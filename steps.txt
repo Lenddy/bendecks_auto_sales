@@ -1,0 +1,24 @@
+Make a car payments(loans) management system for bryan
+
+it will need a list of all the clients and their info 
+    view one , delete , update and creates
+
+
+cars and all their info 
+
+you will need to add (store):
+
+clients info:
+    full name:
+    address:
+    when was the car taken out:
+    day of payments:
+    car type:
+
+
+cars info:
+    name of the car:
+    type:
+    model:
+    how many cars are left:
+    etc:

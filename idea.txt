@@ -1,0 +1,4 @@
+make app that allows you to put a list of thing  and also a todos 
+
+
+have a title description and isDone also have a timer
