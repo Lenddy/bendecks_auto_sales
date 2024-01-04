@@ -1,7 +1,17 @@
+make a new database after 
+
+
 Make a car payments(loans) management system for bryan
 
 it will need a list of all the clients and their info 
     view one , delete , update and creates
+
+
+you may want to add a deal info for a client
+
+the latness paymnet is 80 dollars per late  paymnet  and 10 dollars every day after 
+
+
 
 
 cars and all their info 
@@ -17,8 +27,20 @@ clients info:
 
 
 cars info:
+    get the amount of all the cars and specific types of car for every brand
+
     name of the car:
     type:
     model:
     how many cars are left:
     etc:
+
+
+deals info:\
+
+
+
+
+
+
+that there is a limit of 45 days or the car will need to be return
