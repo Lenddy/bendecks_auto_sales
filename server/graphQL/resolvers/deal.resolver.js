@@ -56,8 +56,8 @@ const dealResolvers = {
 				client_id,
 				vehicle_id,
 			} = args;
-			const createdAt = new Date().toISOString();
-			const updatedAt = new Date().toISOString();
+			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
+			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			//Date;
 			return await Deal.create({
 				downPayment,
@@ -99,7 +99,7 @@ const dealResolvers = {
 				client_id,
 				vehicle_id,
 			} = args;
-			const update = { updatedAt: new Date().toISOString() };
+			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
 			if (downPayment !== undefined) {
 				update.downPayment = downPayment;
@@ -163,6 +163,11 @@ const dealResolvers = {
 					throw err;
 				});
 		},
+	},
+	Deal: {
+		// Use toISOString() for custom DateTime scalar
+		createdAt: (deal) => deal.createdAt.toISOString(),
+		updatedAt: (deal) => deal.updatedAt.toISOString(),
 	},
 };
 

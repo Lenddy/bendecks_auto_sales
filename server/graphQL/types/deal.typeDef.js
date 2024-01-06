@@ -1,7 +1,6 @@
 const { gql } = require("apollo-server-express");
 
-// use this video to fix the dates https://www.youtube.com/watch?v=XkJVYrZaZ9c
-
+require("./dateTime");
 const { clientTypeDef } = require("./client.typeDef");
 const { vehicleTypeDef } = require("./vehicle.typeDef");
 
@@ -21,8 +20,8 @@ const dealTypeDef = gql`
 		sellingPrice: Float!
 		client_id: Client!
 		vehicle_id: Vehicle!
-		createdAt: String!
-		updatedAt: String!
+		createdAt: DateTime!
+		updatedAt: DateTime!
 	}
 
 	#Queries

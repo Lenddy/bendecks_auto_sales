@@ -48,8 +48,9 @@ const clientResolvers = {
 	Mutation: {
 		createOneClient: async (_, args) => {
 			const { clientName, clientLastName, cellPhone } = args;
-			const createdAt = new Date().toISOString();
-			const updatedAt = new Date().toISOString();
+			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
+			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
+
 			//Date;
 			return await Client.create({
 				clientName,
@@ -78,7 +79,7 @@ const clientResolvers = {
 
 		updateOneClient: async (parent, args, context, info) => {
 			const { id, clientName, clientLastName, cellPhone } = args;
-			const update = { updatedAt: new Date().toISOString() };
+			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime scalar
 			// title,description
 
 			if (clientName !== undefined) {
@@ -131,6 +132,11 @@ const clientResolvers = {
 					throw err;
 				});
 		},
+	},
+	Client: {
+		// Use toISOString() for custom DateTime scalar
+		createdAt: (client) => client.createdAt.toISOString(),
+		updatedAt: (client) => client.updatedAt.toISOString(),
 	},
 };
 

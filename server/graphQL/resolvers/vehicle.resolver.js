@@ -49,8 +49,8 @@ const vehicleResolvers = {
 		createOneVehicle: async (_, args) => {
 			const { vehicleName, vehicleModel, year, color, boughtPrice } =
 				args;
-			const createdAt = new Date().toISOString();
-			const updatedAt = new Date().toISOString();
+			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
+			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			//Date;
 			return await Vehicle.create({
 				vehicleName,
@@ -90,7 +90,7 @@ const vehicleResolvers = {
 				boughtPrice,
 				sellingPrice,
 			} = args;
-			const update = { updatedAt: new Date().toISOString() };
+			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
 			if (vehicleName !== undefined) {
 				update.vehicleName = vehicleName;
@@ -148,6 +148,11 @@ const vehicleResolvers = {
 					throw err;
 				});
 		},
+	},
+	Vehicle: {
+		// Use toISOString() for custom DateTime scalar
+		createdAt: (vehicle) => vehicle.createdAt.toISOString(),
+		updatedAt: (vehicle) => vehicle.updatedAt.toISOString(),
 	},
 };
 

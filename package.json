@@ -1,5 +1,5 @@
 {
-  "name": "lists_and_todos",
+  "name": "bendecks_auto_sales",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
     "dev": "nodemon server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Lenddy",
   "license": "ISC",
   "dependencies": {
     "@graphql-tools/merge": "^9.0.1",

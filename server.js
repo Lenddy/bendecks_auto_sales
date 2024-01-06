@@ -44,7 +44,9 @@ const startServer = async () => {
 	await require("./server/config/config"); //waiting for a response from the data bade
 
 	app.listen(process.env.port, () =>
-		console.log(`listening on port ${process.env.port}`)
+		console.log(
+			`listening on port ${process.env.port}\nhttp://localhost:${process.env.port}/graphql/`
+		)
 	); //alerts that the server is running
 };
 
