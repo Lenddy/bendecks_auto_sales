@@ -1,12 +1,15 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
-import { useQuery } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
+import { useQuery, useSubscription } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
 
 import { useNavigate, Link, useParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
+import { client_added_subscription } from "../../GraphQL/queries/clientQueries";
+import io from "socket.io-client"; //importing socket.io-client
 
-function GetAllClients({ reload }) {
+function GetAllClients() {
+	const [socket] = useState(() => io(":8080")); //connect to the server
 	const navigate = useNavigate();
 	const navigateTO = (url) => {
 		navigate(url);
@@ -20,6 +23,23 @@ function GetAllClients({ reload }) {
 	// Set up state to manage the Clients fetched from the query
 	const [clients, setClients] = useState([]);
 
+	// Handle subscription using useSubscription hook
+	// const { data: subscriptionData } = useSubscription(
+	// 	client_added_subscription
+	// );
+
+	useEffect(() => {
+		socket.on("reload_client_list", (newClientInfo) => {
+			setClients((prevClients) => [...prevClients, newClientInfo]);
+			clients;
+		});
+		console.log(clients);
+
+		return () => {
+			socket.off("reload_client_list"); // Clean up the socket listener on unmount
+		};
+	}, [socket]); // Listen to socket changes
+
 	// useEffect hook to handle changes in error, loading, and data states
 	useEffect(() => {
 		if (loading) {
@@ -32,9 +52,17 @@ function GetAllClients({ reload }) {
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
 		}
-	}, [error, loading, data, clients, reload]); // Dependencies for the useEffect hook
+		// if (subscriptionData && subscriptionData.clientAdded) {
+		// 	setClients((prevClients) => [
+		// 		...prevClients,
+		// 		subscriptionData.clientAdded,
+		// 	]);
+		// console.log("the subscription work", subscriptionData.clientAdded);
+		// }subscriptionData
+	}, [error, loading, data, clients]); // Dependencies for the useEffect hook
 
 	// Render the retrieved clients
+
 	return (
 		<div>
 			<button onClick={() => navigateTO("/createOneClient")}>
@@ -51,7 +79,7 @@ function GetAllClients({ reload }) {
 							Full Name: {c?.clientName} {c?.clientLastName}
 						</p>
 						<p>
-							Phone NUmber:{" "}
+							Phone Number:{" "}
 							{c?.cellPhone.map((n, idx) => {
 								return (
 									<span key={idx}>
@@ -66,7 +94,7 @@ function GetAllClients({ reload }) {
 						<Link to={`/update/${c?.id}`}>
 							<button>update</button>
 						</Link>
-						<Link to={`/delete${c?.id}`}>
+						<Link to={`/delete/${c?.id}`}>
 							<button>delete</button>
 						</Link>
 					</div>

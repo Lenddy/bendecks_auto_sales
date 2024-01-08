@@ -1,97 +1,59 @@
 import { useState, useEffect } from "react";
-import { create_One_List } from "../../GraphQL/mutations/Mutations";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import { delete_one_client } from "../../GraphQL/mutations/clientMutations";
+import { get_one_client } from "../../GraphQL/queries/clientQueries";
+import { useNavigate, useParams, Link } from "react-router-dom";
 
-const DeleteOneList = () => {
-	// State to manage form data
-	// Dependencies for the useEffect hook
-	const [info, setInfo] = useState({
-		title: "",
-		description: "",
-		isDone: false,
+const DeleteOneClient = () => {
+	const { id } = useParams();
+	const navigate = useNavigate();
+
+	const [client, setClient] = useState();
+
+	const { error, loading, data } = useQuery(get_one_client, {
+		variables: { id },
 	});
 
-	const [reload, setReload] = useState(false);
+	useEffect(() => {
+		if (loading) {
+			console.log("loading");
+		}
+		if (data) {
+			setClient(data.getOneClient);
+		}
+		if (error) {
+			console.log("there was an error", error);
+		}
+	}, [error, loading, data]);
 
-	useEffect(() => {}, [reload]);
+	const [deleteOneClient] = useMutation(delete_one_client);
 
-	// Apollo Client mutation hook for creating a single list item
-	const [createOneList, { error }] = useMutation(create_One_List);
-
-	// Function to handle input changes and update state accordingly
-	const infoToBeSubmitted = (e) => {
-		const value =
-			e.target.type === "checkbox" ? e.target.checked : e.target.value;
-
-		setInfo({
-			...info,
-			[e.target.name]: value,
-		});
-	};
-
-	// Function to handle form submission
-	const submit = (e) => {
-		e.preventDefault(); // Prevent default form submission behavior
-
-		createOneList({
+	const deleteClient = () => {
+		deleteOneClient({
 			variables: {
-				title: info.title,
-				description: info.description,
-				isDone: info.isDone,
+				id, // Only pass the ID to the deletion mutation
 			},
 		})
 			.then(() => {
-				// Reset the form fields after successful submission
-				setInfo({
-					title: "",
-					description: "",
-					isDone: false,
-				});
+				// Redirect after successful deletion
+				navigate("/dashboard");
 			})
 			.catch((error) => {
 				console.log(error);
 			});
 	};
 
-	// Component rendering
 	return (
 		<div>
-			<form onSubmit={submit}>
-				<div>
-					<label htmlFor="title">Title:</label>
-					<input
-						type="text"
-						name="title"
-						onChange={infoToBeSubmitted}
-						value={info.title}
-					/>
-				</div>
-				<div>
-					<label htmlFor="description">Description:</label>
-					<textarea
-						name="description"
-						onChange={infoToBeSubmitted}
-						value={info.description}
-						cols="30"
-						rows="10"
-					></textarea>
-				</div>
-				<div>
-					<label htmlFor="isDone">Mark as Done:</label>
-					<input
-						type="checkbox"
-						name="isDone"
-						onChange={infoToBeSubmitted}
-						checked={info.isDone}
-					/>
-					<label>Yes</label>
-				</div>
-				<button type="submit" onClick={() => setReload(!reload)}>
-					Add a new list
-				</button>
-			</form>
+			<h1>hello</h1>
+			<Link to={"/dashboard"}>
+				<button>dashboard</button>
+			</Link>
+			<div>
+				<button onClick={deleteClient}>Delete</button>
+			</div>
 		</div>
 	);
 };
 
-export default DeleteOneList;
+export default DeleteOneClient;

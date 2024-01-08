@@ -1,32 +1,38 @@
 import { useState, useEffect } from "react";
-import { create_One_List } from "../../GraphQL/mutations/Mutations";
 import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import { create_one_client } from "../../GraphQL/mutations/clientMutations";
+import io from "socket.io-client"; //importing socket.io-client
 
-const CreateOneList = ({ reload, setReload }) => {
+const CreateOneClient = ({ reload, setReload }) => {
+	const [socket] = useState(() => io(":8080")); //connect to the server
+
+	// socket.on("new_connection", (data) => {
+	// 	console.log(data);
+	// });
+
 	// State to manage form data
 	// Dependencies for the useEffect hook
 	const [info, setInfo] = useState({
-		title: "",
-		description: "",
-		isDone: false,
+		// title: "",
+		// description: "",
+		// isDone: false,
+		cellPhone: [],
 	});
 
 	const navigate = useNavigate();
 
-	useEffect(() => {}, [reload]);
-
 	// Apollo Client mutation hook for creating a single list item
-	const [createOneList, { error }] = useMutation(create_One_List);
+	const [createOneClient, { error }] = useMutation(create_one_client);
 
 	// Function to handle input changes and update state accordingly
 	const infoToBeSubmitted = (e) => {
-		const value =
-			e.target.type === "checkbox" ? e.target.checked : e.target.value;
+		// const value =
+		// 	e.target.type === "checkbox" ? e.target.checked : e.target.value;
 
 		setInfo({
 			...info,
-			[e.target.name]: value,
+			[e.target.name]: e.target.value,
 		});
 	};
 
@@ -34,21 +40,26 @@ const CreateOneList = ({ reload, setReload }) => {
 	const submit = (e) => {
 		e.preventDefault(); // Prevent default form submission behavior
 
-		createOneList({
+		createOneClient({
 			variables: {
-				title: info.title,
-				description: info.description,
-				isDone: info.isDone,
+				clientName: info.clientName,
+				clientLastName: info.clientLastName,
+				cellPhone: info.cellPhone,
 			},
 		})
-			.then(() => {
+			.then((res) => {
 				// Reset the form fields after successful submission
-				setInfo({
-					title: "",
-					description: "",
-					isDone: false,
-				});
+
+				// setInfo({
+				// 	// title: "",
+				// 	// description: "",
+				// 	// isDone: false,
+				// 	cellPhone: [],
+				// });
 				navigate("/dashboard");
+				console.log("here is the response", res.data.createOneClient);
+				socket.emit("new_client_added", res.data.createOneClient);
+				setReload(!reload);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -60,40 +71,35 @@ const CreateOneList = ({ reload, setReload }) => {
 		<div>
 			<form onSubmit={submit}>
 				<div>
-					<label htmlFor="title">Title:</label>
+					<label htmlFor="clientName">Name:</label>
 					<input
 						type="text"
-						name="title"
+						name="clientName"
 						onChange={infoToBeSubmitted}
-						value={info.title}
+						// value={info.clientName}
 					/>
 				</div>
 				<div>
-					<label htmlFor="description">Description:</label>
-					<textarea
-						name="description"
-						onChange={infoToBeSubmitted}
-						value={info.description}
-						cols="30"
-						rows="10"
-					></textarea>
-				</div>
-				<div>
-					<label htmlFor="isDone">Mark as Done:</label>
+					<label htmlFor="clientLastName">Last Name:</label>
 					<input
-						type="checkbox"
-						name="isDone"
+						name="clientLastName"
 						onChange={infoToBeSubmitted}
-						checked={info.isDone}
-					/>
-					<label>Yes</label>
+						// value={info.clientLastName}
+					></input>
 				</div>
-				<button type="submit" onClick={() => setReload(!reload)}>
-					Add a new list
-				</button>
+				<div>
+					<label htmlFor="cellPhone">cell phone:</label>
+					<input
+						type="text"
+						name="cellPhone"
+						onChange={infoToBeSubmitted}
+						// value={info.cellPhone}
+					/>
+				</div>
+				<button type="submit">Add a new client</button>
 			</form>
 		</div>
 	);
 };
 
-export default CreateOneList;
+export default CreateOneClient;

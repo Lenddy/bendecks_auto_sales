@@ -1,4 +1,7 @@
 const Client = require("../../models/client.model");
+const { PubSub } = require("graphql-subscriptions");
+
+const pubsub = new PubSub();
 
 const clientResolvers = {
 	Query: {
@@ -65,6 +68,7 @@ const clientResolvers = {
 						newClient,
 						"\n____________________"
 					);
+					// pubsub.publish("CLIENT_ADDED", { clientAdded: newClient });
 					return newClient;
 				})
 				.catch((err) => {
@@ -133,6 +137,15 @@ const clientResolvers = {
 				});
 		},
 	},
+
+	// Subscription: {
+	// 	clientAdded: {
+	// 		subscribe: () => pubsub.asyncIterator("CLIENT_ADDED"),
+	// 		// Resolve function if needed (to handle subscription payload transformations)
+	// 		resolve: (payload) => payload.clientAdded,
+	// 	},
+	// },
+
 	Client: {
 		// Use toISOString() for custom DateTime scalar
 		createdAt: (client) => client.createdAt.toISOString(),

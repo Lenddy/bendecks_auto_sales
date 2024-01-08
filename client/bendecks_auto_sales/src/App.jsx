@@ -12,8 +12,13 @@ import { onError } from "@apollo/client/link/error"; // Import error handler fro
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
+import Log_reg from "./components/Log_reg";
+
 import GetAllClients from "./components/clients/GetAllClients";
 import GetOneClient from "./components/clients/GetOneClient";
+import CreateOneClient from "./components/clients/CreateOneClient";
+import UpdateOneClient from "./components/clients/UpdateOneClient";
+import DeleteOneClient from "./components/clients/DeleteOneClient";
 
 // Define an error link to catch errors from the GraphQL API
 const errorLink = onError(({ graphqlErrors, networkError }) => {
@@ -44,24 +49,36 @@ function App() {
 		<div>
 			<ApolloProvider client={client}>
 				<Routes>
+					<Route exact path="/" element={<Log_reg />} />
 					<Route
 						exact
 						path="/dashboard"
 						element={<GetAllClients reload={reload} />}
 					/>
 					<Route exact path="/:id" element={<GetOneClient />} />
-					{/* 
+
 					<Route
 						exact
-						path="/createOneList"
-						element={<CreateOneList />}
+						path="/createOneClient"
+						element={
+							<CreateOneClient
+								reload={reload}
+								setReload={setReload}
+							/>
+						}
 					/>
 
 					<Route
 						exact
 						path="/update/:id"
-						element={<UpdateOneList />}
-					/> */}
+						element={<UpdateOneClient />}
+					/>
+
+					<Route
+						exact
+						path="/delete/:id"
+						element={<DeleteOneClient />}
+					/>
 				</Routes>
 			</ApolloProvider>
 		</div>

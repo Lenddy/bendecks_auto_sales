@@ -38,6 +38,10 @@ const clientTypeDef = gql`
 
 		deleteOneClient(id: ID!): Client!
 	}
+
+	# type Subscription {
+	# 	clientAdded: Client!
+	# }
 `;
 
 module.exports = { clientTypeDef };
