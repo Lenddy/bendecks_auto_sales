@@ -19,6 +19,8 @@ import GetOneClient from "./components/clients/GetOneClient";
 import CreateOneClient from "./components/clients/CreateOneClient";
 import UpdateOneClient from "./components/clients/UpdateOneClient";
 import DeleteOneClient from "./components/clients/DeleteOneClient";
+import GetAllVehicles from "./components/vehicles/GetAllVehicles";
+import GetOneVehicle from "./components/vehicles/GetOneVehicle";
 
 // Define an error link to catch errors from the GraphQL API
 const errorLink = onError(({ graphqlErrors, networkError }) => {
@@ -78,6 +80,20 @@ function App() {
 						exact
 						path="/delete/:id"
 						element={<DeleteOneClient />}
+					/>
+
+					{/* vehicles */}
+
+					<Route
+						exact
+						path="/vehicles"
+						element={<GetAllVehicles />}
+					/>
+
+					<Route
+						exact
+						path="/vehicles/:id"
+						element={<GetOneVehicle />}
 					/>
 				</Routes>
 			</ApolloProvider>

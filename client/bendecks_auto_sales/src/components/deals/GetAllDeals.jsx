@@ -4,8 +4,8 @@ import { useQuery, useSubscription } from "@apollo/client"; // Import useQuery h
 import { useNavigate, Link, useParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
-import { get_all_clients } from "../../GraphQL/queries/clientQueries";
-// import { client_added_subscription } from "../../GraphQL/queries/clientQueries";
+import { get_all_clients } from "../../GraphQL/queries/vehicleQueries";
+import { client_added_subscription } from "../../GraphQL/queries/vehicleQueries";
 import io from "socket.io-client"; //importing socket.io-client
 
 function GetAllClients() {
@@ -68,14 +68,6 @@ function GetAllClients() {
 			<button onClick={() => navigateTO("/createOneClient")}>
 				{" "}
 				add one Client
-			</button>
-
-			<button
-				style={{ margin: "5px" }}
-				onClick={() => navigateTO("/vehicles")}
-			>
-				{" "}
-				view vehicles
 			</button>
 
 			{clients.map((c) => {
