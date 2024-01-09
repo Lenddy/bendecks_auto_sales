@@ -45,7 +45,7 @@ function GetAllVehicles() {
 			console.log("loading"); // Log a message when data is loading
 		}
 		if (data) {
-			console.log(data.getAllVehicles); // Log the fetched data
+			console.log(data); // Log the fetched data
 			setVehicles(data.getAllVehicles); // Set the Clients retrieved from the query to the state
 		}
 		if (error) {
@@ -57,8 +57,13 @@ function GetAllVehicles() {
 
 	return (
 		<div>
-			<button onClick={() => navigateTO("/createOneVehicle")}>
-				{" "}
+			<Link to={"/dashboard"}>
+				<button style={{ margin: "5px" }}>view clients</button>
+			</Link>
+			<button
+				style={{ margin: "5px" }}
+				onClick={() => navigateTO("/vehicles/add")}
+			>
 				add one vehicle
 			</button>
 

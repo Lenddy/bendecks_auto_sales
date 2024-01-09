@@ -4,11 +4,11 @@ import { useQuery, useSubscription } from "@apollo/client"; // Import useQuery h
 import { useNavigate, Link, useParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
-import { get_all_clients } from "../../GraphQL/queries/vehicleQueries";
-import { client_added_subscription } from "../../GraphQL/queries/vehicleQueries";
+
+import { get_all_deals } from "../../GraphQL/queries/dealQueries";
 import io from "socket.io-client"; //importing socket.io-client
 
-function GetAllClients() {
+function GetAllDeals() {
 	const [socket] = useState(() => io(":8080")); //connect to the server
 	const navigate = useNavigate();
 	const navigateTO = (url) => {
@@ -18,27 +18,27 @@ function GetAllClients() {
 	// use promisees to get all the data
 
 	// Fetch data using the useQuery hook by executing the getAllClients query
-	const { error, loading, data } = useQuery(get_all_clients);
+	const { error, loading, data } = useQuery(get_all_deals);
 
 	// Set up state to manage the Clients fetched from the query
-	const [clients, setClients] = useState([]);
+	const [deals, setDeals] = useState([]);
 
 	// Handle subscription using useSubscription hook
 	// const { data: subscriptionData } = useSubscription(
 	// 	client_added_subscription
 	// );
 
-	useEffect(() => {
-		socket.on("reload_client_list", (newClientInfo) => {
-			setClients((prevClients) => [...prevClients, newClientInfo]);
-			clients;
-		});
-		console.log(clients);
+	// useEffect(() => {
+	// 	// socket.on("reload_client_list", (newClientInfo) => {
+	// 	// 	setClients((prevClients) => [...prevClients, newClientInfo]);
+	// 	// 	clients;
+	// 	// });
+	// 	console.log(delaselas);
 
-		return () => {
-			socket.off("reload_client_list"); // Clean up the socket listener on unmount
-		};
-	}, [socket]); // Listen to socket changes
+	// 	return () => {
+	// 		socket.off("reload_client_list"); // Clean up the socket listener on unmount
+	// 	};
+	// }, [socket]); // Listen to socket changes
 
 	// useEffect hook to handle changes in error, loading, and data states
 	useEffect(() => {
@@ -46,8 +46,8 @@ function GetAllClients() {
 			console.log("loading"); // Log a message when data is loading
 		}
 		if (data) {
-			console.log(data); // Log the fetched data
-			setClients(data.getAllClients); // Set the Clients retrieved from the query to the state
+			console.log(data.getAllDeals); // Log the fetched data
+			setDeals(data.getAllDeals); // Set the Clients retrieved from the query to the state
 		}
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
@@ -59,42 +59,50 @@ function GetAllClients() {
 		// 	]);
 		// console.log("the subscription work", subscriptionData.clientAdded);
 		// }subscriptionData
-	}, [error, loading, data, clients]); // Dependencies for the useEffect hook
+	}, [error, loading, data, deals]); // Dependencies for the useEffect hook
 
 	// Render the retrieved clients
 
 	return (
 		<div>
-			<button onClick={() => navigateTO("/createOneClient")}>
+			<button onClick={() => navigateTO("/deals/add")}>
 				{" "}
-				add one Client
+				add one deal
 			</button>
 
-			{clients.map((c) => {
+			{deals?.map((d) => {
 				return (
-					<div key={c?.id}>
-						<h1> ID: {c?.id}</h1>
-						<p>
-							{" "}
-							Full Name: {c?.clientName} {c?.clientLastName}
-						</p>
+					<div key={d?.id}>
+						<h1> ID: {d?.id}</h1>
+						<p> down payment: {d?.downPayment}</p>
 						<p>
 							Phone Number:{" "}
-							{c?.cellPhone.map((n, idx) => {
+							{d?.paymentDate?.map((pd, idx) => {
 								return (
 									<span key={idx}>
-										<span>{n}</span> ,
+										<span>{pd}</span> ,
 									</span>
 								);
 							})}
 						</p>
-						<Link to={`/${c.id}`}>
+						<p>
+							remainingBalance:
+							{d?.remainingBalance}
+						</p>
+						<p>
+							remainingBalance:
+							{d?.sellingPrice}
+						</p>
+						<p>client id here: {d?.client_id?.id}</p>
+						<p>vehicle id here {d?.vehicle_id?.id}</p>
+
+						<Link to={`/deals/${d.id}`}>
 							<button>view</button>
 						</Link>
-						<Link to={`/update/${c?.id}`}>
+						<Link to={`/deals/update/${d?.id}`}>
 							<button>update</button>
 						</Link>
-						<Link to={`/delete/${c?.id}`}>
+						<Link to={`/deals/delete/${d?.id}`}>
 							<button>delete</button>
 						</Link>
 					</div>
@@ -104,4 +112,4 @@ function GetAllClients() {
 	);
 }
 
-export default GetAllClients; // Export the GetAllList component
+export default GetAllDeals; // Export the GetAllList component

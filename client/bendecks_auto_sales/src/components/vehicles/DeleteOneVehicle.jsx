@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { delete_one_client } from "../../GraphQL/mutations/clientMutations";
-import { get_one_client } from "../../GraphQL/queries/vehicleQueries";
+import { get_one_vehicle } from "../../GraphQL/queries/vehicleQueries";
+import { delete_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
 import { useNavigate, useParams, Link } from "react-router-dom";
 
-const DeleteOneClient = () => {
+const DeleteOneVehicle = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 
-	const [client, setClient] = useState();
+	const [vehicle, setVehicle] = useState();
 
-	const { error, loading, data } = useQuery(get_one_client, {
+	const { error, data, loading } = useQuery(get_one_vehicle, {
 		variables: { id },
 	});
 
@@ -19,24 +19,26 @@ const DeleteOneClient = () => {
 			console.log("loading");
 		}
 		if (data) {
-			setClient(data.getOneClient);
+			setVehicle(data.getOneVehicle);
 		}
 		if (error) {
 			console.log("there was an error", error);
 		}
-	}, [error, loading, data]);
+	}, [error, loading, data, vehicle]);
 
-	const [deleteOneClient] = useMutation(delete_one_client);
+	const [deleteOneVehicle] = useMutation(delete_one_vehicle);
 
-	const deleteClient = () => {
-		deleteOneClient({
+	const deleteVehicles = () => {
+		console.log(id);
+		deleteOneVehicle({
 			variables: {
 				id, // Only pass the ID to the deletion mutation
 			},
 		})
-			.then(() => {
+			.then((res) => {
 				// Redirect after successful deletion
-				navigate("/dashboard");
+				navigate("/vehicles");
+				return res.data;
 			})
 			.catch((error) => {
 				console.log(error);
@@ -46,14 +48,36 @@ const DeleteOneClient = () => {
 	return (
 		<div>
 			<h1>hello</h1>
+			<Link to={"/vehicles"}>
+				<button>view vehicles</button>
+			</Link>
+
 			<Link to={"/dashboard"}>
 				<button>dashboard</button>
 			</Link>
+
+			<h1> ID: {vehicle?.id}</h1>
+			<p>
+				{" "}
+				Name and Model : {vehicle?.vehicleName} {vehicle?.vehicleModel}
+			</p>
+			<p>year: {vehicle?.year}</p>
+			<p>
+				color(s):{" "}
+				{vehicle?.color?.map((c, idx) => {
+					return (
+						<span key={idx}>
+							<span>{c}</span> ,
+						</span>
+					);
+				})}
+			</p>
+
 			<div>
-				<button onClick={deleteClient}>Delete</button>
+				<button onClick={deleteVehicles}>Delete</button>
 			</div>
 		</div>
 	);
 };
 
-export default DeleteOneClient;
+export default DeleteOneVehicle;

@@ -21,6 +21,12 @@ import UpdateOneClient from "./components/clients/UpdateOneClient";
 import DeleteOneClient from "./components/clients/DeleteOneClient";
 import GetAllVehicles from "./components/vehicles/GetAllVehicles";
 import GetOneVehicle from "./components/vehicles/GetOneVehicle";
+import CreateOneVehicle from "./components/vehicles/CreateOneVehicle";
+import DeleteOneVehicle from "./components/vehicles/DeleteOneVehicle";
+import UpdateOneVehicle from "./components/vehicles/UpdateOneVehicle";
+import GetAllDeals from "./components/deals/GetAllDeals";
+import GetOneDeal from "./components/deals/GetOneDeal";
+import CreateOneDeal from "./components/deals/CreateOneDeal";
 
 // Define an error link to catch errors from the GraphQL API
 const errorLink = onError(({ graphqlErrors, networkError }) => {
@@ -94,6 +100,47 @@ function App() {
 						exact
 						path="/vehicles/:id"
 						element={<GetOneVehicle />}
+					/>
+
+					<Route
+						exact
+						path="/vehicles/add"
+						element={<CreateOneVehicle />}
+					/>
+
+					<Route
+						exact
+						path="/vehicles/update/:id"
+						element={<UpdateOneVehicle />}
+					/>
+
+					<Route
+						exact
+						path="/vehicles/delete/:id"
+						element={<DeleteOneVehicle />}
+					/>
+					{/* deals routes */}
+
+					<Route exact path="/deals" element={<GetAllDeals />} />
+
+					<Route exact path="/deals/:id" element={<GetOneDeal />} />
+
+					<Route
+						exact
+						path="/deals/add"
+						element={<CreateOneDeal />}
+					/>
+
+					<Route
+						exact
+						path="/deals/update/:id"
+						element={<UpdateOneVehicle />}
+					/>
+
+					<Route
+						exact
+						path="/deals/delete/:id"
+						element={<DeleteOneVehicle />}
 					/>
 				</Routes>
 			</ApolloProvider>

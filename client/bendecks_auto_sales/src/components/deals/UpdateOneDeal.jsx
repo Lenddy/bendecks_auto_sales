@@ -1,30 +1,28 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate, useParams } from "react-router-dom";
-import { get_one_client } from "../../GraphQL/queries/vehicleQueries";
-import { update_One_client } from "../../GraphQL/mutations/clientMutations";
+import { get_one_deal } from "../../GraphQL/queries/dealQueries";
+import { update_One_deal } from "../../GraphQL/mutations/dealMutations";
 
 const UpdateOneClient = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
-
-	const { error, loading, data } = useQuery(get_one_client, {
+	const { error, loading, data } = useQuery(update_One_deal, {
 		variables: { id },
 	});
+	const [updateOneDeal] = useMutation(get_one_deal);
 
 	const [info, setInfo] = useState({
 		cellPhone: [],
 	});
 
-	const [client, setClient] = useState();
+	const [deal, setDeal] = useState();
 
 	useEffect(() => {
 		if (!loading && data) {
-			setClient(data.getOneClient);
+			setDeal(data.getOneDeal);
 		}
 	}, [loading, data]);
-
-	const [updateOneClient] = useMutation(update_One_client);
 
 	const infoToBeSubmitted = (e) => {
 		setInfo({
@@ -36,12 +34,16 @@ const UpdateOneClient = () => {
 	const submit = (e) => {
 		e.preventDefault();
 
-		updateOneClient({
+		updateOneDeal({
 			variables: {
 				id,
-				clientName: info.clientName,
-				clientLastName: info.clientLastName,
-				cellPhone: info.cellPhone,
+				downPayment: info.downPayment,
+				payment: info.payment,
+				paymentDate: info.paymentDate,
+				remainingBalance: info.remainingBalance,
+				sellingPrice: info.sellingPrice,
+				client_id: info.client_id,
+				vehicle_id: info.vehicle_id,
 			},
 		})
 			.then((res) => {
@@ -55,44 +57,62 @@ const UpdateOneClient = () => {
 
 	return (
 		<div>
-			{loading ? (
-				<p>Loading...</p>
-			) : (
-				client && (
-					<form onSubmit={submit}>
-						<div>
-							<label htmlFor="clientName">Client Name:</label>
-							<input
-								type="text"
-								name="clientName"
-								onChange={infoToBeSubmitted}
-								// value={info.title}
-								placeholder={client.clientName}
-							/>
-						</div>
-						<div>
-							<label htmlFor="clientLastName">
-								Client Last Name:
-							</label>
-							<input
-								name="clientLastName"
-								onChange={infoToBeSubmitted}
-								placeholder={client.clientLastName}
-							/>
-						</div>
-						<div>
-							<label htmlFor="cellPhone">Cell Phone:</label>
-							<input
-								type="text"
-								name="cellPhone"
-								onChange={infoToBeSubmitted}
-								placeholder={client.cellPhone}
-							/>
-						</div>
-						<button type="submit">Update client</button>
-					</form>
-				)
-			)}
+			<form onSubmit={submit}>
+				<div>
+					<label htmlFor="downPayment">downPayment:</label>
+					<input
+						type="number"
+						name="downPayment"
+						onChange={infoToBeSubmitted}
+						// value={info.clientName}
+					/>
+				</div>
+				<div>
+					<label htmlFor="payment">payment:</label>
+					<input
+						name="payment"
+						onChange={infoToBeSubmitted}
+						// value={info.clientLastName}
+					></input>
+				</div>
+				<div>
+					<label htmlFor="paymentDate">paymentDate:</label>
+					<input
+						type="text"
+						name="paymentDate"
+						onChange={infoToBeSubmitted}
+						// value={info.cellPhone}
+					/>
+				</div>
+				<div>
+					<label htmlFor="remainingBalance">paymentDate:</label>
+					<input
+						type="text"
+						name="remainingBalance"
+						onChange={infoToBeSubmitted}
+						// value={info.cellPhone}
+					/>
+				</div>
+				<div>
+					<label htmlFor="sellingPrice">paymentDate:</label>
+					<input
+						type="text"
+						name="sellingPrice"
+						onChange={infoToBeSubmitted}
+						// value={info.cellPhone}
+					/>
+				</div>
+				<div>
+					<label htmlFor="paymentDate">paymentDate:</label>
+					<input
+						type="text"
+						name="paymentDate"
+						onChange={infoToBeSubmitted}
+						// value={info.cellPhone}
+					/>
+				</div>
+				<button type="submit">Add a new client</button>
+			</form>
 		</div>
 	);
 };

@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 // import(gql);
 
-export const create_one_client = gql`
+export const create_one_vehicle = gql`
 	mutation createOneVehicle(
 		$vehicleName: String!
 		$vehicleModel: String!
@@ -12,8 +12,9 @@ export const create_one_client = gql`
 	) {
 		createOneVehicle(
 			vehicleName: $vehicleName
-			vehicleModel: $clientLastName
-			year: $cellPhone
+			vehicleModel: $vehicleModel
+			year: $year
+			color: $color
 			boughtPrice: $boughtPrice
 		) {
 			id
@@ -28,32 +29,38 @@ export const create_one_client = gql`
 	}
 `;
 
-export const update_One_client = gql`
-	mutation updateOneClient(
+export const update_One_vehicle = gql`
+	mutation updateOneVehicle(
 		$id: ID!
-		$clientName: String
-		$clientLastName: String
-		$cellPhone: [String]
+		$vehicleName: String
+		$vehicleModel: String
+		$year: String
+		$color: [String]
+		$boughtPrice: Float
 	) {
-		updateOneClient(
+		updateOneVehicle(
 			id: $id
-			clientName: $clientName
-			clientLastName: $clientLastName
-			cellPhone: $cellPhone
+			vehicleName: $vehicleName
+			vehicleModel: $vehicleModel
+			year: $year
+			color: $color
+			boughtPrice: $boughtPrice
 		) {
 			id
-			clientName
-			clientLastName
-			cellPhone
-			# createdAt
-			# updateAt
+			vehicleName
+			vehicleModel
+			year
+			color
+			boughtPrice
+			createdAt
+			updatedAt
 		}
 	}
 `;
 
-export const delete_one_client = gql`
-	mutation deleteOneClient($id: ID!) {
-		deleteOneClient(id: $id) {
+export const delete_one_vehicle = gql`
+	mutation deleteOneVehicle($id: ID!) {
+		deleteOneVehicle(id: $id) {
 			id
 		}
 	}

@@ -65,9 +65,20 @@ function GetAllClients() {
 
 	return (
 		<div>
-			<button onClick={() => navigateTO("/createOneClient")}>
+			<button
+				style={{ margin: "5px" }}
+				onClick={() => navigateTO("/createOneClient")}
+			>
 				{" "}
 				add one Client
+			</button>
+
+			<button
+				style={{ margin: "5px" }}
+				onClick={() => navigateTO("/deals")}
+			>
+				{" "}
+				view deals
 			</button>
 
 			<button

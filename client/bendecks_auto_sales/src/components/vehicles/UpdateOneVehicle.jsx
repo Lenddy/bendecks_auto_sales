@@ -1,30 +1,30 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { useNavigate, useParams } from "react-router-dom";
-import { get_one_client } from "../../GraphQL/queries/vehicleQueries";
-import { update_One_client } from "../../GraphQL/mutations/clientMutations";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { get_one_vehicle } from "../../GraphQL/queries/vehicleQueries";
+import { update_One_vehicle } from "../../GraphQL/mutations/vehicleMutations";
 
-const UpdateOneClient = () => {
+const UpdateOneVehicle = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 
-	const { error, loading, data } = useQuery(get_one_client, {
+	const { error, loading, data } = useQuery(get_one_vehicle, {
 		variables: { id },
 	});
 
 	const [info, setInfo] = useState({
-		cellPhone: [],
+		color: [],
 	});
 
-	const [client, setClient] = useState();
+	const [vehicle, setVehicle] = useState();
 
 	useEffect(() => {
 		if (!loading && data) {
-			setClient(data.getOneClient);
+			setVehicle(data.getOneVehicle);
 		}
 	}, [loading, data]);
 
-	const [updateOneClient] = useMutation(update_One_client);
+	const [updateOneVehicle] = useMutation(update_One_vehicle);
 
 	const infoToBeSubmitted = (e) => {
 		setInfo({
@@ -36,17 +36,19 @@ const UpdateOneClient = () => {
 	const submit = (e) => {
 		e.preventDefault();
 
-		updateOneClient({
+		updateOneVehicle({
 			variables: {
 				id,
-				clientName: info.clientName,
-				clientLastName: info.clientLastName,
-				cellPhone: info.cellPhone,
+				vehicleName: info.vehicleName,
+				vehicleModel: info.vehicleModel,
+				year: info.year,
+				color: info.color,
+				boughtPrice: parseFloat(info.boughtPrice),
 			},
 		})
 			.then((res) => {
 				console.log(res.data);
-				navigate(`/${id}`);
+				navigate(`/vehicles/${id}`);
 			})
 			.catch((error) => {
 				console.log("there was an error", error);
@@ -58,43 +60,77 @@ const UpdateOneClient = () => {
 			{loading ? (
 				<p>Loading...</p>
 			) : (
-				client && (
-					<form onSubmit={submit}>
-						<div>
-							<label htmlFor="clientName">Client Name:</label>
-							<input
-								type="text"
-								name="clientName"
-								onChange={infoToBeSubmitted}
-								// value={info.title}
-								placeholder={client.clientName}
-							/>
-						</div>
-						<div>
-							<label htmlFor="clientLastName">
-								Client Last Name:
-							</label>
-							<input
-								name="clientLastName"
-								onChange={infoToBeSubmitted}
-								placeholder={client.clientLastName}
-							/>
-						</div>
-						<div>
-							<label htmlFor="cellPhone">Cell Phone:</label>
-							<input
-								type="text"
-								name="cellPhone"
-								onChange={infoToBeSubmitted}
-								placeholder={client.cellPhone}
-							/>
-						</div>
-						<button type="submit">Update client</button>
-					</form>
+				vehicle && (
+					<div>
+						<Link to={"/vehicles"}>
+							<button style={{ margin: "5px" }}>
+								view vehicles
+							</button>
+						</Link>
+						<form onSubmit={submit}>
+							<div>
+								<label htmlFor="vehicleName">
+									Vehicle Name:
+								</label>
+								<input
+									type="text"
+									name="vehicleName"
+									onChange={infoToBeSubmitted}
+									placeholder={vehicle.vehicleName}
+									// value={info.clientName}
+								/>
+							</div>
+							<div>
+								<label htmlFor="vehicleModel">
+									Vehicle Model:
+								</label>
+								<input
+									name="vehicleModel"
+									onChange={infoToBeSubmitted}
+									placeholder={vehicle.vehicleModel}
+									// value={info.clientLastName}
+								></input>
+							</div>
+							<div>
+								<label htmlFor="year">Year:</label>
+								<input
+									type="text"
+									name="year"
+									onChange={infoToBeSubmitted}
+									placeholder={vehicle.year}
+									// value={info.cellPhone}
+								/>
+							</div>
+							<div>
+								<label htmlFor="color">Color:</label>
+								<input
+									type="text"
+									name="color"
+									onChange={infoToBeSubmitted}
+									placeholder={vehicle.color}
+									// value={info.cellPhone}
+								/>
+							</div>
+
+							<div>
+								<label htmlFor="boughtPrice">
+									Bought Price:
+								</label>
+								<input
+									type="number"
+									name="boughtPrice"
+									onChange={infoToBeSubmitted}
+									placeholder={vehicle.boughtPrice}
+									// value={info.cellPhone}
+								/>
+							</div>
+							<button type="submit">Add a new vehicle</button>
+						</form>
+					</div>
 				)
 			)}
 		</div>
 	);
 };
 
-export default UpdateOneClient;
+export default UpdateOneVehicle;

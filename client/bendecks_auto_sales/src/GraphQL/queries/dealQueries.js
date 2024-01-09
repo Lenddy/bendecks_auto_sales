@@ -1,13 +1,29 @@
 import { gql } from "@apollo/client";
 
 // query to get all clients
-export const get_all_clients = gql`
+export const get_all_deals = gql`
 	query {
-		getAllClients {
+		getAllDeals {
 			id
-			clientName
-			clientLastName
-			cellPhone
+			downPayment
+			payment
+			paymentDate
+			remainingBalance
+			sellingPrice
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhone
+			}
+			vehicle_id {
+				id
+				vehicleName
+				vehicleModel
+				year
+				color
+				boughtPrice
+			}
 			createdAt
 			updatedAt
 		}
@@ -15,13 +31,29 @@ export const get_all_clients = gql`
 `;
 
 // query to get one client
-export const get_one_client = gql`
-	query getOneClient($id: ID!) {
-		getOneClient(id: $id) {
+export const get_one_deal = gql`
+	query getOneDeal($id: ID!) {
+		getOneDeal(id: $id) {
 			id
-			clientName
-			clientLastName
-			cellPhone
+			downPayment
+			payment
+			paymentDate
+			remainingBalance
+			sellingPrice
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhone
+			}
+			vehicle_id {
+				id
+				vehicleName
+				vehicleModel
+				year
+				color
+				boughtPrice
+			}
 			createdAt
 			updatedAt
 		}

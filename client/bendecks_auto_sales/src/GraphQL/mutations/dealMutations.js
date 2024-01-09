@@ -2,44 +2,82 @@ import { gql } from "@apollo/client";
 
 // import(gql);
 
-export const create_one_client = gql`
-	mutation createOneClient(
-		$clientName: String!
-		$clientLastName: String!
-		$cellPhone: [String!]!
+export const create_one_deal = gql`
+	mutation createOneDeal(
+		$downPayment: Float!
+		$payment: Float!
+		$paymentDate: [String!]!
+		$remainingBalance: Float!
+		$sellingPrice: Float!
+		$client_id: ID!
+		$vehicle_id: ID!
 	) {
-		createOneClient(
-			clientName: $clientName
-			clientLastName: $clientLastName
-			cellPhone: $cellPhone
+		createOneDeal(
+			downPayment: $downPayment
+			payment: $payment
+			paymentDate: $paymentDate
+			remainingBalance: $remainingBalance
+			sellingPrice: $sellingPrice
+			client_id: $client_id
+			vehicle_id: $vehicle_id
 		) {
 			id
-			clientName
-			clientLastName
-			cellPhone
+			downPayment
+			payment
+			remainingBalance
+			sellingPrice
+			paymentDate
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhone
+			}
+			vehicle_id {
+				id
+				vehicleName
+				vehicleModel
+				year
+				color
+				boughtPrice
+			}
+			createdAt
+			updatedAt
 		}
 	}
 `;
 
-export const update_One_client = gql`
-	mutation updateOneClient(
+export const update_One_deal = gql`
+	mutation updateOneDeal(
 		$id: ID!
-		$clientName: String
-		$clientLastName: String
-		$cellPhone: [String]
+		$downPayment: Float!
+		$payment: Float!
+		$paymentDate: [String!]!
+		$remainingBalance: Float!
+		$sellingPrice: Float!
+		$client_id: Client!
+		$vehicle_id: Vehicle!
 	) {
-		updateOneClient(
+		updateOneDeal(
 			id: $id
-			clientName: $clientName
-			clientLastName: $clientLastName
-			cellPhone: $cellPhone
+			downPayment: $downPayment
+			payment: $payment
+			paymentDate: $paymentDate
+			remainingBalance: $remainingBalance
+			sellingPrice: $sellingPrice
+			client_id: $client_id
+			vehicle_id: $vehicle_id
 		) {
 			id
-			clientName
-			clientLastName
-			cellPhone
-			# createdAt
-			# updateAt
+			downPayment
+			payment
+			paymentDate
+			remainingBalance
+			sellingPrice
+			client_id
+			vehicle_id
+			createdAt
+			updatedAt
 		}
 	}
 `;

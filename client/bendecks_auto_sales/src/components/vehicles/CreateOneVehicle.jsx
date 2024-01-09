@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
-import { create_one_client } from "../../GraphQL/mutations/clientMutations";
+import { useNavigate, Link } from "react-router-dom";
+import { create_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
 import io from "socket.io-client"; //importing socket.io-client
 
 // !!! make a funtion that has a loop that makes more of a tag so that uses can add more than on e number ,color
 
-const CreateOneClient = ({ reload, setReload }) => {
+const CreateOneVehicle = ({ reload, setReload }) => {
 	const [socket] = useState(() => io(":8080")); //connect to the server
 
 	// socket.on("new_connection", (data) => {
@@ -20,18 +20,16 @@ const CreateOneClient = ({ reload, setReload }) => {
 		// description: "",
 		// isDone: false,
 		// cellPhone: [],
+		color: [],
 	});
 
 	const navigate = useNavigate();
 
 	// Apollo Client mutation hook for creating a single list item
-	const [createOneClient, { error }] = useMutation(create_one_client);
+	const [createOneVehicle, { error }] = useMutation(create_one_vehicle);
 
 	// Function to handle input changes and update state accordingly
 	const infoToBeSubmitted = (e) => {
-		// const value =
-		// 	e.target.type === "checkbox" ? e.target.checked : e.target.value;
-
 		setInfo({
 			...info,
 			[e.target.name]: e.target.value,
@@ -41,12 +39,14 @@ const CreateOneClient = ({ reload, setReload }) => {
 	// Function to handle form submission
 	const submit = (e) => {
 		e.preventDefault(); // Prevent default form submission behavior
-
-		createOneClient({
+		console.log("hello there");
+		createOneVehicle({
 			variables: {
-				clientName: info.clientName,
-				clientLastName: info.clientLastName,
-				cellPhone: info.cellPhone,
+				vehicleName: info.vehicleName,
+				vehicleModel: info.vehicleModel,
+				year: info.year,
+				color: [info.color],
+				boughtPrice: parseFloat(info.boughtPrice),
 			},
 		})
 			.then((res) => {
@@ -58,9 +58,9 @@ const CreateOneClient = ({ reload, setReload }) => {
 				// 	// isDone: false,
 				// 	cellPhone: [],
 				// });
-				navigate("/dashboard");
-				console.log("here is the response", res.data.createOneClient);
-				socket.emit("new_client_added", res.data.createOneClient);
+				navigate("/vehicles");
+				console.log("here is the response", res.data.createOneVehicle);
+				// socket.emit("new_client_added", res.data.createOneVehicle);
 				setReload(!reload);
 			})
 			.catch((error) => {
@@ -71,37 +71,59 @@ const CreateOneClient = ({ reload, setReload }) => {
 	// Component rendering
 	return (
 		<div>
+			<Link to={"/vehicles"}>
+				<button style={{ margin: "5px" }}>view clients</button>
+			</Link>
 			<form onSubmit={submit}>
 				<div>
-					<label htmlFor="clientName">Name:</label>
+					<label htmlFor="vehicleName">Vehicle Name:</label>
 					<input
 						type="text"
-						name="clientName"
+						name="vehicleName"
 						onChange={infoToBeSubmitted}
 						// value={info.clientName}
 					/>
 				</div>
 				<div>
-					<label htmlFor="clientLastName">Last Name:</label>
+					<label htmlFor="vehicleModel">Vehicle Model:</label>
 					<input
-						name="clientLastName"
+						name="vehicleModel"
 						onChange={infoToBeSubmitted}
 						// value={info.clientLastName}
 					></input>
 				</div>
 				<div>
-					<label htmlFor="cellPhone">cell phone:</label>
+					<label htmlFor="year">Year:</label>
 					<input
 						type="text"
-						name="cellPhone"
+						name="year"
 						onChange={infoToBeSubmitted}
 						// value={info.cellPhone}
 					/>
 				</div>
-				<button type="submit">Add a new client</button>
+				<div>
+					<label htmlFor="color">Color:</label>
+					<input
+						type="text"
+						name="color"
+						onChange={infoToBeSubmitted}
+						// value={info.cellPhone}
+					/>
+				</div>
+
+				<div>
+					<label htmlFor="boughtPrice">Bought Price:</label>
+					<input
+						type="number"
+						name="boughtPrice"
+						onChange={infoToBeSubmitted}
+						// value={info.cellPhone}
+					/>
+				</div>
+				<button type="submit">Add a new vehicle</button>
 			</form>
 		</div>
 	);
 };
 
-export default CreateOneClient;
+export default CreateOneVehicle;
