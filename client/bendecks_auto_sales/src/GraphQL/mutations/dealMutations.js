@@ -4,9 +4,10 @@ import { gql } from "@apollo/client";
 
 export const create_one_deal = gql`
 	mutation createOneDeal(
+		$dayOFdeal: DateTime!
 		$downPayment: Float!
 		$payment: Float!
-		$paymentDate: [String!]!
+		$paymentDates: [PaymentDateInput]!
 		$remainingBalance: Float!
 		$sellingPrice: Float!
 		$client_id: ID!
@@ -15,7 +16,7 @@ export const create_one_deal = gql`
 		createOneDeal(
 			downPayment: $downPayment
 			payment: $payment
-			paymentDate: $paymentDate
+			paymentDates: $paymentDates
 			remainingBalance: $remainingBalance
 			sellingPrice: $sellingPrice
 			client_id: $client_id
@@ -26,7 +27,16 @@ export const create_one_deal = gql`
 			payment
 			remainingBalance
 			sellingPrice
-			paymentDate
+			paymentDates {
+				monthFullyPay
+				isLate
+				dateOfPayment
+				hasToPay
+				AmountPayedThisMonth
+				remainingBalance
+				latenessFee
+				daysLate
+			}
 			client_id {
 				id
 				clientName
@@ -44,6 +54,20 @@ export const create_one_deal = gql`
 			createdAt
 			updatedAt
 		}
+	}
+`;
+
+// Define the PaymentDateInput input type
+export const PaymentDateInput = gql`
+	input PaymentDateInput {
+		monthFullyPay: Boolean!
+		isLate: Boolean!
+		dateOfPayment: DateTime!
+		hasToPay: Float!
+		AmountPayedThisMonth: Float!
+		remainingBalance: Float!
+		latenessFee: Float!
+		daysLate: Int!
 	}
 `;
 

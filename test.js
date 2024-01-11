@@ -13,7 +13,7 @@ function dateCalculator(initialDate, downPayment, payment, sellPrice) {
 
 		// Add payment details to the array
 		paymentDates.push({
-			date: currentDate.format("DD-MM-YYYY"),
+			date: currentDate.format("YYYY-MM-DD"),
 			remainingBalance: remainingBalance,
 			monthPayFully: false,
 			hasToPay: amountToPay,

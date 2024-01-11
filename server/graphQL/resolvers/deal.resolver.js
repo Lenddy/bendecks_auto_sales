@@ -2,6 +2,7 @@ const Deal = require("../../models/deal.model");
 // const Client = require("../../models/client.model");
 // const Deal = require("../../models/vehicle.model");
 const { mongoose } = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const dealResolvers = {
 	Query: {
@@ -54,39 +55,27 @@ const dealResolvers = {
 			{
 				downPayment,
 				payment,
-				paymentDate,
+				paymentDates,
 				remainingBalance,
 				sellingPrice,
 				client_id,
 				vehicle_id,
 			}
 		) => {
-			// const {
-			// 	downPayment,
-			// 	payment,
-			// 	paymentDate,
-			// 	remainingBalance,
-			// 	sellingPrice,
-			// 	client_id,
-			// 	vehicle_id,
-			// } = args;
+			paymentDates = paymentDates.map((paymentDate) => {
+				return {
+					...paymentDate,
+					payment_id: uuidv4(), // Generates a unique UUID
+				};
+			});
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			//Date;
-			// client_id;
-			// new mongoose.Types.ObjectId(vehicle_id);
-			let client = client_id.toString("utf8");
-			let vehicle = vehicle_id.toString("utf8");
-			console.log(
-				"this are the ids for client and vehicle",
-				client_id,
-				vehicle_id
-			);
 
 			return await Deal.create({
 				downPayment,
 				payment,
-				paymentDate,
+				paymentDates,
 				remainingBalance,
 				sellingPrice,
 				client_id,

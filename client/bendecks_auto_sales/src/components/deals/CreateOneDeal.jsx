@@ -5,6 +5,7 @@ import { create_one_deal } from "../../GraphQL/mutations/dealMutations";
 import io from "socket.io-client"; //importing socket.io-client
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
+import moment from "moment";
 
 const CreateOneDeal = ({ reload, setReload }) => {
 	const [socket] = useState(() => io(":8080")); //connect to the server
@@ -13,6 +14,20 @@ const CreateOneDeal = ({ reload, setReload }) => {
 	const getVehicle = useQuery(get_all_vehicles);
 	const [vehicles, setVehicles] = useState([]);
 	const [clients, setClients] = useState([]);
+	// Dependencies for the useEffect hook
+	const [info, setInfo] = useState({
+		// title: "",
+		// description: "",
+		// isDone: false,
+		paymentDates: [{}], // Array to hold payment dates,
+		// dayOFDeal:
+	});
+
+	const navigate = useNavigate();
+
+	// Apollo Client mutation hook for creating a single list item
+	const [createOneDeal, { error }] = useMutation(create_one_deal);
+	const [paymentDates, setPaymentDates] = useState();
 	useEffect(() => {
 		if (GetClients.loading) {
 			console.log("loading clients"); // Log a message when data is loading
@@ -21,11 +36,11 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			console.log("loading vehicles"); // Log a message when data is loading
 		}
 		if (GetClients.data) {
-			console.log(GetClients.data); // Log the fetched data
+			// console.log(GetClients.data); // Log the fetched data
 			setClients(GetClients.data.getAllClients); // Set the Clients retrieved from the query to the state
 		}
 		if (getVehicle.data) {
-			console.log(getVehicle.data); // Log the fetched data
+			// console.log(getVehicle.data); // Log the fetched data
 			setVehicles(getVehicle.data.getAllVehicles); // Set the Clients retrieved from the query to the state
 		}
 		if (GetClients.error) {
@@ -50,6 +65,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 		getVehicle.loading,
 		clients,
 		vehicles,
+		info,
 	]); // Dependencies for the useEffect hook
 
 	// socket.on("new_connection", (data) => {
@@ -57,41 +73,39 @@ const CreateOneDeal = ({ reload, setReload }) => {
 	// });
 
 	// State to manage form data
-	// Dependencies for the useEffect hook
-	const [info, setInfo] = useState({
-		// title: "",
-		// description: "",
-		// isDone: false,
-		paymentDate: [], // Array to hold payment dates,
-	});
-
-	const navigate = useNavigate();
-
-	// Apollo Client mutation hook for creating a single list item
-	const [createOneDeal, { error }] = useMutation(create_one_deal);
 
 	// Function to handle input changes and update state accordingly
 	const infoToBeSubmitted = (e) => {
-		// const value =
-		// 	e.target.type === "checkbox" ? e.target.checked : e.target.value;
-
-		setInfo({
+		const newInfo = {
 			...info,
 			[e.target.name]: e.target.value,
-		});
+		};
+
+		setInfo(newInfo);
+
+		// Check if all required fields are present, then call dateCalculator
 		if (
-			info?.paymentDate &&
-			info?.downPayment &&
-			info?.payment &&
-			info?.remainingBalance
-		)
-			dateCalculator(
-				info?.paymentDate,
-				info?.downPayment,
-				info?.payment,
-				info?.remainingBalance
+			newInfo?.paymentDate &&
+			newInfo?.downPayment &&
+			newInfo?.payment &&
+			newInfo?.sellingPrice
+		) {
+			setPaymentDates(
+				dateCalculator(
+					newInfo?.dayOFDeal,
+					newInfo?.downPayment,
+					newInfo?.payment,
+					newInfo?.sellingPrice
+				)
 			);
+		}
+		console.log("this is payment dates", paymentDates);
 	};
+
+	// // Use useEffect to log the info state whenever it changes
+	// useEffect(() => {
+	// 	console.log("this is the info from the form: ", info);
+	// }, [info]);
 
 	// Function to handle form submission
 	const submit = (e) => {
@@ -127,48 +141,41 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			});
 	};
 
-	// // make a function that takes in initial_paymentDate, downPayment , and remainingBalance
-	// const dateCalculator =(initialDate,downPayment,payment , remainingBalance)=>{
-	// 	let amountOfMonth = 0
-
-	// 	while(remainingBalance !== 0){
-	// 		// the date of payment show start next month  same day after the initial date
-	// 		// the remaining balance should go down every month to calculate the amount of months that are left
-	// 		// the created dates should be added to an array
-	// 		//amountOfMonth should go up every time a month is added
-	// 		// when remaining balance goes to 0 stop creating next dates of payments
-
-	// 	}
-
-	// }
-
-	function dateCalculator(
-		initialDate,
-		downPayment = parseFloat(0),
-		payment = parseFloat(0),
-		remainingBalance = parseFloat(0)
-	) {
+	function dateCalculator(initialDate, downPayment, payment, sellPrice) {
+		// console.log(
+		// 	`initialDate: ${initialDate},downPayment: ${downPayment},payment: ${payment},sellPrice: ${sellPrice}`
+		// );
 		let paymentDates = [];
-		// let amount = 0;
-		let currentDate = new Date(initialDate);
-		console.log(currentDate);
-		// Adjust the remaining balance for the down payment
-		remainingBalance -= downPayment;
+		let currentDate = moment(initialDate).add(1, "months");
 
-		console.log("the remaining balance is ", remainingBalance);
+		// Adjust the remaining balance for the down payment
+		let remainingBalance = sellPrice - downPayment;
+
 		while (remainingBalance > 0) {
-			// Increment the month
-			currentDate.setMonth(currentDate.getMonth() + 1);
-			paymentDates.push(currentDate.toISOString().split("T")[0]);
-			console.log();
+			// Calculate the amount to pay this month
+			let amountToPay = Math.min(payment, remainingBalance);
+
+			// Add payment details to the array
+			paymentDates.push({
+				// payment_id:1,
+				monthFullyPay: false,
+				isLate: false,
+				dateOfPayment: currentDate.format("YYYY-MM-DD"),
+				hasToPay: amountToPay,
+				remainingBalance: remainingBalance,
+				amountPayedThisMonth: 0,
+				latenessFee: 0,
+				daysLate: 0,
+			});
 
 			// Update the remaining balance
-			remainingBalance -= payment;
-			console.log("the remaining balance is ", remainingBalance);
-			// amountOfMonth++;
-		}
+			remainingBalance -= amountToPay;
 
-		console.log("this are the payments dates", paymentDates);
+			// Move to the next month
+			currentDate.add(1, "months");
+		}
+		console.log(paymentDates);
+		// setPaymentDates(paymentDates);
 		return paymentDates;
 	}
 
@@ -181,6 +188,19 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				</Link>
 			</div>
 			<form onSubmit={submit}>
+				<div>
+					<label htmlFor="sellingPrice">sellingPrice:</label>
+					<input
+						type="number"
+						step="0.01"
+						name="sellingPrice"
+						onChange={(e) => {
+							infoToBeSubmitted(e);
+						}}
+						// value={info.cellPhone}
+					/>
+				</div>
+
 				<div>
 					<label htmlFor="downPayment">downPayment:</label>
 					<input
@@ -202,11 +222,12 @@ const CreateOneDeal = ({ reload, setReload }) => {
 					></input>
 				</div>
 				<div>
-					<label htmlFor="paymentDate">paymentDate:</label>
+					<label htmlFor="dayOFDeal">Date of the deal:</label>
 					<input
 						type="date"
-						name="paymentDate"
-						onChange={infoToBeSubmitted}
+						name="dayOFDeal"
+						// onClick={infoToBeSubmitted}
+						onChange={(e) => infoToBeSubmitted(e)}
 						// value={info.cellPhone}
 					/>
 				</div>
@@ -220,18 +241,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						// value={info.cellPhone}
 					/>
 				</div>
-				<div>
-					<label htmlFor="sellingPrice">sellingPrice:</label>
-					<input
-						type="number"
-						step="0.01"
-						name="sellingPrice"
-						onChange={(e) => {
-							infoToBeSubmitted(e);
-						}}
-						// value={info.cellPhone}
-					/>
-				</div>
+
 				<div>
 					<label htmlFor="client_id">client_id:</label>
 

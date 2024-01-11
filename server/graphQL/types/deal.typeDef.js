@@ -8,20 +8,44 @@ const dealTypeDef = gql`
 	${clientTypeDef}
 	${vehicleTypeDef}
 
-	#scalar Date
-
 	#Object
+
+	type PaymentDate {
+		payment_id: ID!
+		monthFullyPay: Boolean!
+		isLate: Boolean!
+		dateOfPayment: DateTime!
+		hasToPay: Float!
+		amountPayedThisMonth: Float!
+		remainingBalance: Float!
+		latenessFee: Float!
+		daysLate: Int!
+	}
+
 	type Deal {
 		id: ID!
+		dayOFdeal: DateTime!
 		downPayment: Float!
 		payment: Float!
-		paymentDate: [String!]!
+		paymentDates: [PaymentDate]!
 		remainingBalance: Float!
 		sellingPrice: Float!
 		client_id: Client!
 		vehicle_id: Vehicle!
 		createdAt: DateTime!
 		updatedAt: DateTime!
+	}
+
+	input PaymentDateInput {
+		payment_id: ID
+		monthFullyPay: Boolean!
+		isLate: Boolean!
+		dateOfPayment: DateTime!
+		hasToPay: Float!
+		amountPayedThisMonth: Float!
+		remainingBalance: Float!
+		latenessFee: Float!
+		daysLate: Int!
 	}
 
 	#Queries
@@ -34,9 +58,10 @@ const dealTypeDef = gql`
 	#mutations
 	type Mutation {
 		createOneDeal(
+			dayOFdeal: DateTime!
 			downPayment: Float!
 			payment: Float!
-			paymentDate: [String!]!
+			paymentDates: [PaymentDateInput]!
 			remainingBalance: Float!
 			sellingPrice: Float!
 			client_id: ID!
@@ -47,7 +72,7 @@ const dealTypeDef = gql`
 			id: ID!
 			downPayment: Float
 			payment: Float
-			paymentDate: [String!]
+			paymentDates: [PaymentDateInput]
 			remainingBalance: Float
 			sellingPrice: Float
 		): Deal!

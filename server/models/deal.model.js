@@ -15,8 +15,12 @@ const DealSchema = new Schema(
 			required: true,
 			// min: [1, "Model Of The Vehicle Must Be At Least 1 Character Long"],
 		},
-		paymentDate: {
-			type: [String],
+		dayOFdeal: {
+			type: Date,
+			require: true,
+		},
+		paymentDates: {
+			type: Array,
 			required: true,
 		},
 		sellingPrice: {
