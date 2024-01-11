@@ -27,6 +27,8 @@ import UpdateOneVehicle from "./components/vehicles/UpdateOneVehicle";
 import GetAllDeals from "./components/deals/GetAllDeals";
 import GetOneDeal from "./components/deals/GetOneDeal";
 import CreateOneDeal from "./components/deals/CreateOneDeal";
+import DeleteOneDeal from "./components/deals/DeleteOneDeal";
+import UpdateOneDeal from "./components/deals/UpdateOneDeal";
 
 // Define an error link to catch errors from the GraphQL API
 const errorLink = onError(({ graphqlErrors, networkError }) => {
@@ -134,13 +136,13 @@ function App() {
 					<Route
 						exact
 						path="/deals/update/:id"
-						element={<UpdateOneVehicle />}
+						element={<UpdateOneDeal />}
 					/>
 
 					<Route
 						exact
 						path="/deals/delete/:id"
-						element={<DeleteOneVehicle />}
+						element={<DeleteOneDeal />}
 					/>
 				</Routes>
 			</ApolloProvider>

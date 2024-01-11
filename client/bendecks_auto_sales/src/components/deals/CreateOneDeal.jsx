@@ -62,7 +62,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 		// title: "",
 		// description: "",
 		// isDone: false,
-		paymentDate: [],
+		paymentDate: [], // Array to hold payment dates,
 	});
 
 	const navigate = useNavigate();
@@ -79,6 +79,18 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			...info,
 			[e.target.name]: e.target.value,
 		});
+		if (
+			info?.paymentDate &&
+			info?.downPayment &&
+			info?.payment &&
+			info?.remainingBalance
+		)
+			dateCalculator(
+				info?.paymentDate,
+				info?.downPayment,
+				info?.payment,
+				info?.remainingBalance
+			);
 	};
 
 	// Function to handle form submission
@@ -115,6 +127,51 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			});
 	};
 
+	// // make a function that takes in initial_paymentDate, downPayment , and remainingBalance
+	// const dateCalculator =(initialDate,downPayment,payment , remainingBalance)=>{
+	// 	let amountOfMonth = 0
+
+	// 	while(remainingBalance !== 0){
+	// 		// the date of payment show start next month  same day after the initial date
+	// 		// the remaining balance should go down every month to calculate the amount of months that are left
+	// 		// the created dates should be added to an array
+	// 		//amountOfMonth should go up every time a month is added
+	// 		// when remaining balance goes to 0 stop creating next dates of payments
+
+	// 	}
+
+	// }
+
+	function dateCalculator(
+		initialDate,
+		downPayment = parseFloat(0),
+		payment = parseFloat(0),
+		remainingBalance = parseFloat(0)
+	) {
+		let paymentDates = [];
+		// let amount = 0;
+		let currentDate = new Date(initialDate);
+		console.log(currentDate);
+		// Adjust the remaining balance for the down payment
+		remainingBalance -= downPayment;
+
+		console.log("the remaining balance is ", remainingBalance);
+		while (remainingBalance > 0) {
+			// Increment the month
+			currentDate.setMonth(currentDate.getMonth() + 1);
+			paymentDates.push(currentDate.toISOString().split("T")[0]);
+			console.log();
+
+			// Update the remaining balance
+			remainingBalance -= payment;
+			console.log("the remaining balance is ", remainingBalance);
+			// amountOfMonth++;
+		}
+
+		console.log("this are the payments dates", paymentDates);
+		return paymentDates;
+	}
+
 	// Component rendering
 	return (
 		<div>
@@ -147,7 +204,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				<div>
 					<label htmlFor="paymentDate">paymentDate:</label>
 					<input
-						type="text"
+						type="date"
 						name="paymentDate"
 						onChange={infoToBeSubmitted}
 						// value={info.cellPhone}
@@ -169,7 +226,9 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						type="number"
 						step="0.01"
 						name="sellingPrice"
-						onChange={infoToBeSubmitted}
+						onChange={(e) => {
+							infoToBeSubmitted(e);
+						}}
 						// value={info.cellPhone}
 					/>
 				</div>

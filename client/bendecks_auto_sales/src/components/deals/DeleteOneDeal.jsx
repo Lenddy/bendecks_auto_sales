@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
-import { delete_one_client } from "../../GraphQL/mutations/clientMutations";
-import { get_one_client } from "../../GraphQL/queries/vehicleQueries";
+import { delete_one_deal } from "../../GraphQL/mutations/dealMutations";
+import { get_one_deal } from "../../GraphQL/queries/dealQueries";
 import { useNavigate, useParams, Link } from "react-router-dom";
 
-const DeleteOneClient = () => {
+const DeleteOneDeal = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
 
-	const [client, setClient] = useState();
+	const [deal, setDeal] = useState();
 
-	const { error, loading, data } = useQuery(get_one_client, {
+	const { error, loading, data } = useQuery(get_one_deal, {
 		variables: { id },
 	});
 
@@ -19,24 +19,24 @@ const DeleteOneClient = () => {
 			console.log("loading");
 		}
 		if (data) {
-			setClient(data.getOneClient);
+			setDeal(data.getOneDeal);
 		}
 		if (error) {
 			console.log("there was an error", error);
 		}
-	}, [error, loading, data]);
+	}, [error, loading, data, deal]);
 
-	const [deleteOneClient] = useMutation(delete_one_client);
+	const [deleteOneDeal] = useMutation(delete_one_deal);
 
-	const deleteClient = () => {
-		deleteOneClient({
+	const deleteDeal = () => {
+		deleteOneDeal({
 			variables: {
 				id, // Only pass the ID to the deletion mutation
 			},
 		})
 			.then(() => {
 				// Redirect after successful deletion
-				navigate("/dashboard");
+				navigate("/deals");
 			})
 			.catch((error) => {
 				console.log(error);
@@ -45,15 +45,17 @@ const DeleteOneClient = () => {
 
 	return (
 		<div>
-			<h1>hello</h1>
-			<Link to={"/dashboard"}>
+			<Link to={"/deals"}>
 				<button>dashboard</button>
 			</Link>
 			<div>
-				<button onClick={deleteClient}>Delete</button>
+				<h1>delete on deal</h1>
+			</div>
+			<div>
+				<button onClick={deleteDeal}>Delete</button>
 			</div>
 		</div>
 	);
 };
 
-export default DeleteOneClient;
+export default DeleteOneDeal;

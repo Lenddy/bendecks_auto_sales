@@ -50,13 +50,11 @@ export const create_one_deal = gql`
 export const update_One_deal = gql`
 	mutation updateOneDeal(
 		$id: ID!
-		$downPayment: Float!
-		$payment: Float!
-		$paymentDate: [String!]!
-		$remainingBalance: Float!
-		$sellingPrice: Float!
-		$client_id: Client!
-		$vehicle_id: Vehicle!
+		$downPayment: Float
+		$payment: Float
+		$paymentDate: [String!]
+		$remainingBalance: Float
+		$sellingPrice: Float
 	) {
 		updateOneDeal(
 			id: $id
@@ -65,26 +63,36 @@ export const update_One_deal = gql`
 			paymentDate: $paymentDate
 			remainingBalance: $remainingBalance
 			sellingPrice: $sellingPrice
-			client_id: $client_id
-			vehicle_id: $vehicle_id
 		) {
 			id
 			downPayment
 			payment
-			paymentDate
 			remainingBalance
 			sellingPrice
-			client_id
-			vehicle_id
+			paymentDate
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhone
+			}
+			vehicle_id {
+				id
+				vehicleName
+				vehicleModel
+				year
+				color
+				boughtPrice
+			}
 			createdAt
 			updatedAt
 		}
 	}
 `;
 
-export const delete_one_client = gql`
-	mutation deleteOneClient($id: ID!) {
-		deleteOneClient(id: $id) {
+export const delete_one_deal = gql`
+	mutation deleteOneDeal($id: ID!) {
+		deleteOneDeal(id: $id) {
 			id
 		}
 	}
