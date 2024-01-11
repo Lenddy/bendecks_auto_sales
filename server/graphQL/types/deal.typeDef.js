@@ -24,7 +24,7 @@ const dealTypeDef = gql`
 
 	type Deal {
 		id: ID!
-		dayOFdeal: DateTime!
+		dayOfDeal: String!
 		downPayment: Float!
 		payment: Float!
 		paymentDates: [PaymentDate]!
@@ -58,7 +58,7 @@ const dealTypeDef = gql`
 	#mutations
 	type Mutation {
 		createOneDeal(
-			dayOFdeal: DateTime!
+			dayOfDeal: String!
 			downPayment: Float!
 			payment: Float!
 			paymentDates: [PaymentDateInput]!

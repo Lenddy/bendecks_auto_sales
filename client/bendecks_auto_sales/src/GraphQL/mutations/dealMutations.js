@@ -4,7 +4,7 @@ import { gql } from "@apollo/client";
 
 export const create_one_deal = gql`
 	mutation createOneDeal(
-		$dayOFdeal: DateTime!
+		$dayOfDeal: DateTime!
 		$downPayment: Float!
 		$payment: Float!
 		$paymentDates: [PaymentDateInput]!
@@ -14,6 +14,7 @@ export const create_one_deal = gql`
 		$vehicle_id: ID!
 	) {
 		createOneDeal(
+			dayOfDeal: $dayOfDeal
 			downPayment: $downPayment
 			payment: $payment
 			paymentDates: $paymentDates
@@ -23,6 +24,7 @@ export const create_one_deal = gql`
 			vehicle_id: $vehicle_id
 		) {
 			id
+			dayOfDeal
 			downPayment
 			payment
 			remainingBalance

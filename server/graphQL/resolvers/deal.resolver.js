@@ -53,6 +53,7 @@ const dealResolvers = {
 		createOneDeal: async (
 			_,
 			{
+				dayOfDeal,
 				downPayment,
 				payment,
 				paymentDates,
@@ -73,6 +74,7 @@ const dealResolvers = {
 			//Date;
 
 			return await Deal.create({
+				dayOfDeal,
 				downPayment,
 				payment,
 				paymentDates,

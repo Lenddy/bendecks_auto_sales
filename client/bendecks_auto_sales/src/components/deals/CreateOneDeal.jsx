@@ -9,25 +9,23 @@ import moment from "moment";
 
 const CreateOneDeal = ({ reload, setReload }) => {
 	const [socket] = useState(() => io(":8080")); //connect to the server
+	const navigate = useNavigate();
 
 	const GetClients = useQuery(get_all_clients);
 	const getVehicle = useQuery(get_all_vehicles);
 	const [vehicles, setVehicles] = useState([]);
 	const [clients, setClients] = useState([]);
+	const [updateCount, setUpdateCount] = useState(0); // New state variable
 	// Dependencies for the useEffect hook
 	const [info, setInfo] = useState({
-		// title: "",
-		// description: "",
-		// isDone: false,
 		paymentDates: [{}], // Array to hold payment dates,
 		// dayOFDeal:
 	});
 
-	const navigate = useNavigate();
-
 	// Apollo Client mutation hook for creating a single list item
 	const [createOneDeal, { error }] = useMutation(create_one_deal);
-	const [paymentDates, setPaymentDates] = useState();
+	const [paymentData, setPaymentData] = useState();
+
 	useEffect(() => {
 		if (GetClients.loading) {
 			console.log("loading clients"); // Log a message when data is loading
@@ -49,13 +47,6 @@ const CreateOneDeal = ({ reload, setReload }) => {
 		if (getVehicle.error) {
 			console.log("there was an error", getVehicle.error); // Log an error message if an error occurs
 		}
-		// if (subscriptionData && subscriptionData.clientAdded) {
-		// 	setClients((prevClients) => [
-		// 		...prevClients,
-		// 		subscriptionData.clientAdded,
-		// 	]);
-		// console.log("the subscription work", subscriptionData.clientAdded);
-		// }subscriptionData
 	}, [
 		GetClients.data,
 		GetClients.error,
@@ -68,69 +59,25 @@ const CreateOneDeal = ({ reload, setReload }) => {
 		info,
 	]); // Dependencies for the useEffect hook
 
-	// socket.on("new_connection", (data) => {
-	// 	console.log(data);
-	// });
-
-	// State to manage form data
-
-	// Function to handle input changes and update state accordingly
-	const infoToBeSubmitted = (e) => {
-		const newInfo = {
-			...info,
-			[e.target.name]: e.target.value,
-		};
-
-		setInfo(newInfo);
-
-		// Check if all required fields are present, then call dateCalculator
-		if (
-			newInfo?.paymentDate &&
-			newInfo?.downPayment &&
-			newInfo?.payment &&
-			newInfo?.sellingPrice
-		) {
-			setPaymentDates(
-				dateCalculator(
-					newInfo?.dayOFDeal,
-					newInfo?.downPayment,
-					newInfo?.payment,
-					newInfo?.sellingPrice
-				)
-			);
-		}
-		console.log("this is payment dates", paymentDates);
-	};
-
-	// // Use useEffect to log the info state whenever it changes
-	// useEffect(() => {
-	// 	console.log("this is the info from the form: ", info);
-	// }, [info]);
-
 	// Function to handle form submission
 	const submit = (e) => {
 		e.preventDefault(); // Prevent default form submission behavior
 
 		createOneDeal({
 			variables: {
+				dayOFdeal: parseInt(info?.dayOFdeal) || parseInt(0),
 				downPayment: parseFloat(info.downPayment),
 				payment: parseFloat(info.payment),
-				paymentDate: info.paymentDate,
-				remainingBalance: parseFloat(info.remainingBalance),
+				paymentDates: info?.paymentDates,
+				remainingBalance:
+					parseFloat(info?.paymentDates[0]?.remainingBalance) ||
+					parseFloat(0),
 				sellingPrice: parseFloat(info.sellingPrice),
 				client_id: info.client_id,
 				vehicle_id: info.vehicle_id,
 			},
 		})
 			.then((res) => {
-				// Reset the form fields after successful submission
-
-				// setInfo({
-				// 	// title: "",
-				// 	// description: "",
-				// 	// isDone: false,
-				// 	cellPhone: [],
-				// });
 				navigate("/deals");
 				console.log("here is the response", res.data.createOneDeal);
 				socket.emit("new_client_added", res.data.createOneDeal);
@@ -141,15 +88,76 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			});
 	};
 
+	// ???????
+	// ???????
+	// ???????
+	// ???????
+	//! fix  when you change  the values in the field after they are initially  enter  and after that make the ui look presentable
+
+	// ???????
+	// ???????
+	// ???????
+
+	useEffect(() => {
+		// Check if all required fields are present
+		if (
+			info.dayOfDeal &&
+			info.downPayment &&
+			info.payment &&
+			info.sellingPrice &&
+			updateCount
+		) {
+			console.log("got all the payments");
+
+			// Call dateCalculator and update the paymentDates in the info state
+			const newPaymentDates = dateCalculator(
+				info.dayOfDeal,
+				info.downPayment,
+				info.payment,
+				info.sellingPrice
+			);
+
+			setInfo((prevInfo) => ({
+				...prevInfo,
+				paymentDates: newPaymentDates,
+			}));
+		}
+	}, [
+		info.dayOfDeal,
+		info.downPayment,
+		info.payment,
+		info.sellingPrice,
+		updateCount,
+	]); // Dependencies array
+
+	// const infoToBeSubmitted = (e) => {
+	// 	const newInfo = {
+	// 		...info,
+	// 		[e.target.name]: e.target.value,
+	// 		paymentDates: paymentData ? paymentData : [{}],
+	// 	};
+
+	// 	setInfo(newInfo);
+
+	// };
+
+	const infoToBeSubmitted = (e) => {
+		const { name, value } = e.target;
+
+		setInfo((prevInfo) => ({ ...prevInfo, [name]: value }));
+		setUpdateCount((count) => count + 1); // Increment the update count
+	};
+
 	function dateCalculator(initialDate, downPayment, payment, sellPrice) {
-		// console.log(
-		// 	`initialDate: ${initialDate},downPayment: ${downPayment},payment: ${payment},sellPrice: ${sellPrice}`
-		// );
+		console.log(
+			`initialDate: ${initialDate},downPayment: ${downPayment},payment: ${payment},sellPrice: ${sellPrice}`
+		);
 		let paymentDates = [];
 		let currentDate = moment(initialDate).add(1, "months");
 
 		// Adjust the remaining balance for the down payment
 		let remainingBalance = sellPrice - downPayment;
+		setInfo({ remainingBalance });
 
 		while (remainingBalance > 0) {
 			// Calculate the amount to pay this month
@@ -222,10 +230,10 @@ const CreateOneDeal = ({ reload, setReload }) => {
 					></input>
 				</div>
 				<div>
-					<label htmlFor="dayOFDeal">Date of the deal:</label>
+					<label htmlFor="dayOfDeal">Date of the deal:</label>
 					<input
 						type="date"
-						name="dayOFDeal"
+						name="dayOfDeal"
 						// onClick={infoToBeSubmitted}
 						onChange={(e) => infoToBeSubmitted(e)}
 						// value={info.cellPhone}
@@ -238,7 +246,10 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						type="number"
 						name="remainingBalance"
 						onChange={infoToBeSubmitted}
-						// value={info.cellPhone}
+						disabled
+						placeholder={
+							parseFloat(info?.remainingBalance) || parseFloat(0)
+						}
 					/>
 				</div>
 
