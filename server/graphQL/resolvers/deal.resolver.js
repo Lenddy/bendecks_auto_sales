@@ -156,6 +156,62 @@ const dealResolvers = {
 				});
 		},
 
+		updateOneDealPayment: async (parent, args, context, info) => {
+			const { id, payment_id, amountPayedThisMonth } = args;
+			// const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
+			// const updatedDeal =
+
+			const oneDeal = await dealResolvers?.Query?.getOneDeal(null, {
+				id,
+			});
+			const paymentInfo = oneDeal.paymentDates.find(
+				(pd) => pd?.payment_id === payment_id
+			);
+
+			if (!paymentInfo) {
+				throw new Error("Payment not found");
+			}
+			// Calculate the new total amount paid
+			const newAmountPayedThisMonth =
+				paymentInfo?.amountPayedThisMonth + amountPayedThisMonth;
+
+			// Check if the total amount exceeds hasToPay
+			const monthFullyPay =
+				newAmountPayedThisMonth >= paymentInfo?.hasToPay;
+
+			return await Deal.findOneAndUpdate(
+				{ id, "paymentDates.payment_id": payment_id },
+				{
+					$set: {
+						// "paymentDates.isPaid": true,
+						"paymentDates.$.amountPayedThisMonth":
+							amountPayedThisMonth,
+						"paymentDates.$.monthFullyPay": monthFullyPay,
+						updatedAt: new Date().toISOString(),
+					},
+				},
+				{ new: true } // Return the updated document
+			)
+				.then(async (updatedDeal) => {
+					console.log(
+						"deal updated",
+						updatedDeal,
+						"\n____________________"
+					);
+					return await dealResolvers.Query.getOneDeal(null, {
+						id: updatedDeal.id,
+					});
+				})
+				.catch((err) => {
+					console.log(
+						"there was an error updating a deal",
+						err,
+						"\n____________________"
+					);
+					throw err;
+				});
+		},
+
 		deleteOneDeal: async (_, { id }) => {
 			return await Deal.findByIdAndDelete(id)
 				.then((deletedDeal) => {

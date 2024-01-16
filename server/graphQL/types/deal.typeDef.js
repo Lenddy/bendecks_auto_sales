@@ -77,6 +77,12 @@ const dealTypeDef = gql`
 			sellingPrice: Float
 		): Deal!
 
+		updateOneDealPayment(
+			id: ID!
+			payment_id: ID
+			amountPayedThisMonth: Float!
+		): Deal!
+
 		deleteOneDeal(id: ID!): Deal!
 	}
 `;

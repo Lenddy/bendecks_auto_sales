@@ -46,8 +46,9 @@ function GetAllDeals() {
 			console.log("loading"); // Log a message when data is loading
 		}
 		if (data) {
-			console.log(data.getAllDeals); // Log the fetched data
+			console.log(data); // Log the fetched data
 			setDeals(data.getAllDeals); // Set the Clients retrieved from the query to the state
+			console.log("thissssssss =>>>", data.getAllDeals[1].paymentDates);
 		}
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
@@ -75,16 +76,37 @@ function GetAllDeals() {
 					<div key={d?.id}>
 						<h1> ID: {d?.id}</h1>
 						<p> down payment: {d?.downPayment}</p>
-						<p>
-							Phone Number:{" "}
-							{d?.paymentDate?.map((pd, idx) => {
+						<div>
+							<p>
+								paymentDate:
+								{d?.paymentDates?.amountPayedThisMonth}{" "}
+							</p>
+							<p>{}</p>
+							{d?.paymentDates?.map((pd, idx) => {
 								return (
-									<span key={idx}>
-										<span>{pd}</span> ,
-									</span>
+									<div key={pd.payment_id}>
+										<p>Payment id : {pd.payment_id}</p>
+										<p>
+											Date of Payment: {pd.dateOfPayment}
+										</p>
+										<p>Amount to Pay: {pd.hasToPay}</p>
+										<p>
+											Amount Paid This Month:{" "}
+											{pd.amountPayedThisMonth}
+										</p>
+										<p>
+											Remaining Balance:{" "}
+											{pd.remainingBalance}
+										</p>
+										<p>
+											Is Late: {pd.isLate ? "Yes" : "No"}
+										</p>
+										<p>Lateness Fee: {pd.latenessFee}</p>
+										<p>Days Late: {pd.daysLate}</p>
+									</div>
 								);
 							})}
-						</p>
+						</div>
 						<p>
 							remainingBalance:
 							{d?.remainingBalance}
