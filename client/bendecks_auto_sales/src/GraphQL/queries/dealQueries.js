@@ -45,11 +45,22 @@ export const get_one_deal = gql`
 	query getOneDeal($id: ID!) {
 		getOneDeal(id: $id) {
 			id
+			dayOfDeal
 			downPayment
 			payment
-			paymentDate
 			remainingBalance
 			sellingPrice
+			paymentDates {
+				payment_id
+				monthFullyPay
+				isLate
+				dateOfPayment
+				hasToPay
+				amountPayedThisMonth
+				remainingBalance
+				latenessFee
+				daysLate
+			}
 			client_id {
 				id
 				clientName

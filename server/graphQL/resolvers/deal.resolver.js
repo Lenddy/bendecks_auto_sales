@@ -174,6 +174,11 @@ const dealResolvers = {
 			// Calculate the new total amount paid
 			const newAmountPayedThisMonth =
 				paymentInfo?.amountPayedThisMonth + amountPayedThisMonth;
+			// console.table(
+			// 	"|||||||||||",
+			// 	newAmountPayedThisMonth,
+			// 	"|||||||||||"
+			// );
 
 			// Check if the total amount exceeds hasToPay
 			const monthFullyPay =
@@ -185,7 +190,7 @@ const dealResolvers = {
 					$set: {
 						// "paymentDates.isPaid": true,
 						"paymentDates.$.amountPayedThisMonth":
-							amountPayedThisMonth,
+							newAmountPayedThisMonth,
 						"paymentDates.$.monthFullyPay": monthFullyPay,
 						updatedAt: new Date().toISOString(),
 					},
@@ -204,7 +209,7 @@ const dealResolvers = {
 				})
 				.catch((err) => {
 					console.log(
-						"there was an error updating a deal",
+						"there was an error updating a deal payment",
 						err,
 						"\n____________________"
 					);

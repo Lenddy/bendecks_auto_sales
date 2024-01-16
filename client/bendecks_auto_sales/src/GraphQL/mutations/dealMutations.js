@@ -115,6 +115,54 @@ export const update_One_deal = gql`
 	}
 `;
 
+export const update_One_deal_payment = gql`
+	mutation updateOneDealPayment(
+		$id: ID!
+		$payment_id: ID!
+		$amountPayedThisMonth: Float!
+	) {
+		updateOneDealPayment(
+			id: $id
+			payment_id: $payment_id
+			amountPayedThisMonth: $amountPayedThisMonth
+		) {
+			id
+			dayOfDeal
+			downPayment
+			payment
+			remainingBalance
+			sellingPrice
+			paymentDates {
+				payment_id
+				monthFullyPay
+				isLate
+				dateOfPayment
+				hasToPay
+				amountPayedThisMonth
+				remainingBalance
+				latenessFee
+				daysLate
+			}
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhone
+			}
+			vehicle_id {
+				id
+				vehicleName
+				vehicleModel
+				year
+				color
+				boughtPrice
+			}
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
 export const delete_one_deal = gql`
 	mutation deleteOneDeal($id: ID!) {
 		deleteOneDeal(id: $id) {
