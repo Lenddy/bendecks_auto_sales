@@ -1,8 +1,8 @@
 const Deal = require("../../models/deal.model");
 // const Client = require("../../models/client.model");
 // const Deal = require("../../models/vehicle.model");
-const { mongoose } = require("mongoose");
 const { v4: uuidv4 } = require("uuid");
+const moment = require("moment");
 
 const dealResolvers = {
 	Query: {
@@ -174,11 +174,6 @@ const dealResolvers = {
 			// Calculate the new total amount paid
 			const newAmountPayedThisMonth =
 				paymentInfo?.amountPayedThisMonth + amountPayedThisMonth;
-			// console.table(
-			// 	"|||||||||||",
-			// 	newAmountPayedThisMonth,
-			// 	"|||||||||||"
-			// );
 
 			// Check if the total amount exceeds hasToPay
 			const monthFullyPay =
@@ -215,6 +210,69 @@ const dealResolvers = {
 					);
 					throw err;
 				});
+		},
+
+		// !!!!! fix the function so that i can handle multiple days  late you can make use of a if that checks if the isLate field is set to true so you can add a multiplier base on how many days the payment is late you might want to the nested else if
+		isDealPaymentPayed: async (parent, args, context, info) => {
+			const allDeals = await dealResolvers?.Query?.getAllDeals();
+			const today = moment();
+
+			for (const deal of allDeals) {
+				let dealUpdated = false;
+				const lastUpdate = moment(deal.updatedAt);
+				const daysSinceLastUpdate = today.diff(lastUpdate, "days");
+
+				if (daysSinceLastUpdate >= 1) {
+					for (const paymentInfo of deal.paymentDates) {
+						const paymentDueDate = moment(
+							paymentInfo.dateOfPayment
+						);
+						const daysLate = today.diff(paymentDueDate, "days");
+
+						if (daysLate > 0) {
+							if (!paymentInfo.isLate) {
+								paymentInfo.latenessFee = 80;
+								paymentInfo.isLate = true;
+							} else if (daysLate <= 45) {
+								paymentInfo.latenessFee += 10;
+							}
+
+							paymentInfo.latenessFee = Math.min(
+								paymentInfo.latenessFee,
+								80 + 10 * 44
+							);
+							paymentInfo.daysLate = daysLate;
+							dealUpdated = true;
+						}
+					}
+				}
+
+				if (dealUpdated) {
+					// Save the updated deal
+					console.log("doing the update");
+					await Deal.updateOne(
+						{
+							id: deal.id,
+							"paymentDates.payment_id": paymentInfo.payment_id,
+						},
+						{
+							$set: {
+								"paymentDates.$.isLate": paymentInfo.isLate,
+								"paymentDates.$.latenessFee":
+									paymentInfo.latenessFee,
+								"paymentDates.$.daysLate": paymentInfo.daysLate,
+							},
+						}
+					).catch((error) => {
+						console.log(
+							"there was an error on is deal payment late",
+							error
+						);
+					});
+				}
+			}
+
+			return allDeals; // or return some summary of updates
 		},
 
 		deleteOneDeal: async (_, { id }) => {

@@ -48,7 +48,7 @@ function GetAllDeals() {
 		if (data) {
 			console.log(data); // Log the fetched data
 			setDeals(data.getAllDeals); // Set the Clients retrieved from the query to the state
-			console.log("thissssssss =>>>", data.getAllDeals[1].paymentDates);
+			// console.log("thissssssss =>>>", data?.getAllDeals[1]?.paymentDates);
 		}
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
@@ -79,7 +79,7 @@ function GetAllDeals() {
 						<div>
 							<p>
 								paymentDate:
-								{d?.paymentDates?.amountPayedThisMonth}{" "}
+								{/* {d?.paymentDates?.amountPayedThisMonth} */}
 							</p>
 							<p>{}</p>
 							{d?.paymentDates?.map((pd, idx) => {
