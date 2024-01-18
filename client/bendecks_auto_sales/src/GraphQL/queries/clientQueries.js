@@ -27,14 +27,3 @@ export const get_one_client = gql`
 		}
 	}
 `;
-
-export const client_added_subscription = gql`
-	subscription {
-		clientAdded {
-			id
-			clientName
-			clientLastName
-			cellPhone
-		}
-	}
-`;

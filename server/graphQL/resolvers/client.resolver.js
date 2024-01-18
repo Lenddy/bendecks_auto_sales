@@ -63,6 +63,9 @@ const clientResolvers = {
 				updatedAt,
 			})
 				.then((newClient) => {
+					pubsub.publish("CLIENT_ADDED", {
+						onClientChange: newClient,
+					});
 					console.log(
 						"new client created",
 						newClient,
@@ -138,13 +141,23 @@ const clientResolvers = {
 		},
 	},
 
-	// Subscription: {
-	// 	clientAdded: {
-	// 		subscribe: () => pubsub.asyncIterator("CLIENT_ADDED"),
-	// 		// Resolve function if needed (to handle subscription payload transformations)
-	// 		resolve: (payload) => payload.clientAdded,
-	// 	},
-	// },
+	Subscription: {
+		onClientChange: {
+			subscribe: () =>
+				pubsub.asyncIterator([
+					"CLIENT_ADDED",
+					"CLIENT_UPDATED",
+					"CLIENT_DELETED",
+				]),
+			// Resolve function if needed (to handle subscription payload transformations)
+			// resolve: (payload) => payload.clientAdded,
+		},
+		onNewClient: {
+			subscribe: () => pubsub.asyncIterator("CLIENT_ADDED"),
+			// Resolve function if needed (to handle subscription payload transformations)
+			// resolve: (payload) => payload.clientAdded,
+		},
+	},
 
 	Client: {
 		// Use toISOString() for custom DateTime scalar
@@ -154,3 +167,4 @@ const clientResolvers = {
 };
 
 module.exports = { clientResolvers };
+// pubsub.publish()

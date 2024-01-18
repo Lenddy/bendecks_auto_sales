@@ -5,11 +5,11 @@ import { useNavigate, Link, useParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
-// import { client_added_subscription } from "../../GraphQL/queries/clientQueries";
-import io from "socket.io-client"; //importing socket.io-client
+import { CLIENT_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/clientSubscriptions";
+// import io from "socket.io-client"; //importing socket.io-client
 
 function GetAllClients() {
-	const [socket] = useState(() => io(":8080")); //connect to the server
+	// const [socket] = useState(() => io(":8080")); //connect to the server
 	const navigate = useNavigate();
 	const navigateTO = (url) => {
 		navigate(url);
@@ -22,46 +22,37 @@ function GetAllClients() {
 
 	// Set up state to manage the Clients fetched from the query
 	const [clients, setClients] = useState([]);
+	const [newClient, setNewClient] = useState();
 
 	// Handle subscription using useSubscription hook
-	// const { data: subscriptionData } = useSubscription(
-	// 	client_added_subscription
-	// );
-
-	useEffect(() => {
-		socket.on("reload_client_list", (newClientInfo) => {
-			setClients((prevClients) => [...prevClients, newClientInfo]);
-			clients;
-		});
-		console.log(clients);
-
-		return () => {
-			socket.off("reload_client_list"); // Clean up the socket listener on unmount
-		};
-	}, [socket]); // Listen to socket changes
+	const subscription = useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
+		onData: (newChange) => {
+			const newClient = newChange.data.data.onClientChange;
+			console.log("i got the new data on the sub", newClient);
+			setNewClient(newClient);
+		},
+	});
 
 	// useEffect hook to handle changes in error, loading, and data states
 	useEffect(() => {
+		console.log("the component render");
 		if (loading) {
-			console.log("loading"); // Log a message when data is loading
+			console.log("loading");
+		} else if (data) {
+			console.log("all clients: ", data);
+			setClients(data.getAllClients);
+		} else if (error) {
+			console.log("there was an error", error);
 		}
-		if (data) {
-			console.log(data); // Log the fetched data
-			setClients(data.getAllClients); // Set the Clients retrieved from the query to the state
-		}
-		if (error) {
-			console.log("there was an error", error); // Log an error message if an error occurs
-		}
-		// if (subscriptionData && subscriptionData.clientAdded) {
-		// 	setClients((prevClients) => [
-		// 		...prevClients,
-		// 		subscriptionData.clientAdded,
-		// 	]);
-		// console.log("the subscription work", subscriptionData.clientAdded);
-		// }subscriptionData
-	}, [error, loading, data, clients]); // Dependencies for the useEffect hook
+	}, [error, loading, data]);
 
-	// Render the retrieved clients
+	// Handle new client from subscription
+	useEffect(() => {
+		if (newClient) {
+			setClients((prevClients) => [...prevClients, newClient]);
+			console.log("client was updated", clients);
+		}
+	}, [newClient, clients]);
 
 	return (
 		<div>
@@ -99,7 +90,7 @@ function GetAllClients() {
 						</p>
 						<p>
 							Phone Number:{" "}
-							{c?.cellPhone.map((n, idx) => {
+							{c?.cellPhone?.map((n, idx) => {
 								return (
 									<span key={idx}>
 										<span>{n}</span> ,

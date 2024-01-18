@@ -5,7 +5,7 @@ import { create_one_client } from "../../GraphQL/mutations/clientMutations";
 import io from "socket.io-client"; //importing socket.io-client
 
 const CreateOneClient = ({ reload, setReload }) => {
-	const [socket] = useState(() => io(":8080")); //connect to the server
+	// const [socket] = useState(() => io(":8080")); //connect to the server
 
 	// socket.on("new_connection", (data) => {
 	// 	console.log(data);
@@ -37,17 +37,17 @@ const CreateOneClient = ({ reload, setReload }) => {
 	};
 
 	// Function to handle form submission
-	const submit = (e) => {
+	const submit = async (e) => {
 		e.preventDefault(); // Prevent default form submission behavior
 
-		createOneClient({
+		await createOneClient({
 			variables: {
 				clientName: info.clientName,
 				clientLastName: info.clientLastName,
 				cellPhone: info.cellPhone,
 			},
 		})
-			.then((res) => {
+			.then(async (res) => {
 				// Reset the form fields after successful submission
 
 				// setInfo({
@@ -56,10 +56,13 @@ const CreateOneClient = ({ reload, setReload }) => {
 				// 	// isDone: false,
 				// 	cellPhone: [],
 				// });
-				navigate("/dashboard");
-				console.log("here is the response", res.data.createOneClient);
-				socket.emit("new_client_added", res.data.createOneClient);
-				setReload(!reload);
+				await console.log(
+					"here is the response",
+					res.data.createOneClient
+				);
+				await navigate("/dashboard");
+				// socket.emit("new_client_added", res.data.createOneClient);
+				// setReload(!reload);
 			})
 			.catch((error) => {
 				console.log(error);
