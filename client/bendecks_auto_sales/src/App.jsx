@@ -21,6 +21,8 @@ import CreateOneDeal from "./components/deals/CreateOneDeal";
 import DeleteOneDeal from "./components/deals/DeleteOneDeal";
 import UpdateOneDeal from "./components/deals/UpdateOneDeal";
 
+import Container from "./components/Container";
+
 // Define the main App component
 function App() {
 	const [reload, setReload] = useState(false);
@@ -32,7 +34,11 @@ function App() {
 				<Route
 					exact
 					path="/dashboard"
-					element={<GetAllClients reload={reload} />}
+					element={
+						<Container>
+							<GetAllClients reload={reload} />
+						</Container>
+					}
 				/>
 				<Route exact path="/:id" element={<GetOneClient />} />
 
@@ -40,10 +46,12 @@ function App() {
 					exact
 					path="/createOneClient"
 					element={
-						<CreateOneClient
-							reload={reload}
-							setReload={setReload}
-						/>
+						<div>
+							<CreateOneClient
+								reload={reload}
+								setReload={setReload}
+							/>
+						</div>
 					}
 				/>
 

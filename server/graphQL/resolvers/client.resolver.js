@@ -152,11 +152,6 @@ const clientResolvers = {
 			// Resolve function if needed (to handle subscription payload transformations)
 			// resolve: (payload) => payload.clientAdded,
 		},
-		onNewClient: {
-			subscribe: () => pubsub.asyncIterator("CLIENT_ADDED"),
-			// Resolve function if needed (to handle subscription payload transformations)
-			// resolve: (payload) => payload.clientAdded,
-		},
 	},
 
 	Client: {

@@ -57,12 +57,14 @@ const client = new ApolloClient({
 	cache: new InMemoryCache(), // Set up an in-memory cache for caching query results
 });
 
+//  <React.StrictMode>
+
+//  </React.StrictMode>
+
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<ApolloProvider client={client}>
-		{/* <React.StrictMode> */}
 		<BrowserRouter>
 			<App />
 		</BrowserRouter>
-		{/* </React.StrictMode> */}
 	</ApolloProvider>
 );

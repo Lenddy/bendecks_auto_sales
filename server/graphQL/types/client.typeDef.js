@@ -42,7 +42,6 @@ const clientTypeDef = gql`
 	#re renders data on data update
 	type Subscription {
 		onClientChange: Client
-		onNewClient: Client
 	}
 `;
 

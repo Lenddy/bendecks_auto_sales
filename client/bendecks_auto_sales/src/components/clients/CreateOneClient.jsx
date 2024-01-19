@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { create_one_client } from "../../GraphQL/mutations/clientMutations";
+import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 import io from "socket.io-client"; //importing socket.io-client
 
 const CreateOneClient = ({ reload, setReload }) => {
@@ -46,21 +47,15 @@ const CreateOneClient = ({ reload, setReload }) => {
 				clientLastName: info.clientLastName,
 				cellPhone: info.cellPhone,
 			},
+			refetchQueries: [{ query: get_all_clients }],
 		})
 			.then(async (res) => {
-				// Reset the form fields after successful submission
-
-				// setInfo({
-				// 	// title: "",
-				// 	// description: "",
-				// 	// isDone: false,
-				// 	cellPhone: [],
-				// });
+				let id = res.data.createOneClient.id;
+				await navigate(`/${id}`);
 				await console.log(
 					"here is the response",
 					res.data.createOneClient
 				);
-				await navigate("/dashboard");
 				// socket.emit("new_client_added", res.data.createOneClient);
 				// setReload(!reload);
 			})
@@ -99,7 +94,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 						// value={info.cellPhone}
 					/>
 				</div>
-				<button type="submit">Add a new client</button>
+				<button type="submit">Add a new client</button>{" "}
 			</form>
 		</div>
 	);

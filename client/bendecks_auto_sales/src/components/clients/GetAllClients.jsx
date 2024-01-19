@@ -1,6 +1,10 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
-import { useQuery, useSubscription } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
-
+import {
+	useQuery,
+	useSubscription,
+	gql,
+	useApolloClient,
+} from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
 import { useNavigate, Link, useParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
@@ -20,66 +24,76 @@ function GetAllClients() {
 	// Fetch data using the useQuery hook by executing the getAllClients query
 	const { error, loading, data } = useQuery(get_all_clients);
 
-	// Set up state to manage the Clients fetched from the query
+	// State to manage Clients and new changes
 	const [clients, setClients] = useState([]);
-	const [newClient, setNewClient] = useState();
+	const [newChange, setNewChange] = useState();
 
-	// Handle subscription using useSubscription hook
-	const subscription = useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
-		onData: (newChange) => {
-			const newClient = newChange.data.data.onClientChange;
-			console.log("i got the new data on the sub", newClient);
-			setNewClient(newClient);
+	// Subscription for client changes
+	useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
+		onData: (infoChange) => {
+			console.log(infoChange);
+			const newClient = infoChange.data.data.onClientChange;
+			console.log("New data from subscription:", newClient);
+			setNewChange(newClient);
 		},
 	});
+	// const client = useApolloClient();
+	// useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
+	// 	onData: ({ subscriptionData }) => {
+	// 		const newClient = subscriptionData.data.newClient;
+	// 		client.cache.modify({
+	// 			fields: {
+	// 				getAllClients(existingClients = []) {
+	// 					const newClientRef = client.cache.writeFragment({
+	// 						data: newClient,
+	// 						fragment: gql`
+	// 							fragment NewClient on Client {
+	// 								id
+	// 								clientName
+	// 							}
+	// 						`,
+	// 					});
 
-	// useEffect hook to handle changes in error, loading, and data states
+	// 					return [newClientRef, ...existingClients];
+	// 				},
+	// 			},
+	// 		});
+	// 	},
+	// });
+
+	// Effect for handling new changes and initial data load
+	// ? delete the use effect
 	useEffect(() => {
-		console.log("the component render");
-		if (loading) {
-			console.log("loading");
+		if (newChange) {
+			console.log("Client was updated", newChange);
+			setClients((prevClients) => [...prevClients, newChange]);
+		} else if (loading) {
+			console.log("Loading...");
 		} else if (data) {
-			console.log("all clients: ", data);
-			setClients(data.getAllClients);
+			console.log("All clients:", data);
+			setClients(data.getAllClients); // Ensure this matches the structure from your GraphQL server
 		} else if (error) {
-			console.log("there was an error", error);
+			console.log("Error:", error);
 		}
-	}, [error, loading, data]);
+	}, [error, loading, data, newChange]);
 
-	// Handle new client from subscription
-	useEffect(() => {
-		if (newClient) {
-			setClients((prevClients) => [...prevClients, newClient]);
-			console.log("client was updated", clients);
-		}
-	}, [newClient, clients]);
+	// // Handle new client from subscription
+	// useEffect(() => {
+	// 	// if (newChange) {
+	// 	// 	setClients((prevClients) => [...prevClients, newChange]);
+	// 	// 	console.log("client was updated", clients);
+	// 	// }
+	// 	if (subscription.loading) {
+	// 		console.log("subscription is loading");
+	// 	}
+	// 	if (subscription.data) {
+	// 		console.log("sub data", subscription.data);
+	// 	}
+	// 	// newChange, client,
+	// }, [subscription.loading, subscription.data]);
 
 	return (
 		<div>
-			<button
-				style={{ margin: "5px" }}
-				onClick={() => navigateTO("/createOneClient")}
-			>
-				{" "}
-				add one Client
-			</button>
-
-			<button
-				style={{ margin: "5px" }}
-				onClick={() => navigateTO("/deals")}
-			>
-				{" "}
-				view deals
-			</button>
-
-			<button
-				style={{ margin: "5px" }}
-				onClick={() => navigateTO("/vehicles")}
-			>
-				{" "}
-				view vehicles
-			</button>
-
 			{clients.map((c) => {
 				return (
 					<div key={c?.id}>
@@ -98,7 +112,7 @@ function GetAllClients() {
 								);
 							})}
 						</p>
-						<Link to={`/${c.id}`}>
+						<Link to={`/${c?.id}`}>
 							<button>view</button>
 						</Link>
 						<Link to={`/update/${c?.id}`}>

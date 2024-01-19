@@ -1,1 +1,21 @@
-fix the date of dayof deal 
+render the dynamic info as changes are made so if something new is add updated or deleted update the info on the screen for your screen and others
+
+problem :
+
+1 when something is add the component re renders so that make the new info to be lose 
+
+2 the components does not make a api call when that happens 
+
+
+solutions :
+
+1 figure out the way to just add the new info to the current info with out losing the new info:(hard)
+
+2 make the component make a api call to retrieve the new info :(slow)
+
+
+trying:
+
+when adding a new client the client is add 
+
+but  i cant get that info because the component re renders 
