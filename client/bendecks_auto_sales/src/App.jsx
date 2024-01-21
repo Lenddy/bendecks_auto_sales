@@ -28,7 +28,7 @@ function App() {
 	const [reload, setReload] = useState(false);
 	return (
 		// Wrap the app with ApolloProvider to access Apollo Client functionalities
-		<div>
+		<div className="app">
 			<Routes>
 				<Route exact path="/" element={<Log_reg />} />
 				<Route

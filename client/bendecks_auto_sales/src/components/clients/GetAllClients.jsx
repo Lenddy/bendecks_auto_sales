@@ -25,6 +25,7 @@ function GetAllClients() {
 	const { error, loading, data } = useQuery(get_all_clients);
 
 	// State to manage Clients and new changes
+	const [search, setSearch] = useState("");
 	const [clients, setClients] = useState([]);
 	const [newChange, setNewChange] = useState();
 
@@ -94,36 +95,84 @@ function GetAllClients() {
 
 	return (
 		<div>
-			{clients.map((c) => {
-				return (
-					<div key={c?.id}>
-						<h1> ID: {c?.id}</h1>
-						<p>
-							{" "}
-							Full Name: {c?.clientName} {c?.clientLastName}
-						</p>
-						<p>
-							Phone Number:{" "}
-							{c?.cellPhone?.map((n, idx) => {
-								return (
-									<span key={idx}>
-										<span>{n}</span> ,
-									</span>
-								);
-							})}
-						</p>
-						<Link to={`/${c?.id}`}>
-							<button>view</button>
-						</Link>
-						<Link to={`/update/${c?.id}`}>
-							<button>update</button>
-						</Link>
-						<Link to={`/delete/${c?.id}`}>
-							<button>delete</button>
-						</Link>
-					</div>
-				);
-			})}
+			<input
+				type="text"
+				className="filterInput"
+				placeholder="filtrar Por Nombre"
+				onChange={(e) => setSearch(e.target.value)}
+			></input>
+
+			<table>
+				<tr className="tableHeader">
+					<th>
+						<h2>ID </h2>
+					</th>
+					<th>
+						<h2>Nombre </h2>
+					</th>
+					<th>
+						<h2>Teléfono(s)</h2>
+					</th>
+					<th></th>
+				</tr>
+				{clients
+					.filter(
+						(c, idx) =>
+							// (
+							// 	c.clientName.toLowerCase() +
+							// 	" " +
+							// 	c.clientLastName.toLowerCase()
+							// ).includes(search.toLowerCase())
+							c.clientName
+								.toLowerCase()
+								.includes(search.toLowerCase()) ||
+							c.clientLastName
+								.toLowerCase()
+								.includes(search.toLowerCase())
+					)
+					.map((c) => {
+						return (
+							<tr key={c?.id} className="data">
+								<td>
+									<p className="idInfo">{c?.id}</p>
+								</td>
+								<td>
+									<p>
+										{c?.clientName +
+											" " +
+											c?.clientLastName}
+									</p>
+								</td>
+								<td>
+									<p>
+										{c?.cellPhone?.map((n, idx) => {
+											return (
+												<span key={idx}>
+													<span>{n}</span> ,
+												</span>
+											);
+										})}
+									</p>
+								</td>
+								<td>
+									<Link to={`/${c?.id}`}>
+										<button className="utilBtn">Ver</button>
+									</Link>
+									<Link to={`/update/${c?.id}`}>
+										<button className="utilBtn">
+											Editar
+										</button>
+									</Link>
+									<Link to={`/delete/${c?.id}`}>
+										<button className="utilBtn">
+											Delete
+										</button>
+									</Link>
+								</td>
+							</tr>
+						);
+					})}
+			</table>
 		</div>
 	);
 }

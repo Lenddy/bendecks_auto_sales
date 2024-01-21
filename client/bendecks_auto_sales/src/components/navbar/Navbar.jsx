@@ -11,8 +11,7 @@ function Navbar() {
 						style={{ margin: "5px" }}
 						onClick={() => navigateTo("/createOneClient")}
 					>
-						{" "}
-						add one Client
+						<h1>add one Client</h1>
 					</button>
 				</li>
 				<li>
@@ -20,8 +19,7 @@ function Navbar() {
 						style={{ margin: "5px" }}
 						onClick={() => navigateTo("/deals")}
 					>
-						{" "}
-						view deals
+						<h1>view deals</h1>
 					</button>
 				</li>
 				<li>
@@ -29,8 +27,7 @@ function Navbar() {
 						style={{ margin: "5px" }}
 						onClick={() => navigateTo("/vehicles")}
 					>
-						{" "}
-						view vehicles
+						<h1>view vehicles</h1>
 					</button>
 				</li>
 			</ul>

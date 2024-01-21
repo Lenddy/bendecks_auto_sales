@@ -1,8 +1,13 @@
 #root {
-  width: 100%;
+  max-width: 2560px;
+  padding: 0px;
+  margin: 0px;
+  text-align: center;
+  /* display: flex;
+  justify-content: center;
+  flex-direction: column; */
   /* margin: 0 auto;
   padding: 2rem;
-  text-align: center;
   */
 } 
 *{
@@ -15,19 +20,25 @@
 } */
 
 body{
-  width: 100%;
-  /* display: flex; */
+  max-width: 2560px;
+  margin: 0px auto;
+  /* display: flex;
+  justify-content: center; */
+
+
+}
+
+html{
+  max-width: 2560px;
 }
 
 .container{
-  width: 100%;
+  max-width:2560px;
   display: flex;
   justify-content: center;
   flex-direction: column;
-}
-.child{
-  width: 100%;
-  margin-top: 10px;
+  /* background-color: blue; */
+  background-color:   #081717;
 }
 
 
@@ -36,24 +47,98 @@ body{
 /* nav bar */
 .navBar{
   width: 100%;
-  height: 20px;
-  background-color: green;
+  height: 60px;
   display: flex;
-  /* flex-direction: column; */
-  justify-content: end;
-
-  /* display: none; */
+  justify-content: center;
+  align-items: center;
 }
-
 
 .navBar ul{
+  width: 50%;
   position: fixed;
   list-style: none;
-  background-color: black;
-  margin-right: 5%;
-  margin-top: 5px;
-  border-radius:5px;
+  /* background-color: black; */
+  /* margin-right: 5%; */
+  /* margin-top: 5px;
+  border-radius:5px; */
+  display: flex;
+  justify-content: space-around;
 }
+
+.navBar ul li{
+  color:  white;
+  border-bottom: 3px solid white;
+}
+
+.navBar ul li button{
+  background-color: transparent;
+  border: none;
+}
+
+
+.navBar ul li:hover{
+  border-bottom: 0 solid white;
+}
+
+
+/* all clients */
+/* filter input */
+.filterInput{
+  width: 30%;
+  height: 30px;
+  margin: 10px;
+  border:solid 10px #172531;
+  border-radius: 10px;
+  background-color: transparent;
+}
+
+.filterInput::placeholder{
+  font-size: 20px;
+  /* color: rgba(255, 255, 255, 0.761); */
+}
+
+.idInfo{
+  color:  rgb(11, 149, 229);
+}
+
+
+
+
+
+table{
+  width:100%;
+  /* max-width: px; */
+  /* background-color: red; */
+  border-collapse: collapse;
+  border:3px #172531 solid;
+  background-color: #172531;
+}
+
+
+table th{
+  background-color: #0f2334;
+  /* border: solid 1px white; */
+  border-radius: 10px;
+}
+
+td{
+  border: solid white 1px ;
+    /* vertical-align: bottom; */
+}
+
+.utilBtn{
+  width: 70px;
+  height: 50px;
+  margin: 5px;
+}
+
+
+
+
+@media (max-width: 2560px) {
+ 
+}
+
 
 
 
@@ -62,10 +147,26 @@ body{
     /* max-width: 100%; */
     font-size: 5px;
     background-color: red;
+    
   }
 
   .child{
     color: black;
+  }
+
+  .navBar{
+    width: 100%;
+    height: 20px;
+    background-color: green;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+  
+    /* display: none; */
+  }
+
+  .navBar ul{
+    background-color: #121212;
   }
   
 }
