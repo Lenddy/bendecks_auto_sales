@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { get_one_vehicle } from "../../GraphQL/queries/vehicleQueries";
 import { delete_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 
 const DeleteOneVehicle = () => {
 	const { id } = useParams();
@@ -34,6 +35,8 @@ const DeleteOneVehicle = () => {
 			variables: {
 				id, // Only pass the ID to the deletion mutation
 			},
+			// this is re fetching the data
+			refetchQueries: [{ query: get_all_vehicles }],
 		})
 			.then((res) => {
 				// Redirect after successful deletion

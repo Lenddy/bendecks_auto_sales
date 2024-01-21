@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { useNavigate, Link } from "react-router-dom";
 import { create_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
+import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
+
 import io from "socket.io-client"; //importing socket.io-client
 
 // !!! make a funtion that has a loop that makes more of a tag so that uses can add more than on e number ,color
@@ -48,6 +50,8 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 				color: [info.color],
 				boughtPrice: parseFloat(info.boughtPrice),
 			},
+			// this is re fetching the data
+			refetchQueries: [{ query: get_all_vehicles }],
 		})
 			.then((res) => {
 				// Reset the form fields after successful submission

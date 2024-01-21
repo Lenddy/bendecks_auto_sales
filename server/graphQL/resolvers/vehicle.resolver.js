@@ -1,4 +1,7 @@
 const Vehicle = require("../../models/vehicle.model");
+const { PubSub } = require("graphql-subscriptions");
+
+const pubsub = new PubSub();
 
 const vehicleResolvers = {
 	Query: {
@@ -63,6 +66,13 @@ const vehicleResolvers = {
 				updatedAt,
 			})
 				.then((newVehicle) => {
+					pubsub.publish("VEHICLE_ADDED", {
+						onVehicleChange: {
+							eventType: "VEHICLE_ADDED",
+							vehicleChanges: newVehicle,
+						},
+					});
+
 					console.log(
 						"new Vehicle created",
 						newVehicle,
@@ -112,6 +122,12 @@ const vehicleResolvers = {
 				new: true,
 			})
 				.then((updatedVehicle) => {
+					pubsub.publish("VEHICLE_UPDATED", {
+						onVehicleChange: {
+							eventType: "VEHICLE_UPDATED",
+							vehicleChanges: updatedVehicle,
+						},
+					});
 					console.log(
 						"vehicle updated",
 						updatedVehicle,
@@ -132,6 +148,13 @@ const vehicleResolvers = {
 		deleteOneVehicle: async (_, { id }) => {
 			return await Vehicle.findByIdAndDelete(id)
 				.then((deletedVehicle) => {
+					pubsub.publish("VEHICLE_DELETED", {
+						onVehicleChange: {
+							eventType: "VEHICLE_DELETED",
+							vehicleChanges: deletedVehicle,
+						},
+					});
+
 					console.log(
 						" a Vehicle was deleted",
 						deletedVehicle,
@@ -149,6 +172,18 @@ const vehicleResolvers = {
 				});
 		},
 	},
+
+	Subscription: {
+		onVehicleChange: {
+			subscribe: () =>
+				pubsub.asyncIterator([
+					"VEHICLE_ADDED",
+					"VEHICLE_UPDATED",
+					"VEHICLE_DELETED",
+				]),
+		},
+	},
+
 	Vehicle: {
 		// Use toISOString() for custom DateTime scalar
 		createdAt: (vehicle) => vehicle.createdAt.toISOString(),

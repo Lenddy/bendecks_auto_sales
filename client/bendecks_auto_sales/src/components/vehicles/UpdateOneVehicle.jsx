@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { get_one_vehicle } from "../../GraphQL/queries/vehicleQueries";
 import { update_One_vehicle } from "../../GraphQL/mutations/vehicleMutations";
+import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 
 const UpdateOneVehicle = () => {
 	const { id } = useParams();
@@ -45,6 +46,8 @@ const UpdateOneVehicle = () => {
 				color: info.color,
 				boughtPrice: parseFloat(info.boughtPrice),
 			},
+			// this is re fetching the data
+			refetchQueries: [{ query: get_all_vehicles }],
 		})
 			.then((res) => {
 				console.log(res.data);

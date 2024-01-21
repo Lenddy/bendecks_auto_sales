@@ -10,18 +10,6 @@ const dealTypeDef = gql`
 
 	#Object
 
-	type PaymentDate {
-		payment_id: ID!
-		monthFullyPay: Boolean!
-		isLate: Boolean!
-		dateOfPayment: DateTime!
-		hasToPay: Float!
-		amountPayedThisMonth: Float!
-		remainingBalance: Float!
-		latenessFee: Float!
-		daysLate: Int!
-	}
-
 	type Deal {
 		id: ID!
 		dayOfDeal: String!
@@ -36,6 +24,18 @@ const dealTypeDef = gql`
 		updatedAt: DateTime!
 	}
 
+	type PaymentDate {
+		payment_id: ID!
+		monthFullyPay: Boolean!
+		isLate: Boolean!
+		dateOfPayment: DateTime!
+		hasToPay: Float!
+		amountPayedThisMonth: Float!
+		remainingBalance: Float!
+		latenessFee: Float!
+		daysLate: Int!
+	}
+
 	input PaymentDateInput {
 		payment_id: ID
 		monthFullyPay: Boolean!
@@ -46,6 +46,11 @@ const dealTypeDef = gql`
 		remainingBalance: Float!
 		latenessFee: Float!
 		daysLate: Int!
+	}
+
+	type DealChange {
+		eventType: String
+		DealChanges: Deal
 	}
 
 	#Queries
@@ -86,6 +91,11 @@ const dealTypeDef = gql`
 		isDealPaymentPayed: [Deal!]!
 
 		deleteOneDeal(id: ID!): Deal!
+	}
+
+	#re renders data on data update
+	type Subscription {
+		onDealChange: DealChange
 	}
 `;
 

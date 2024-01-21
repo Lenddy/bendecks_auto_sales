@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate, useParams } from "react-router-dom";
 import { get_one_client } from "../../GraphQL/queries/clientQueries";
 import { update_One_client } from "../../GraphQL/mutations/clientMutations";
+import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 
 const UpdateOneClient = () => {
 	const { id } = useParams();
@@ -24,7 +25,20 @@ const UpdateOneClient = () => {
 		}
 	}, [loading, data]);
 
-	const [updateOneClient] = useMutation(update_One_client);
+	const [updateOneClient] = useMutation(update_One_client, {
+		update(cache, { data: { updateItem } }) {
+			cache.writeFragment({
+				id: cache.identify(updateItem),
+				fragment: gql`
+					fragment UpdatedItem on Item {
+						id
+						... // updated fields
+					}
+				`,
+				data: updateItem,
+			});
+		},
+	});
 
 	const infoToBeSubmitted = (e) => {
 		setInfo({
@@ -43,6 +57,7 @@ const UpdateOneClient = () => {
 				clientLastName: info.clientLastName,
 				cellPhone: info.cellPhone,
 			},
+			refetchQueries: [{ query: get_all_clients }],
 		})
 			.then((res) => {
 				console.log(res.data);

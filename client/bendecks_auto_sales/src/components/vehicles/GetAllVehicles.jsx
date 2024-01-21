@@ -7,10 +7,12 @@ import { useState, useEffect } from "react";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 import io from "socket.io-client"; //importing socket.io-client
 
+import { VEHICLE_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscriptions";
+
 // !!! make a funtion that has a loop that makes more of a tag so that uses can add more than on e number ,color
 
 function GetAllVehicles() {
-	const [socket] = useState(() => io(":8080")); //connect to the server
+	// const [socket] = useState(() => io(":8080")); //connect to the server
 	const navigate = useNavigate();
 	const navigateTO = (url) => {
 		navigate(url);
@@ -22,22 +24,44 @@ function GetAllVehicles() {
 	// Set up state to manage the Clients fetched from the query
 	const [vehicles, setVehicles] = useState([]);
 
-	// Handle subscription using useSubscription hook
-	// const { data: subscriptionData } = useSubscription(
-	// 	client_added_subscription
-	// );
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!   find out why the subsciption is not updating the info on the page for others
 
-	// useEffect(() => {
-	// 	socket.on("reload_client_list", (newClientInfo) => {
-	// 		setClients((prevClients) => [...prevClients, newClientInfo]);
-	// 		clients;
-	// 	});
-	// 	console.log(clients);
+	// Subscription for client changes
+	useSubscription(VEHICLE_CHANGE_SUBSCRIPTION, {
+		onData: (infoChange) => {
+			console.log("this the vehicle subscription :", infoChange);
+			const changeInfo = infoChange?.data?.data?.onVehicleChange;
+			const { eventType, vehicleChanges } = changeInfo;
+			console.log("New data from vehicle subscription:", changeInfo);
 
-	// 	return () => {
-	// 		socket.off("reload_client_list"); // Clean up the socket listener on unmount
-	// 	};
-	// }, [socket]); // Listen to socket changes
+			if (eventType === "VEHICLE_ADDED") {
+				// Handle new client addition
+				console.log("added hit");
+				setVehicles((prev) => [...prev, vehicleChanges]);
+			} else if (eventType === "VEHICLE_UPDATED") {
+				console.log("updated hit");
+				// Handle client update
+				setVehicles((prev) =>
+					prev.map((v) =>
+						v.id === vehicleChanges.id ? vehicleChanges : v
+					)
+				);
+			} else if (eventType === "VEHICLE_DELETED") {
+				console.log("delete hit");
+				// Handle client deletion
+				setVehicles((prev) =>
+					prev.filter((v) => v.id !== vehicleChanges.id)
+				);
+			} else {
+				console.log("Unknown event type");
+			}
+			// eventType;
+			// clientChanges;
+
+			// setNewChange(changeClient);
+			// setClients((prevClients) => [...prevClients, newChange]);
+		},
+	});
 
 	// useEffect hook to handle changes in error, loading, and data states
 	useEffect(() => {

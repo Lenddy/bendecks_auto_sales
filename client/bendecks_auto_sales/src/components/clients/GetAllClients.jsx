@@ -9,7 +9,7 @@ import { useNavigate, Link, useParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
-import { CLIENT_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/clientSubscriptions";
+import { CLIENT_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscriptions";
 // import io from "socket.io-client"; //importing socket.io-client
 
 function GetAllClients() {
@@ -27,15 +27,39 @@ function GetAllClients() {
 	// State to manage Clients and new changes
 	const [search, setSearch] = useState("");
 	const [clients, setClients] = useState([]);
-	const [newChange, setNewChange] = useState();
+	// const [newChange, setNewChange] = useState();
 
 	// Subscription for client changes
 	useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
 		onData: (infoChange) => {
-			console.log(infoChange);
-			const newClient = infoChange.data.data.onClientChange;
-			console.log("New data from subscription:", newClient);
-			setNewChange(newClient);
+			console.log("this the subscription :", infoChange);
+			const changeClient = infoChange?.data?.data?.onClientChange;
+			const { eventType, clientChanges } = changeClient;
+			console.log("New data from subscription:", changeClient);
+
+			if (eventType === "CLIENT_ADDED") {
+				// Handle new client addition
+				setClients((prevClients) => [...prevClients, clientChanges]);
+			} else if (eventType === "CLIENT_UPDATED") {
+				// Handle client update
+				setClients((prevClients) =>
+					prevClients.map((c) =>
+						c.id === clientChanges.id ? clientChanges : c
+					)
+				);
+			} else if (eventType === "CLIENT_DELETED") {
+				// Handle client deletion
+				setClients((prevClients) =>
+					prevClients.filter((c) => c.id !== clientChanges.id)
+				);
+			} else {
+				console.log("Unknown event type");
+			}
+			// eventType;
+			// clientChanges;
+
+			// setNewChange(changeClient);
+			// setClients((prevClients) => [...prevClients, newChange]);
 		},
 	});
 	// const client = useApolloClient();
@@ -65,10 +89,12 @@ function GetAllClients() {
 	// Effect for handling new changes and initial data load
 	// ? delete the use effect
 	useEffect(() => {
-		if (newChange) {
-			console.log("Client was updated", newChange);
-			setClients((prevClients) => [...prevClients, newChange]);
-		} else if (loading) {
+		// if (newChange) {
+		// 	console.log("Client was updated", newChange);
+		// 	setClients((prevClients) => [...prevClients, newChange]);
+		// }
+
+		if (loading) {
 			console.log("Loading...");
 		} else if (data) {
 			console.log("All clients:", data);
@@ -76,22 +102,7 @@ function GetAllClients() {
 		} else if (error) {
 			console.log("Error:", error);
 		}
-	}, [error, loading, data, newChange]);
-
-	// // Handle new client from subscription
-	// useEffect(() => {
-	// 	// if (newChange) {
-	// 	// 	setClients((prevClients) => [...prevClients, newChange]);
-	// 	// 	console.log("client was updated", clients);
-	// 	// }
-	// 	if (subscription.loading) {
-	// 		console.log("subscription is loading");
-	// 	}
-	// 	if (subscription.data) {
-	// 		console.log("sub data", subscription.data);
-	// 	}
-	// 	// newChange, client,
-	// }, [subscription.loading, subscription.data]);
+	}, [error, loading, data]); //newChange
 
 	return (
 		<div>
@@ -123,10 +134,10 @@ function GetAllClients() {
 							// 	" " +
 							// 	c.clientLastName.toLowerCase()
 							// ).includes(search.toLowerCase())
-							c.clientName
+							c?.clientName
 								.toLowerCase()
 								.includes(search.toLowerCase()) ||
-							c.clientLastName
+							c?.clientLastName
 								.toLowerCase()
 								.includes(search.toLowerCase())
 					)

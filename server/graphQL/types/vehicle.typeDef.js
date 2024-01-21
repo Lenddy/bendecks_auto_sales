@@ -16,6 +16,11 @@ const vehicleTypeDef = gql`
 		updatedAt: DateTime!
 	}
 
+	type VehicleChange {
+		eventType: String
+		vehicleChanges: Vehicle
+	}
+
 	#Queries
 	type Query {
 		hello: String
@@ -43,6 +48,11 @@ const vehicleTypeDef = gql`
 		): Vehicle!
 
 		deleteOneVehicle(id: ID!): Vehicle!
+	}
+
+	#re renders data on data update
+	type Subscription {
+		onVehicleChange: VehicleChange
 	}
 `;
 

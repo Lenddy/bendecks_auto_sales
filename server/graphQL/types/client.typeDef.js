@@ -14,6 +14,11 @@ const clientTypeDef = gql`
 		updatedAt: DateTime!
 	}
 
+	type ClientChange {
+		eventType: String
+		clientChanges: Client
+	}
+
 	#Queries
 	type Query {
 		hello: String
@@ -41,7 +46,7 @@ const clientTypeDef = gql`
 
 	#re renders data on data update
 	type Subscription {
-		onClientChange: Client
+		onClientChange: ClientChange
 	}
 `;
 

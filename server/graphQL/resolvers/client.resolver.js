@@ -63,8 +63,12 @@ const clientResolvers = {
 				updatedAt,
 			})
 				.then((newClient) => {
+					// When a client is added
 					pubsub.publish("CLIENT_ADDED", {
-						onClientChange: newClient,
+						onClientChange: {
+							eventType: "CLIENT_ADDED",
+							clientChanges: newClient,
+						},
 					});
 					console.log(
 						"new client created",
@@ -103,6 +107,13 @@ const clientResolvers = {
 				new: true,
 			})
 				.then((updatedClient) => {
+					// When a client is updated
+					pubsub.publish("CLIENT_UPDATED", {
+						onClientChange: {
+							eventType: "CLIENT_UPDATED",
+							clientChanges: updatedClient,
+						},
+					});
 					console.log(
 						"client updated",
 						updatedClient,
@@ -123,6 +134,13 @@ const clientResolvers = {
 		deleteOneClient: async (_, { id }) => {
 			return await Client.findByIdAndDelete(id)
 				.then((deletedClient) => {
+					// When a client is deleted
+					pubsub.publish("CLIENT_DELETED", {
+						onClientChange: {
+							eventType: "CLIENT_DELETED",
+							clientChanges: deletedClient,
+						},
+					});
 					console.log(
 						" a client was deleted",
 						deletedClient,
@@ -149,8 +167,6 @@ const clientResolvers = {
 					"CLIENT_UPDATED",
 					"CLIENT_DELETED",
 				]),
-			// Resolve function if needed (to handle subscription payload transformations)
-			// resolve: (payload) => payload.clientAdded,
 		},
 	},
 

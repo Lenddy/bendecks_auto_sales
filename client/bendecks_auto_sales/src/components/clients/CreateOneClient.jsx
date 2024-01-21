@@ -3,6 +3,7 @@ import { useMutation } from "@apollo/client";
 import { useNavigate, Link } from "react-router-dom";
 import { create_one_client } from "../../GraphQL/mutations/clientMutations";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
+import { gql } from "@apollo/client";
 import io from "socket.io-client"; //importing socket.io-client
 
 const CreateOneClient = ({ reload, setReload }) => {
@@ -24,7 +25,36 @@ const CreateOneClient = ({ reload, setReload }) => {
 	const navigate = useNavigate();
 
 	// Apollo Client mutation hook for creating a single list item
-	const [createOneClient, { error }] = useMutation(create_one_client);
+	const [createOneClient, { error }] = useMutation(
+		create_one_client
+		// 	 {
+		// 	update(cache, { data: { addNewItem } }) {
+		// 		cache.modify({
+		// 			fields: {
+		// 				allItems(existingItems = []) {
+		// 					const newItemRef = cache.writeFragment({
+		// 						data: addNewItem,
+		// 						fragment: gql`
+		// 							fragment NewItem on Item {
+		// 								id
+		// 								clientName
+		// 								clientLastName
+		// 								cellPhone
+		// 								createdAt
+		// 								updatedAt
+		// 							}
+		// 						`,
+		// 					});
+		// 					let newInfo = [...existingItems, newItemRef];
+		// 					console.log("new item", newItemRef);
+		// 					console.log("the cache was updated", newInfo);
+		// 					return newInfo;
+		// 				},
+		// 			},
+		// 		});
+		// 	},
+		// }
+	);
 
 	// Function to handle input changes and update state accordingly
 	const infoToBeSubmitted = (e) => {
@@ -47,6 +77,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 				clientLastName: info.clientLastName,
 				cellPhone: info.cellPhone,
 			},
+			// this is re fetching the data
 			refetchQueries: [{ query: get_all_clients }],
 		})
 			.then(async (res) => {
