@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { create_one_client } from "../../GraphQL/mutations/clientMutations";
+import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 import io from "socket.io-client"; //importing socket.io-client
 
 const CreateOneClient = ({ reload, setReload }) => {
-	const [socket] = useState(() => io(":8080")); //connect to the server
+	// const [socket] = useState(() => io(":8080")); //connect to the server
 
 	// socket.on("new_connection", (data) => {
 	// 	console.log(data);
@@ -37,29 +38,26 @@ const CreateOneClient = ({ reload, setReload }) => {
 	};
 
 	// Function to handle form submission
-	const submit = (e) => {
+	const submit = async (e) => {
 		e.preventDefault(); // Prevent default form submission behavior
 
-		createOneClient({
+		await createOneClient({
 			variables: {
 				clientName: info.clientName,
 				clientLastName: info.clientLastName,
 				cellPhone: info.cellPhone,
 			},
+			refetchQueries: [{ query: get_all_clients }],
 		})
-			.then((res) => {
-				// Reset the form fields after successful submission
-
-				// setInfo({
-				// 	// title: "",
-				// 	// description: "",
-				// 	// isDone: false,
-				// 	cellPhone: [],
-				// });
-				navigate("/dashboard");
-				console.log("here is the response", res.data.createOneClient);
-				socket.emit("new_client_added", res.data.createOneClient);
-				setReload(!reload);
+			.then(async (res) => {
+				let id = res.data.createOneClient.id;
+				await navigate(`/${id}`);
+				await console.log(
+					"here is the response",
+					res.data.createOneClient
+				);
+				// socket.emit("new_client_added", res.data.createOneClient);
+				// setReload(!reload);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -96,7 +94,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 						// value={info.cellPhone}
 					/>
 				</div>
-				<button type="submit">Add a new client</button>
+				<button type="submit">Add a new client</button>{" "}
 			</form>
 		</div>
 	);

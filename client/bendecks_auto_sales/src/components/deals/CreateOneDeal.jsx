@@ -15,7 +15,6 @@ const CreateOneDeal = ({ reload, setReload }) => {
 	const getVehicle = useQuery(get_all_vehicles);
 	const [vehicles, setVehicles] = useState([]);
 	const [clients, setClients] = useState([]);
-	const [updateCount, setUpdateCount] = useState(0); // New state variable
 	// Dependencies for the useEffect hook
 	const [info, setInfo] = useState({
 		paymentDates: [{}], // Array to hold payment dates,
@@ -34,12 +33,12 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			console.log("loading vehicles"); // Log a message when data is loading
 		}
 		if (GetClients.data) {
-			// console.log(GetClients.data); // Log the fetched data
-			setClients(GetClients.data.getAllClients); // Set the Clients retrieved from the query to the state
+			console.log(GetClients.data); // Log the fetched data
+			setClients(GetClients.data?.getAllClients); // Set the Clients retrieved from the query to the state
 		}
 		if (getVehicle.data) {
-			// console.log(getVehicle.data); // Log the fetched data
-			setVehicles(getVehicle.data.getAllVehicles); // Set the Clients retrieved from the query to the state
+			console.log(getVehicle.data); // Log the fetched data
+			setVehicles(getVehicle.data?.getAllVehicles); // Set the Clients retrieved from the query to the state
 		}
 		if (GetClients.error) {
 			console.log("there was an error", GetClients.error); // Log an error message if an error occurs
@@ -56,7 +55,6 @@ const CreateOneDeal = ({ reload, setReload }) => {
 		getVehicle.loading,
 		clients,
 		vehicles,
-		info,
 	]); // Dependencies for the useEffect hook
 
 	// Function to handle form submission
@@ -65,16 +63,14 @@ const CreateOneDeal = ({ reload, setReload }) => {
 
 		createOneDeal({
 			variables: {
-				dayOFdeal: parseInt(info?.dayOFdeal) || parseInt(0),
+				dayOfDeal: info?.dayOfDeal,
 				downPayment: parseFloat(info.downPayment),
 				payment: parseFloat(info.payment),
 				paymentDates: info?.paymentDates,
-				remainingBalance:
-					parseFloat(info?.paymentDates[0]?.remainingBalance) ||
-					parseFloat(0),
+				remainingBalance: parseFloat(info?.remainingBalance),
 				sellingPrice: parseFloat(info.sellingPrice),
-				client_id: info.client_id,
-				vehicle_id: info.vehicle_id,
+				client_id: info?.client_id,
+				vehicle_id: info?.vehicle_id,
 			},
 		})
 			.then((res) => {
@@ -88,84 +84,56 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			});
 	};
 
-	// ???????
-	// ???????
-	// ???????
-	// ???????
-	//! fix  when you change  the values in the field after they are initially  enter  and after that make the ui look presentable
-
-	// ???????
-	// ???????
-	// ???????
-
 	useEffect(() => {
-		// Check if all required fields are present
 		if (
-			info.dayOfDeal &&
-			info.downPayment &&
-			info.payment &&
-			info.sellingPrice &&
-			updateCount
+			info?.dayOfDeal &&
+			info?.downPayment &&
+			info?.payment &&
+			info?.sellingPrice
 		) {
-			console.log("got all the payments");
-
-			// Call dateCalculator and update the paymentDates in the info state
-			const newPaymentDates = dateCalculator(
+			const paymentDates = dateCalculator(
 				info.dayOfDeal,
 				info.downPayment,
 				info.payment,
 				info.sellingPrice
 			);
-
 			setInfo((prevInfo) => ({
 				...prevInfo,
-				paymentDates: newPaymentDates,
+				paymentDates: paymentDates,
+				remainingBalance:
+					paymentDates.length > 0
+						? paymentDates[0].remainingBalance
+						: prevInfo.sellingPrice - prevInfo.downPayment,
 			}));
 		}
-	}, [
-		info.dayOfDeal,
-		info.downPayment,
-		info.payment,
-		info.sellingPrice,
-		updateCount,
-	]); // Dependencies array
-
-	// const infoToBeSubmitted = (e) => {
-	// 	const newInfo = {
-	// 		...info,
-	// 		[e.target.name]: e.target.value,
-	// 		paymentDates: paymentData ? paymentData : [{}],
-	// 	};
-
-	// 	setInfo(newInfo);
-
-	// };
+	}, [info.dayOfDeal, info.downPayment, info.payment, info.sellingPrice]); // Updated dependencies array
 
 	const infoToBeSubmitted = (e) => {
 		const { name, value } = e.target;
+		console.log(`Selected ${name}: ${value}`); // This will log which field is being updated and its value
 
-		setInfo((prevInfo) => ({ ...prevInfo, [name]: value }));
-		setUpdateCount((count) => count + 1); // Increment the update count
+		const numericValue =
+			name === "sellingPrice" ||
+			name === "downPayment" ||
+			name === "payment"
+				? parseFloat(value)
+				: value;
+
+		setInfo((prevInfo) => ({
+			...prevInfo,
+			[name]: numericValue,
+		}));
 	};
 
 	function dateCalculator(initialDate, downPayment, payment, sellPrice) {
-		console.log(
-			`initialDate: ${initialDate},downPayment: ${downPayment},payment: ${payment},sellPrice: ${sellPrice}`
-		);
 		let paymentDates = [];
 		let currentDate = moment(initialDate).add(1, "months");
-
-		// Adjust the remaining balance for the down payment
 		let remainingBalance = sellPrice - downPayment;
-		setInfo({ remainingBalance });
 
 		while (remainingBalance > 0) {
-			// Calculate the amount to pay this month
 			let amountToPay = Math.min(payment, remainingBalance);
 
-			// Add payment details to the array
 			paymentDates.push({
-				// payment_id:1,
 				monthFullyPay: false,
 				isLate: false,
 				dateOfPayment: currentDate.format("YYYY-MM-DD"),
@@ -176,14 +144,9 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				daysLate: 0,
 			});
 
-			// Update the remaining balance
 			remainingBalance -= amountToPay;
-
-			// Move to the next month
 			currentDate.add(1, "months");
 		}
-		console.log(paymentDates);
-		// setPaymentDates(paymentDates);
 		return paymentDates;
 	}
 
@@ -214,9 +177,11 @@ const CreateOneDeal = ({ reload, setReload }) => {
 					<input
 						type="number"
 						name="downPayment"
-						onChange={infoToBeSubmitted}
+						onChange={(e) => infoToBeSubmitted(e)}
 						// value={info.clientName}
 						step="0.01"
+						maxLength={20}
+						// minLength={1}
 					/>
 				</div>
 				<div>
@@ -225,7 +190,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						step="0.01"
 						type="number"
 						name="payment"
-						onChange={infoToBeSubmitted}
+						onChange={(e) => infoToBeSubmitted(e)}
 						// value={info.clientLastName}
 					></input>
 				</div>
@@ -245,7 +210,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						step="0.01"
 						type="number"
 						name="remainingBalance"
-						onChange={infoToBeSubmitted}
+						onChange={(e) => infoToBeSubmitted(e)}
 						disabled
 						placeholder={
 							parseFloat(info?.remainingBalance) || parseFloat(0)
@@ -260,7 +225,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						<option value="">clients</option>
 						{clients?.map((c) => {
 							return (
-								<option key={c?.id} value={c?.id}>
+								<option key={c?.id} value={`${c?.id}`}>
 									{c?.clientName} {c?.clientLastName}
 								</option>
 							);
@@ -277,7 +242,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						<option value="">vehicles</option>
 						{vehicles?.map((v) => {
 							return (
-								<option key={v?.id} value={v?.id}>
+								<option key={v?.id} value={`${v?.id}`}>
 									{v?.vehicleName} {v?.vehicleModel}
 								</option>
 							);

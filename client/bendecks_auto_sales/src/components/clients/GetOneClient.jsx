@@ -7,6 +7,10 @@ import { get_one_client } from "../../GraphQL/queries/clientQueries";
 function GetOneClient() {
 	const { id } = useParams();
 
+	const navigate = useNavigate();
+	const navigateTO = (url) => {
+		navigate(url);
+	};
 	// Fetch data using the useQuery hook by executing the getAllList query
 	const { error, loading, data } = useQuery(get_one_client, {
 		variables: { id },
@@ -32,9 +36,9 @@ function GetOneClient() {
 	// Render the retrieved lists
 	return (
 		<div>
-			<Link to={"/dashboard"}>
-				<button>dashboard</button>
-			</Link>
+			{/* <Link to={"/dashboard"}> */}
+			<button onClick={() => navigateTO("/dashboard")}>dashboard</button>
+			{/* </Link> */}
 
 			<h1> ID: {client?.id}</h1>
 			<p>

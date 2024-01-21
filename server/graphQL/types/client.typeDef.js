@@ -39,9 +39,10 @@ const clientTypeDef = gql`
 		deleteOneClient(id: ID!): Client!
 	}
 
-	# type Subscription {
-	# 	clientAdded: Client!
-	# }
+	#re renders data on data update
+	type Subscription {
+		onClientChange: Client
+	}
 `;
 
 module.exports = { clientTypeDef };
