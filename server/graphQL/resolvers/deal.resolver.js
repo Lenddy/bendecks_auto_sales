@@ -3,6 +3,9 @@ const Deal = require("../../models/deal.model");
 // const Deal = require("../../models/vehicle.model");
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
+const { PubSub } = require("graphql-subscriptions");
+
+const pubsub = new PubSub();
 
 const dealResolvers = {
 	Query: {
@@ -91,6 +94,12 @@ const dealResolvers = {
 						newDeal,
 						"\n____________________"
 					);
+					pubsub.publish("DEAL_ADDED", {
+						onDealChange: {
+							eventType: "DEAL_ADDED",
+							dealChanges: newDeal,
+						},
+					});
 					// Use the getOneDeal method to fetch and populate the new deal
 					return await dealResolvers.Query.getOneDeal(_, {
 						id: newDeal.id,
@@ -193,6 +202,13 @@ const dealResolvers = {
 				{ new: true } // Return the updated document
 			)
 				.then(async (updatedDeal) => {
+					pubsub.publish("DEAL_UPDATED", {
+						onDealChange: {
+							eventType: "DEAL_UPDATED",
+							dealChanges: updatedDeal,
+						},
+					});
+
 					console.log(
 						"deal updated",
 						updatedDeal,
@@ -281,6 +297,13 @@ const dealResolvers = {
 		deleteOneDeal: async (_, { id }) => {
 			return await Deal.findByIdAndDelete(id)
 				.then((deletedDeal) => {
+					pubsub.publish("DEAL_DELETED", {
+						onDealChange: {
+							eventType: "DEAL_DELETED",
+							dealChanges: deletedDeal,
+						},
+					});
+
 					console.log(
 						" a deal was deleted",
 						deletedDeal,
@@ -298,6 +321,18 @@ const dealResolvers = {
 				});
 		},
 	},
+
+	Subscription: {
+		onVehicleChange: {
+			subscribe: () =>
+				pubsub.asyncIterator([
+					"VEHICLE_ADDED",
+					"VEHICLE_UPDATED",
+					"VEHICLE_DELETED",
+				]),
+		},
+	},
+
 	Deal: {
 		// Use toISOString() for custom DateTime scalar
 		createdAt: (deal) => deal.createdAt.toISOString(),

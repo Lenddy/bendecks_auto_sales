@@ -1,11 +1,2 @@
-problem
-
-when i add a new client the data is not re fetch    the subscription works but it does not show the new data on the person that create it but it does show it for the other people 
-
-
-the component re renders but the data is not re fetch  
-
-the comoponent re render makes the data tha was store on the subsciption be loss be so for the person  that create the data it does not show 
-
-
-
+find out why the subscription for the vehicles is not logging and  updating the data :
+    fixed: the  was a dependency reloading the component when vehicle change

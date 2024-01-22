@@ -9,7 +9,7 @@ import io from "socket.io-client"; //importing socket.io-client
 // !!! make a funtion that has a loop that makes more of a tag so that uses can add more than on e number ,color
 
 const CreateOneVehicle = ({ reload, setReload }) => {
-	const [socket] = useState(() => io(":8080")); //connect to the server
+	// const [socket] = useState(() => io(":8080")); //connect to the server
 
 	// socket.on("new_connection", (data) => {
 	// 	console.log(data);

@@ -50,7 +50,7 @@ const dealTypeDef = gql`
 
 	type DealChange {
 		eventType: String
-		DealChanges: Deal
+		dealChanges: Deal
 	}
 
 	#Queries

@@ -75,7 +75,7 @@ function GetAllVehicles() {
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
 		}
-	}, [error, loading, data, vehicles]); // Dependencies for the useEffect hook
+	}, [error, loading, data]); // Dependencies for the useEffect hook
 
 	// Render the retrieved clients
 
