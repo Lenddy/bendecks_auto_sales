@@ -1,7 +1,9 @@
 const Vehicle = require("../../models/vehicle.model");
-const { PubSub } = require("graphql-subscriptions");
+const pubsub = require("../pubsub");
 
-const pubsub = new PubSub();
+// const { PubSub } = require("graphql-subscriptions");
+
+// const pubsub = new PubSub();
 
 const vehicleResolvers = {
 	Query: {
@@ -72,6 +74,10 @@ const vehicleResolvers = {
 							vehicleChanges: newVehicle,
 						},
 					});
+					// console.log(
+					// 	"this is pubsub heerrrrrrreeeeeee: ",
+					// 	pubsub._events
+					// );
 
 					console.log(
 						"new Vehicle created",
@@ -177,6 +183,9 @@ const vehicleResolvers = {
 		onVehicleChange: {
 			subscribe: () =>
 				pubsub.asyncIterator([
+					// "CLIENT_ADDED",
+					// "CLIENT_UPDATED",
+					// "CLIENT_DELETED",
 					"VEHICLE_ADDED",
 					"VEHICLE_UPDATED",
 					"VEHICLE_DELETED",

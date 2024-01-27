@@ -142,6 +142,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				amountPayedThisMonth: 0,
 				latenessFee: 0,
 				daysLate: 0,
+				latestLatenessFeeUpdate: null,
 			});
 
 			remainingBalance -= amountToPay;

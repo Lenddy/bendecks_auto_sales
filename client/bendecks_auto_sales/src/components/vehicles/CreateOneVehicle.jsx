@@ -65,7 +65,7 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 				navigate("/vehicles");
 				console.log("here is the response", res.data.createOneVehicle);
 				// socket.emit("new_client_added", res.data.createOneVehicle);
-				setReload(!reload);
+				// setReload(!reload);
 			})
 			.catch((error) => {
 				console.log(error);

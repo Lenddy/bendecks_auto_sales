@@ -36,18 +36,6 @@ const dealTypeDef = gql`
 		daysLate: Int!
 	}
 
-	input PaymentDateInput {
-		payment_id: ID
-		monthFullyPay: Boolean!
-		isLate: Boolean!
-		dateOfPayment: DateTime!
-		hasToPay: Float!
-		amountPayedThisMonth: Float!
-		remainingBalance: Float!
-		latenessFee: Float!
-		daysLate: Int!
-	}
-
 	type DealChange {
 		eventType: String
 		dealChanges: Deal
@@ -58,6 +46,18 @@ const dealTypeDef = gql`
 		hello: String
 		getAllDeals: [Deal!]!
 		getOneDeal(id: ID!): Deal!
+	}
+
+	input PaymentDateInput {
+		payment_id: ID
+		monthFullyPay: Boolean!
+		isLate: Boolean!
+		dateOfPayment: DateTime!
+		hasToPay: Float!
+		amountPayedThisMonth: Float!
+		remainingBalance: Float!
+		latenessFee: Float!
+		daysLate: Int!
 	}
 
 	#mutations
@@ -90,7 +90,7 @@ const dealTypeDef = gql`
 
 		isDealPaymentPayed: [Deal!]!
 
-		deleteOneDeal(id: ID!): Deal!
+		deleteOneDeal(id: ID!): Boolean!
 	}
 
 	#re renders data on data update
@@ -100,3 +100,5 @@ const dealTypeDef = gql`
 `;
 
 module.exports = { dealTypeDef };
+
+//!!!!!! check if the reason why the subs for vehicle are not working is becaus of del  because deal is using the vehicle subscrtiption tell chat gpt to check all the files fo tevery types and resolver  later

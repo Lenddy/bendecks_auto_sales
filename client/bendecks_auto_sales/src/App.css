@@ -1,87 +1,69 @@
 #root {
+  /* max-width: 3000px; */
   max-width: 2560px;
   padding: 0px;
-  margin: 0px;
+  margin: 0px auto;
   text-align: center;
-  /* display: flex;
-  justify-content: center;
-  flex-direction: column; */
-  /* margin: 0 auto;
-  padding: 2rem;
-  */
 } 
+
+
+
 *{
   text-align: center;
   padding: 0 ;
   margin: 0;
 }
-/* html{
-  max-width:10000px ;
-} */
 
-body{
-  max-width: 2560px;
-  margin: 0px auto;
-  /* display: flex;
-  justify-content: center; */
-
-
-}
-
-html{
-  max-width: 2560px;
-}
 
 .container{
   max-width:2560px;
   display: flex;
   justify-content: center;
   flex-direction: column;
-  /* background-color: blue; */
-  background-color:   #081717;
+  /* background-color: violet; */
+}
+.children{
+  display: flex;
+  justify-content: center;
+  /* background-color: gray; */
 }
 
+.children_content{
+ width: 100%;
+  /* background-color:darkgreen; */
+  /* display: flex;
+  justify-content: center; */
+}
 
 
 
 /* nav bar */
-.navBar{
+ .navBar{
   width: 100%;
   height: 60px;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  /* align-items: center; */
+  margin-bottom:30px ;
+  /* background-color: red; */
+  /* z-index:9999999; */
 }
 
-.navBar ul{
-  width: 50%;
-  position: fixed;
-  list-style: none;
-  /* background-color: black; */
-  /* margin-right: 5%; */
-  /* margin-top: 5px;
-  border-radius:5px; */
-  display: flex;
-  justify-content: space-around;
-}
 
-.navBar ul li{
-  color:  white;
-  border-bottom: 3px solid white;
-}
 
 .navBar ul li button{
   background-color: transparent;
   border: none;
+  border-bottom: 3px solid white;
 }
 
 
-.navBar ul li:hover{
-  border-bottom: 0 solid white;
+.navBar ul li{
+  color:  white;
+
 }
 
 
-/* all clients */
 /* filter input */
 .filterInput{
   width: 30%;
@@ -90,6 +72,7 @@ html{
   border:solid 10px #172531;
   border-radius: 10px;
   background-color: transparent;
+  margin-bottom: 30px;
 }
 
 .filterInput::placeholder{
@@ -104,7 +87,7 @@ html{
 
 
 
-
+/* get all  */
 table{
   width:100%;
   /* max-width: px; */
@@ -113,7 +96,6 @@ table{
   border:3px #172531 solid;
   background-color: #172531;
 }
-
 
 table th{
   background-color: #0f2334;
@@ -133,40 +115,173 @@ td{
 }
 
 
-
-
-@media (max-width: 2560px) {
- 
+.burgerIcon{
+  height: 50px;
+  /* color: white; */
+  filter: invert();
+  /* position: absolute; */
 }
 
 
 
+.close{
+  background-color:  #172531;
+  width: 100%;
+}
+.sidebar button{
+background-color: none;
+}
 
-@media (max-width: 300px) {
-  .container{
-    /* max-width: 100%; */
-    font-size: 5px;
-    background-color: red;
-    
+.subBtn{
+  background-color: #081717;
+/* border-top: solid white 1px; */
+border-bottom: solid white 1px;
+}
+
+.dropDownTitle{
+ display: flex;
+ justify-content: center;
+ align-items:center;
+}
+
+
+.subIcon{
+  height: 25px;
+  /* color: white; */
+  filter: invert();
+  /* position: absolute; */
+}
+/* .dropdown-menu{
+  transition: ;
+} */
+
+
+@media screen and (max-width: 500px) {
+  /* nav bar */
+  .sidebar {
+    height: 100%;
+    width: 0; /* Sidebar is hidden initially */
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #081717; /* Sidebar background */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    transition: all 0.5s; /* Smooth transition for opening/closing */
+    border: 1px solid white;
+    border-radius: 10px;
   }
-
-  .child{
-    color: black;
+  
+  .sidebar li {
+    margin: 10px auto;
+    /* font-size: 15px; */
+    display: block;
+    transition: 0.3s;
   }
-
-  .navBar{
-    width: 100%;
-    height: 20px;
-    background-color: green;
+  
+  .sidebar.open {
+    width: 250px; /* Width of the sidebar when open */
+  }
+  
+  .dropdown-menu {
     display: flex;
+    justify-content: space-around;
     flex-direction: column;
-    justify-content: end;
-  
-    /* display: none; */
+    /* align-items: ; */
+    background-color: #172531; /* Background color */
+    min-width: 160px; /* Set a minimum width */
+    min-height: 130px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Add some shadow */
+    z-index: 1; /* Ensure it's on top of other elements */
+    border: white 1px solid;
+    border-radius: 10px;
+    margin:0px 10px 10px 10px;
+    overflow: hidden;
+  max-height: 0; /* Start with a max-height of 0 */
+  transition: max-height 0.5s ease-out; /* Transition for max-height */
   }
 
-  .navBar ul{
-    background-color: #121212;
+  .dropdown-visible {
+    max-height: 500px; /* Adjust this value based on the content size */
+    /* transition will automatically apply when max-height changes */
   }
-  
+
+  /* filter input */
+
+  .filterInput{
+    min-width:250px;
+  }
+
+  .filterInput::placeholder{
+    font-size: 15px;
+  }
+
+
+  /* get all  */
+
+table th{
+  background-color: #0f2334;
+  /* border: solid 1px white; */
+  border-radius: 10px;
 }
+
+td{
+  border: solid white 1px ;
+    /* vertical-align: bottom; */
+    height: 50px;
+}
+
+
+.getAllName{
+  color:  rgb(11, 149, 229);
+  text-decoration: underline;
+}
+
+
+.utilBtn{
+  width: 70px;
+  height: 50px;
+  margin: 5px;
+}
+
+/* get one */
+.getOne{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.oneInfo{
+  width: 90%;
+}
+
+.notFound{
+  font-size: 25px;
+}
+
+.title{
+  font-size: 25px;
+
+}
+
+.notFound span{
+  color:  rgb(11, 149, 229);
+}
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+

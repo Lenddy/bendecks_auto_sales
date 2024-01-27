@@ -1,11 +1,11 @@
 const Deal = require("../../models/deal.model");
-// const Client = require("../../models/client.model");
-// const Deal = require("../../models/vehicle.model");
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
-const { PubSub } = require("graphql-subscriptions");
+const cron = require("node-cron");
+const pubsub = require("../pubsub");
 
-const pubsub = new PubSub();
+// const { PubSub } = require("graphql-subscriptions");
+// const pubsub = new PubSub();
 
 const dealResolvers = {
 	Query: {
@@ -33,6 +33,7 @@ const dealResolvers = {
 					throw err;
 				}); //gets all the vehicles(items) in the data base
 		},
+
 		getOneDeal: async (_, { id }) => {
 			return await Deal.findById(id)
 				.populate("client_id")
@@ -101,7 +102,7 @@ const dealResolvers = {
 						},
 					});
 					// Use the getOneDeal method to fetch and populate the new deal
-					return await dealResolvers.Query.getOneDeal(_, {
+					return await dealResolvers.Query.getOneDeal(null, {
 						id: newDeal.id,
 					});
 				})
@@ -230,39 +231,57 @@ const dealResolvers = {
 
 		// !!!!! fix the function so that i can handle multiple days  late you can make use of a if that checks if the isLate field is set to true so you can add a multiplier base on how many days the payment is late you might want to the nested else if //todo   and you might want to add a new field on the paymentDates  to lattestUpdate and the update is going to be the latest date that it was updated  so you so you have to make use of the  deals updated at
 		isDealPaymentPayed: async (parent, args, context, info) => {
+			// Retrieve all deals using a query function 'getAllDeals'.
 			const allDeals = await dealResolvers?.Query?.getAllDeals();
+
+			// Get the current date using moment.js.
 			const today = moment();
 
+			// Iterate over each deal in the list of all deals.
 			for (const deal of allDeals) {
-				let dealUpdated = false;
-				const lastUpdate = moment(deal.updatedAt);
-				const daysSinceLastUpdate = today.diff(lastUpdate, "days");
+				let dealUpdated = false; // Flag to track if the deal has been updated.
+				const lastUpdate = moment(deal.updatedAt); // Get the last update time of the deal.
+				const daysSinceLastUpdate = today.diff(lastUpdate, "days"); // Calculate days since the last update.
 
+				// Check if at least one day has passed since the last update.
 				if (daysSinceLastUpdate >= 1) {
+					// Iterate over each payment information in the deal.
 					for (const paymentInfo of deal.paymentDates) {
 						const paymentDueDate = moment(
 							paymentInfo.dateOfPayment
-						);
-						const daysLate = today.diff(paymentDueDate, "days");
+						); // Get the due date for the payment.
+						const daysLate = today.diff(paymentDueDate, "days"); // Calculate how many days late the payment is.
 
+						let firstCheck = false; // Flag to indicate if it's the first check for lateness.
+
+						// Check if the payment is late.
 						if (daysLate > 0) {
+							// If the payment is not already marked as late, add a late fee of $80 and set the flag to true.
 							if (!paymentInfo.isLate) {
 								paymentInfo.latenessFee = 80;
 								paymentInfo.isLate = true;
-							} else if (daysLate <= 45) {
-								paymentInfo.latenessFee += 10 * daysLate;
+								firstCheck = true;
+							}
+							// If it's the first time marking as late and within 45 days, add $10 fee for each day late except the first day.
+							if (daysLate <= 45 && firstCheck) {
+								paymentInfo.latenessFee += 10 * (daysLate - 1);
 							}
 
+							// If it's not the first check and the payment is within 45 days late, add $10 fee for each day late.
+							if (daysLate <= 45 && firstCheck === false) {
+								paymentInfo.latenessFee += 10 * daysLate;
+							}
+							// Cap the lateness fee at a maximum value.
 							paymentInfo.latenessFee = Math.min(
 								paymentInfo.latenessFee,
 								80 + 10 * 44
 							);
-							paymentInfo.daysLate = daysLate;
-							dealUpdated = true;
+							paymentInfo.daysLate = daysLate; // Update the number of days late.
+							dealUpdated = true; // Mark the deal as updated.
 						}
 
+						// If the deal was updated, save the changes to the database.
 						if (dealUpdated) {
-							// Save the updated deal
 							console.log("doing the update");
 							await Deal.updateOne(
 								{
@@ -291,12 +310,13 @@ const dealResolvers = {
 				}
 			}
 
-			return allDeals; // or return some summary of updates
+			// Return the list of all deals, possibly with their updated statuses.
+			return allDeals;
 		},
 
 		deleteOneDeal: async (_, { id }) => {
 			return await Deal.findByIdAndDelete(id)
-				.then((deletedDeal) => {
+				.then(async (deletedDeal) => {
 					pubsub.publish("DEAL_DELETED", {
 						onDealChange: {
 							eventType: "DEAL_DELETED",
@@ -309,7 +329,7 @@ const dealResolvers = {
 						deletedDeal,
 						"\n____________________"
 					);
-					return deletedDeal;
+					return true;
 				})
 				.catch((err) => {
 					console.log(
@@ -323,7 +343,7 @@ const dealResolvers = {
 	},
 
 	Subscription: {
-		onVehicleChange: {
+		onDealChange: {
 			subscribe: () =>
 				pubsub.asyncIterator([
 					"DEAL_ADDED",
@@ -340,84 +360,14 @@ const dealResolvers = {
 	},
 };
 
+// Schedule the function to run every day at a specific time (e.g., midnight)
+cron.schedule("0 0 * * *", async () => {
+	try {
+		await dealResolvers.Mutation.isDealPaymentPayed(); // Call your function here
+		console.log("isDealPaymentPayed function executed successfully");
+	} catch (error) {
+		console.error("Error executing isDealPaymentPayed:", error);
+	}
+});
+
 module.exports = { dealResolvers };
-// isDealPaymentPayed: async (parent, args, context, info) => {
-// 	const allDeals = await dealResolvers?.Query?.getAllDeals();
-// 	const today = moment();
-
-// 	for (const deal of allDeals) {
-// 		let dealUpdated = false;
-// 		const lastUpdate = moment(deal.updatedAt);
-// 		const daysSinceLastUpdate = today.diff(lastUpdate, "days");
-
-// 		if (daysSinceLastUpdate >= 1) {
-// 			for (const paymentInfo of deal.paymentDates) {
-// 				const paymentDueDate = moment(
-// 					paymentInfo.dateOfPayment
-// 				);
-// 				//! total days that the payment is late
-// 				const totalDaysLate = today.diff(
-// 					paymentDueDate,
-// 					"days"
-// 				);
-
-// 				if (totalDaysLate > 0) {
-// 					// Update daysLate
-// 					if (paymentInfo.daysLate === 0) {
-// 						paymentInfo.daysLate = totalDaysLate;
-// 					} else {
-// 						paymentInfo.daysLate += daysSinceLastUpdate;
-// 					}
-
-// 					// Update latenessFee
-// 					if (!paymentInfo.isLate) {
-// 						paymentInfo.latenessFee = 80;
-// 						paymentInfo.isLate = true;
-// 					} else {
-// 						// Calculate additional fee for the new late days only
-// 						const additionalDaysLate =
-// 							totalDaysLate - paymentInfo.daysLate;
-// 						paymentInfo.latenessFee +=
-// 							10 * additionalDaysLate;
-// 					}
-
-// 					// Cap the fee at 45 days (80 + 10 * 44)
-// 					paymentInfo.latenessFee = Math.min(
-// 						paymentInfo.latenessFee,
-// 						80 + 10 * 44
-// 					);
-
-// 					dealUpdated = true;
-// 				}
-
-// 				if (dealUpdated) {
-// 					// Save the updated deal
-// 					await Deal.updateOne(
-// 						{
-// 							_id: deal._id,
-// 							"paymentDates.payment_id":
-// 								paymentInfo.payment_id,
-// 						},
-// 						{
-// 							$set: {
-// 								"paymentDates.$.isLate":
-// 									paymentInfo.isLate,
-// 								"paymentDates.$.latenessFee":
-// 									paymentInfo.latenessFee,
-// 								"paymentDates.$.daysLate":
-// 									paymentInfo.daysLate,
-// 							},
-// 						}
-// 					).catch((error) => {
-// 						console.log(
-// 							"Error updating payment info",
-// 							error
-// 						);
-// 					});
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	return allDeals; // or return some summary of updates
-// },

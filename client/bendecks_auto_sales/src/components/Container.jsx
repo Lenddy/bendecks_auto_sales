@@ -5,7 +5,7 @@ function Container({ children }) {
 	return (
 		<div className="container">
 			<Navbar />
-			{children}
+			<div className="children">{children}</div>
 		</div>
 	);
 }

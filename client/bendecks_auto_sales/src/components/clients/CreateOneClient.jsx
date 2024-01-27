@@ -97,33 +97,35 @@ const CreateOneClient = ({ reload, setReload }) => {
 
 	// Component rendering
 	return (
-		<div>
-			<form onSubmit={submit}>
+		<div className="children_content">
+			<form onSubmit={submit} className="submissionForm">
 				<div>
-					<label htmlFor="clientName">Name:</label>
-					<input
-						type="text"
-						name="clientName"
-						onChange={infoToBeSubmitted}
-						// value={info.clientName}
-					/>
-				</div>
-				<div>
-					<label htmlFor="clientLastName">Last Name:</label>
-					<input
-						name="clientLastName"
-						onChange={infoToBeSubmitted}
-						// value={info.clientLastName}
-					></input>
-				</div>
-				<div>
-					<label htmlFor="cellPhone">cell phone:</label>
-					<input
-						type="text"
-						name="cellPhone"
-						onChange={infoToBeSubmitted}
-						// value={info.cellPhone}
-					/>
+					<div>
+						<label htmlFor="clientName">Name:</label>
+						<input
+							type="text"
+							name="clientName"
+							onChange={infoToBeSubmitted}
+							// value={info.clientName}
+						/>
+					</div>
+					<div>
+						<label htmlFor="clientLastName">Last Name:</label>
+						<input
+							name="clientLastName"
+							onChange={infoToBeSubmitted}
+							// value={info.clientLastName}
+						></input>
+					</div>
+					<div>
+						<label htmlFor="cellPhone">cell phone:</label>
+						<input
+							type="text"
+							name="cellPhone"
+							onChange={infoToBeSubmitted}
+							// value={info.cellPhone}
+						/>
+					</div>
 				</div>
 				<button type="submit">Add a new client</button>{" "}
 			</form>
