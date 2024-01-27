@@ -1,7 +1,7 @@
 const Client = require("../../models/client.model");
-const { PubSub } = require("graphql-subscriptions");
+const pubsub = require("../pubsub");
 
-const pubsub = new PubSub();
+// const pubsub = new PubSub();
 
 const clientResolvers = {
 	Query: {
@@ -166,6 +166,9 @@ const clientResolvers = {
 					"CLIENT_ADDED",
 					"CLIENT_UPDATED",
 					"CLIENT_DELETED",
+					// "VEHICLE_ADDED",
+					// "VEHICLE_UPDATED",
+					// "VEHICLE_DELETED",
 				]),
 		},
 	},

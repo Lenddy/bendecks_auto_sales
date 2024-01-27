@@ -25,20 +25,23 @@ const UpdateOneClient = () => {
 		}
 	}, [loading, data]);
 
-	const [updateOneClient] = useMutation(update_One_client, {
-		update(cache, { data: { updateItem } }) {
-			cache.writeFragment({
-				id: cache.identify(updateItem),
-				fragment: gql`
-					fragment UpdatedItem on Item {
-						id
-						... // updated fields
-					}
-				`,
-				data: updateItem,
-			});
-		},
-	});
+	const [updateOneClient] = useMutation(
+		update_One_client
+		// 	{
+		// 	update(cache, { data: { updateItem } }) {
+		// 		cache.writeFragment({
+		// 			id: cache.identify(updateItem),
+		// 			fragment: gql`
+		// 				fragment UpdatedItem on Item {
+		// 					id
+		// 					... // updated fields
+		// 				}
+		// 			`,
+		// 			data: updateItem,
+		// 		});
+		// 	},
+		// }
+	);
 
 	const infoToBeSubmitted = (e) => {
 		setInfo({
