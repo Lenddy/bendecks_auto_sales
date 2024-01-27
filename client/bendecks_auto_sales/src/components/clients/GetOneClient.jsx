@@ -1,11 +1,8 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
-import { useQuery } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { get_one_client } from "../../GraphQL/queries/clientQueries";
 import { useMutation, useQuery } from "@apollo/client";
-import { useNavigate, useParams } from "react-router-dom";
-import { get_one_client } from "../../GraphQL/queries/clientQueries";
 import { update_One_client } from "../../GraphQL/mutations/clientMutations";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 
@@ -25,7 +22,6 @@ function GetOneClient() {
 	const [client, setClient] = useState();
 
 	const [notFound, setNotFound] = useState(false);
- 
 
 	const [info, setInfo] = useState({
 		cellPhone: [],
@@ -112,7 +108,7 @@ function GetOneClient() {
 				</h1>
 			) : (
 				<div className="oneInfo">
-					<h1 className="title"> {client?.id}</h1>
+					{/* <h1 className="title"> {client?.id}</h1>
 					<h1 className="title">
 						{client?.clientName} {client?.clientLastName}
 					</h1>
@@ -134,18 +130,20 @@ function GetOneClient() {
 					</Link>
 					<Link to={`/delete/${client?.id}`}>
 						<button>delete</button>
-					</Link>
-
+					</Link> */}
 
 					<form onSubmit={submit}>
 						<div>
+							<h1 className="notFound">
+								ID:<span>{id}</span>
+							</h1>
 							<label htmlFor="clientName">Client Name:</label>
 							<input
 								type="text"
 								name="clientName"
 								onChange={infoToBeSubmitted}
 								// value={info.title}
-								placeholder={client.clientName}
+								placeholder={client?.clientName}
 							/>
 						</div>
 						<div>
@@ -155,7 +153,7 @@ function GetOneClient() {
 							<input
 								name="clientLastName"
 								onChange={infoToBeSubmitted}
-								placeholder={client.clientLastName}
+								placeholder={client?.clientLastName}
 							/>
 						</div>
 						<div>
@@ -164,15 +162,12 @@ function GetOneClient() {
 								type="text"
 								name="cellPhone"
 								onChange={infoToBeSubmitted}
-								placeholder={client.cellPhone}
+								placeholder={client?.cellPhone}
 							/>
 						</div>
 						<button type="submit">Update client</button>
 					</form>
 				</div>
-
-
-
 			)}
 		</div>
 	);
@@ -182,21 +177,19 @@ export default GetOneClient; // Export the GetAllList component
 
 // {list.map((l, idx) => {})}
 
+// const UpdateOneClient = () => {
 
-const UpdateOneClient = () => {
-	
+// 	return (
+// 		<div>
+// 			{loading ? (
+// 				<p>Loading...</p>
+// 			) : (
+// 				client && (
 
-	return (
-		<div>
-			{loading ? (
-				<p>Loading...</p>
-			) : (
-				client && (
-					
-				)
-			)}
-		</div>
-	);
-};
+// 				)
+// 			)}
+// 		</div>
+// 	);
+// };
 
-export default UpdateOneClient;
+// export default UpdateOneClient;

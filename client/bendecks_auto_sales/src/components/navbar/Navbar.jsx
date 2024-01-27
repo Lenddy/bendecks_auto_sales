@@ -92,7 +92,7 @@ function Navbar() {
 							onClick={() => toggleDropdown("vehicles")}
 							className="dropDownTitle"
 						>
-							<h1>Clients</h1>
+							<h1>Vehículos</h1>
 							<img src={dropDown} alt="" className="subIcon" />
 						</div>
 						{renderDropdown("vehicles", [
