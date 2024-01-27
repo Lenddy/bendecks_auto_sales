@@ -326,9 +326,9 @@ const dealResolvers = {
 		onVehicleChange: {
 			subscribe: () =>
 				pubsub.asyncIterator([
-					"VEHICLE_ADDED",
-					"VEHICLE_UPDATED",
-					"VEHICLE_DELETED",
+					"DEAL_ADDED",
+					"DEAL_UPDATED",
+					"DEAL_DELETED",
 				]),
 		},
 	},
