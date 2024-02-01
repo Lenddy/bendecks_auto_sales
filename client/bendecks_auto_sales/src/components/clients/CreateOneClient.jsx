@@ -46,31 +46,11 @@ const CreateOneClient = ({ reload, setReload }) => {
 	);
 
 	// Function to handle input changes and update state accordingly
-	const infoToBeSubmitted = (e, index) => {
-		if (e.target.name === "cellPhone") {
-			// Handle changes in cellPhone inputs
-			const updatedCellPhones = info.cellPhone.map((phone, i) => {
-				if (i === index) {
-					return e.target.value;
-				}
-				return phone;
-			});
-			setInfo({ ...info, cellPhone: updatedCellPhones });
-			console.log(setInfo);
-		} else {
-			// Handle changes in other inputs
-			setInfo({ ...info, [e.target.name]: e.target.value });
-			console.log(setInfo);
-		}
-	};
-
-	const addSection = () => {
-		setInfo({ ...info, cellPhone: [...info.cellPhone, ""] });
-	};
-
-	const deleteSection = (index) => {
-		const filteredCellPhones = info.cellPhone.filter((_, i) => i !== index);
-		setInfo({ ...info, cellPhone: filteredCellPhones });
+	const infoToBeSubmitted = (e) => {
+		setInfo({
+			...info,
+			[e.target.name]: e.target.value,
+		});
 	};
 
 	// Function to handle form submission
@@ -101,6 +81,35 @@ const CreateOneClient = ({ reload, setReload }) => {
 			});
 	};
 
+	const [sections, setSections] = useState([{ cellPhone: "" }]);
+
+	const addSection = () => {
+		setSections([...sections, { cellPhone: "" }]);
+	};
+
+	const handleInputChange = (e, index) => {
+		const updatedSections = sections.map((section, secIndex) => {
+			if (index === secIndex) {
+				return { ...section, [e.target.name]: e.target.value };
+			}
+			return section;
+		});
+		setSections(updatedSections);
+
+		// Update the info.cellPhone with the cell phone numbers from all sections
+		const updatedCellPhones = updatedSections.map(
+			(section) => section.cellPhone
+		);
+		setInfo({ ...info, cellPhone: updatedCellPhones });
+	};
+
+	const deleteSection = (index) => {
+		const filteredSections = sections.filter(
+			(_, secIndex) => secIndex !== index
+		);
+		setSections(filteredSections);
+	};
+
 	// Component rendering
 	return (
 		<div className="children_content">
@@ -110,7 +119,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 						<input
 							type="text"
 							name="clientName"
-							onChange={infoToBeSubmitted}
+							onChange={(e) => infoToBeSubmitted(e)}
 							// value={info.clientName}
 							placeholder="Nombre"
 							className="createOneClientInput"
@@ -120,31 +129,36 @@ const CreateOneClient = ({ reload, setReload }) => {
 					<div>
 						<input
 							name="clientLastName"
-							onChange={infoToBeSubmitted}
+							onChange={(e) => infoToBeSubmitted(e)}
 							// value={info.clientLastName}
 							placeholder="Apellido"
 							className="createOneClientInput"
 						/>
 					</div>
 
-					{info.cellPhone.map((phone, index) => (
+					{sections.map((section, index) => (
 						<div key={index} className="newSection">
 							<input
 								type="text"
 								name="cellPhone"
-								value={phone}
-								onChange={(e) => infoToBeSubmitted(e, index)}
+								value={section.cellPhone}
+								onChange={(e) => {
+									handleInputChange(e, index);
+									// infoToBeSubmitted(e);
+								}}
 								placeholder="Teléfono"
 								className="createOneClientInput space"
 							/>
-							{info.cellPhone.length > 1 && (
-								<button
-									type="button"
-									onClick={() => deleteSection(index)}
-									className="deleteSection"
-								>
-									<p>&#8722;</p>
-								</button>
+							{sections.length > 1 && (
+								<div>
+									<button
+										type="button"
+										onClick={() => deleteSection(index)}
+										className="deleteSection"
+									>
+										<p>&#8722;</p>
+									</button>
+								</div>
 							)}
 						</div>
 					))}

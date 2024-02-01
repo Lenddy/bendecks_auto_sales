@@ -266,7 +266,7 @@ td{
 
 }
 
-.notFound span{
+.notFound {
   color:  rgb(11, 149, 229);
 }
 
@@ -361,6 +361,25 @@ td{
 .addSection:active ,.submit_btn:active , .deleteSection:active {
   box-shadow: 0px 4px 5px white;
 }
+
+.section_union{
+  /* background-color: red; */
+  display: flex;
+  justify-content: center;
+  max-width: 400px;
+}
+
+.editableField{
+  /* display: inline-block; */
+  min-width: 100px;
+  /* max-width: 200px; */
+  margin: 5px;
+}
+
+/* .getOneForm{
+  display: flex;
+  justify-content: center;
+} */
 
 }
 

@@ -24,7 +24,7 @@ function GetOneClient() {
 	const [notFound, setNotFound] = useState(false);
 
 	const [info, setInfo] = useState({
-		cellPhone: [],
+		// cellPhone: [],
 	});
 
 	useEffect(() => {
@@ -54,7 +54,7 @@ function GetOneClient() {
 	const infoToBeSubmitted = (e) => {
 		setInfo({
 			...info,
-			[e.target.name]: e.target.value,
+			[e.target.getAttribute("name")]: e.target.innerText,
 		});
 	};
 
@@ -94,6 +94,37 @@ function GetOneClient() {
 		}
 	}, [error, loading, data]); // Dependencies for the useEffect hook
 
+	const [sections, setSections] = useState([{ cellPhone: "" }]);
+
+	const addSection = () => {
+		setSections([...sections, { cellPhone: "" }]);
+	};
+
+	const handleInputChange = (e, index) => {
+		const updatedSections = sections.map((section, secIndex) => {
+			if (index === secIndex) {
+				return { ...section, [e.target.name]: e.target.value };
+			}
+			return section;
+		});
+		setSections(updatedSections);
+
+		// Update the info.cellPhone with the cell phone numbers from all sections
+		const updatedCellPhones = updatedSections.map(
+			(section) => section.cellPhone
+		);
+		setInfo({ ...info, cellPhone: updatedCellPhones });
+	};
+
+	const deleteSection = (index) => {
+		const filteredSections = sections.filter(
+			(_, secIndex) => secIndex !== index
+		);
+		setSections(filteredSections);
+	};
+
+	// ! find a way to edit all the numbers on there section  what i am thinking is to use the splice method to  and also you should add the btns of adding a deleting and they will show when one of the inputs is on focus and they will disappear when they stop being on focus  and the edit should only affect the specific item on the array so thats why i thought on using the splice
+
 	// Render the retrieved lists
 	return (
 		<div className="getOne">
@@ -108,64 +139,84 @@ function GetOneClient() {
 				</h1>
 			) : (
 				<div className="oneInfo">
-					{/* <h1 className="title"> {client?.id}</h1>
-					<h1 className="title">
-						{client?.clientName} {client?.clientLastName}
-					</h1>
-					<p>
-						Phone NUmber:{" "}
-						{client?.cellPhone.map((n, idx) => {
-							return (
-								<span key={idx}>
-									<span>{n}</span> ,
-								</span>
-							);
-						})}
-					</p>
-					<Link to={`/${client?.id}`}>
-						<button>view</button>
-					</Link>
-					<Link to={`/update/${client?.id}`}>
-						<button>update</button>
-					</Link>
-					<Link to={`/delete/${client?.id}`}>
-						<button>delete</button>
-					</Link> */}
+					<h1 className="notFound">{id}</h1>
+					<form onSubmit={submit} className="getOneForm">
+						<div className="section_union">
+							<div>
+								<h1
+									contentEditable
+									suppressContentEditableWarning
+									name="clientName"
+									onInput={infoToBeSubmitted}
+									className="editableField "
+									onFocus={() => console.log("helll there")}
+								>
+									{client?.clientName}
+								</h1>
+							</div>
 
-					<form onSubmit={submit}>
-						<div>
-							<h1 className="notFound">
-								ID:<span>{id}</span>
-							</h1>
-							<label htmlFor="clientName">Client Name:</label>
-							<input
-								type="text"
-								name="clientName"
-								onChange={infoToBeSubmitted}
-								// value={info.title}
-								placeholder={client?.clientName}
-							/>
+							<div>
+								<h1
+									contentEditable
+									suppressContentEditableWarning
+									name="clientLastName"
+									onInput={infoToBeSubmitted}
+									className="editableField"
+								>
+									{client?.clientLastName}
+								</h1>
+							</div>
 						</div>
-						<div>
-							<label htmlFor="clientLastName">
-								Client Last Name:
-							</label>
-							<input
-								name="clientLastName"
-								onChange={infoToBeSubmitted}
-								placeholder={client?.clientLastName}
-							/>
-						</div>
-						<div>
-							<label htmlFor="cellPhone">Cell Phone:</label>
-							<input
-								type="text"
-								name="cellPhone"
-								onChange={infoToBeSubmitted}
-								placeholder={client?.cellPhone}
-							/>
-						</div>
-						<button type="submit">Update client</button>
+
+						{client?.cellPhone?.length > 0 ? (
+							client.cellPhone.map((phone, index) => (
+								<div
+									key={index}
+									className="editablePhoneSection"
+								>
+									<h1
+										contentEditable
+										suppressContentEditableWarning
+										name={`cellPhone-${index}`}
+										onInput={infoToBeSubmitted}
+										className="editableField"
+									>
+										{phone}
+									</h1>
+								</div>
+							))
+						) : (
+							<div className="editablePhoneSection">
+								<h1
+									contentEditable
+									suppressContentEditableWarning
+									name="cellPhone-0"
+									onInput={infoToBeSubmitted}
+									className="editableField"
+								>
+									{client?.cellPhone[0]}
+								</h1>
+							</div>
+						)}
+						{/* {sections.map((section, index) => (
+							<div key={index}>
+								<h1
+									contentEditable
+									suppressContentEditableWarning
+									onInput={(e) => handleInputChange(e, index)}
+									className="editableField"
+								>
+									{section.cellPhone}
+								</h1>
+								<button onClick={() => deleteSection(index)}>
+									Delete Section
+								</button>
+							</div>
+						))}
+						<button onClick={addSection}>Add New Section</button> */}
+						<button type="submit" className="submit_btn">
+							Update Client
+						</button>
 					</form>
 				</div>
 			)}
@@ -174,22 +225,3 @@ function GetOneClient() {
 }
 
 export default GetOneClient; // Export the GetAllList component
-
-// {list.map((l, idx) => {})}
-
-// const UpdateOneClient = () => {
-
-// 	return (
-// 		<div>
-// 			{loading ? (
-// 				<p>Loading...</p>
-// 			) : (
-// 				client && (
-
-// 				)
-// 			)}
-// 		</div>
-// 	);
-// };
-
-// export default UpdateOneClient;
