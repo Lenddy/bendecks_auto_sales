@@ -7,19 +7,8 @@ import { gql } from "@apollo/client";
 import io from "socket.io-client"; //importing socket.io-client
 
 const CreateOneClient = ({ reload, setReload }) => {
-	// const [socket] = useState(() => io(":8080")); //connect to the server
-
-	// socket.on("new_connection", (data) => {
-	// 	console.log(data);
-	// });
-
-	// State to manage form data
-	// Dependencies for the useEffect hook
 	const [info, setInfo] = useState({
-		// title: "",
-		// description: "",
-		// isDone: false,
-		cellPhone: [],
+		cellPhone: [""],
 	});
 
 	const navigate = useNavigate();
@@ -57,14 +46,31 @@ const CreateOneClient = ({ reload, setReload }) => {
 	);
 
 	// Function to handle input changes and update state accordingly
-	const infoToBeSubmitted = (e) => {
-		// const value =
-		// 	e.target.type === "checkbox" ? e.target.checked : e.target.value;
+	const infoToBeSubmitted = (e, index) => {
+		if (e.target.name === "cellPhone") {
+			// Handle changes in cellPhone inputs
+			const updatedCellPhones = info.cellPhone.map((phone, i) => {
+				if (i === index) {
+					return e.target.value;
+				}
+				return phone;
+			});
+			setInfo({ ...info, cellPhone: updatedCellPhones });
+			console.log(setInfo);
+		} else {
+			// Handle changes in other inputs
+			setInfo({ ...info, [e.target.name]: e.target.value });
+			console.log(setInfo);
+		}
+	};
 
-		setInfo({
-			...info,
-			[e.target.name]: e.target.value,
-		});
+	const addSection = () => {
+		setInfo({ ...info, cellPhone: [...info.cellPhone, ""] });
+	};
+
+	const deleteSection = (index) => {
+		const filteredCellPhones = info.cellPhone.filter((_, i) => i !== index);
+		setInfo({ ...info, cellPhone: filteredCellPhones });
 	};
 
 	// Function to handle form submission
@@ -98,36 +104,63 @@ const CreateOneClient = ({ reload, setReload }) => {
 	// Component rendering
 	return (
 		<div className="children_content">
-			<form onSubmit={submit} className="submissionForm">
-				<div>
+			<form onSubmit={submit} className="createOneClientForm">
+				<div className="creteOneFullSection">
 					<div>
-						<label htmlFor="clientName">Name:</label>
 						<input
 							type="text"
 							name="clientName"
 							onChange={infoToBeSubmitted}
 							// value={info.clientName}
+							placeholder="Nombre"
+							className="createOneClientInput"
 						/>
 					</div>
+
 					<div>
-						<label htmlFor="clientLastName">Last Name:</label>
 						<input
 							name="clientLastName"
 							onChange={infoToBeSubmitted}
 							// value={info.clientLastName}
-						></input>
-					</div>
-					<div>
-						<label htmlFor="cellPhone">cell phone:</label>
-						<input
-							type="text"
-							name="cellPhone"
-							onChange={infoToBeSubmitted}
-							// value={info.cellPhone}
+							placeholder="Apellido"
+							className="createOneClientInput"
 						/>
 					</div>
+
+					{info.cellPhone.map((phone, index) => (
+						<div key={index} className="newSection">
+							<input
+								type="text"
+								name="cellPhone"
+								value={phone}
+								onChange={(e) => infoToBeSubmitted(e, index)}
+								placeholder="Teléfono"
+								className="createOneClientInput space"
+							/>
+							{info.cellPhone.length > 1 && (
+								<button
+									type="button"
+									onClick={() => deleteSection(index)}
+									className="deleteSection"
+								>
+									<p>&#8722;</p>
+								</button>
+							)}
+						</div>
+					))}
+					<div className="btnNewSection">
+						<button
+							type="button"
+							onClick={addSection}
+							className="addSection"
+						>
+							<p>&#43;</p>
+						</button>
+					</div>
 				</div>
-				<button type="submit">Add a new client</button>{" "}
+				<button type="submit" className="submit_btn">
+					Agregar Cliente
+				</button>
 			</form>
 		</div>
 	);
