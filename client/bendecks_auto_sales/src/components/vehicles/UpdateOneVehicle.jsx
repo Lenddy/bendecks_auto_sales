@@ -18,6 +18,7 @@ const UpdateOneVehicle = () => {
 	});
 
 	const [vehicle, setVehicle] = useState();
+	const [notFound, setNotFound] = useState(false);
 
 	useEffect(() => {
 		if (!loading && data) {
@@ -44,7 +45,7 @@ const UpdateOneVehicle = () => {
 				vehicleModel: info.vehicleModel,
 				year: info.year,
 				color: info.color,
-				boughtPrice: parseFloat(info.boughtPrice),
+				// boughtPrice: parseFloat(info.boughtPrice),
 			},
 			// this is re fetching the data
 			refetchQueries: [{ query: get_all_vehicles }],
@@ -58,79 +59,89 @@ const UpdateOneVehicle = () => {
 			});
 	};
 
-	return (
-		<div>
-			{loading ? (
-				<p>Loading...</p>
-			) : (
-				vehicle && (
-					<div>
-						<Link to={"/vehicles"}>
-							<button style={{ margin: "5px" }}>
-								view vehicles
-							</button>
-						</Link>
-						<form onSubmit={submit}>
-							<div>
-								<label htmlFor="vehicleName">
-									Vehicle Name:
-								</label>
-								<input
-									type="text"
-									name="vehicleName"
-									onChange={infoToBeSubmitted}
-									placeholder={vehicle.vehicleName}
-									// value={info.clientName}
-								/>
-							</div>
-							<div>
-								<label htmlFor="vehicleModel">
-									Vehicle Model:
-								</label>
-								<input
-									name="vehicleModel"
-									onChange={infoToBeSubmitted}
-									placeholder={vehicle.vehicleModel}
-									// value={info.clientLastName}
-								></input>
-							</div>
-							<div>
-								<label htmlFor="year">Year:</label>
-								<input
-									type="text"
-									name="year"
-									onChange={infoToBeSubmitted}
-									placeholder={vehicle.year}
-									// value={info.cellPhone}
-								/>
-							</div>
-							<div>
-								<label htmlFor="color">Color:</label>
-								<input
-									type="text"
-									name="color"
-									onChange={infoToBeSubmitted}
-									placeholder={vehicle.color}
-									// value={info.cellPhone}
-								/>
-							</div>
+	// useEffect hook to handle changes in error, loading, and data states
+	useEffect(() => {
+		if (loading) {
+			console.log("loading"); // Log a message when data is loading
+		}
+		if (data) {
+			console.log(data); // Log the fetched data
+			setVehicle(data.getOneVehicle); // Set the lists retrieved from the query to the state
+		}
+		if (error) {
+			console.log("there was an error", error); // Log an error message if an error occurs
+			setNotFound(true);
+		}
+	}, [error, loading, data]); // Dependencies for the useEffect hook
 
-							<div>
-								<label htmlFor="boughtPrice">
-									Bought Price:
-								</label>
-								<input
-									type="number"
-									name="boughtPrice"
-									onChange={infoToBeSubmitted}
-									placeholder={vehicle.boughtPrice}
-									// value={info.cellPhone}
-								/>
-							</div>
-							<button type="submit">Add a new vehicle</button>
-						</form>
-					</div>
-				)
+	//! fix this  you should make it work like the get one in clients
+
+	return (
+		<div className="getOne">
+			{notFound ? (
+				<h1 className="notFound">
+					vehículo con ID:<span>{id}</span> no se pudo encontrara
+					asegúrese de que seal el id correcto
+				</h1>
+			) : (
+				<div>
+					<Link to={"/vehicles"}>
+						<button style={{ margin: "5px" }}>view vehicles</button>
+					</Link>
+					<form onSubmit={submit}>
+						<div>
+							<label htmlFor="vehicleName">Vehicle Name:</label>
+							<input
+								type="text"
+								name="vehicleName"
+								onChange={infoToBeSubmitted}
+								placeholder={vehicle.vehicleName}
+								// value={info.clientName}
+							/>
+						</div>
+						<div>
+							<label htmlFor="vehicleModel">Vehicle Model:</label>
+							<input
+								name="vehicleModel"
+								onChange={infoToBeSubmitted}
+								placeholder={vehicle.vehicleModel}
+								// value={info.clientLastName}
+							></input>
+						</div>
+						<div>
+							<label htmlFor="year">Year:</label>
+							<input
+								type="text"
+								name="year"
+								onChange={infoToBeSubmitted}
+								placeholder={vehicle.year}
+								// value={info.cellPhone}
+							/>
+						</div>
+						<div>
+							<label htmlFor="color">Color:</label>
+							<input
+								type="text"
+								name="color"
+								onChange={infoToBeSubmitted}
+								placeholder={vehicle.color}
+								// value={info.cellPhone}
+							/>
+						</div>
+
+						<div>
+							<label htmlFor="boughtPrice">Bought Price:</label>
+							<input
+								type="number"
+								name="boughtPrice"
+								onChange={infoToBeSubmitted}
+								placeholder={vehicle.boughtPrice}
+								// value={info.cellPhone}
+							/>
+						</div>
+						<button type="submit">Add a new vehicle</button>
+					</form>
+				</div>
 			)}
 		</div>
 	);

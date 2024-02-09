@@ -73,7 +73,8 @@ function App() {
 					<Route
 						exact
 						path="/vehicles/:id"
-						element={<GetOneVehicle />}
+						element={<UpdateOneVehicle />}
+						// <GetOneVehicle />
 					/>
 
 					<Route

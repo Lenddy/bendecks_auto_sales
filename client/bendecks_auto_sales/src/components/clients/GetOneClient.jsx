@@ -24,6 +24,7 @@ function GetOneClient() {
 	const [notFound, setNotFound] = useState(false);
 
 	const [info, setInfo] = useState({
+		test: "hello",
 		// cellPhone: [],
 	});
 
@@ -125,6 +126,10 @@ function GetOneClient() {
 
 	// ! find a way to edit all the numbers on there section  what i am thinking is to use the splice method to  and also you should add the btns of adding a deleting and they will show when one of the inputs is on focus and they will disappear when they stop being on focus  and the edit should only affect the specific item on the array so thats why i thought on using the splice
 
+	// ?  fixx send an object that takes the index number and the new info of that number to change in the back end
+
+	// check to see if you need to add diferent field to the number array so that you can make the update easier
+
 	// Render the retrieved lists
 	return (
 		<div className="getOne">
@@ -149,7 +154,7 @@ function GetOneClient() {
 									name="clientName"
 									onInput={infoToBeSubmitted}
 									className="editableField "
-									onFocus={() => console.log("helll there")}
+									// onFocus={}
 								>
 									{client?.clientName}
 								</h1>
@@ -179,6 +184,7 @@ function GetOneClient() {
 										suppressContentEditableWarning
 										name={`cellPhone-${index}`}
 										onInput={infoToBeSubmitted}
+										// onChange={infoToBeSubmitted}
 										className="editableField"
 									>
 										{phone}
@@ -192,6 +198,7 @@ function GetOneClient() {
 									suppressContentEditableWarning
 									name="cellPhone-0"
 									onInput={infoToBeSubmitted}
+									// onChange={infoToBeSubmitted}
 									className="editableField"
 								>
 									{client?.cellPhone[0]}

@@ -44,11 +44,11 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 		console.log("hello there");
 		createOneVehicle({
 			variables: {
-				vehicleName: info.vehicleName,
-				vehicleModel: info.vehicleModel,
-				year: info.year,
-				color: [info.color],
-				boughtPrice: parseFloat(info.boughtPrice),
+				vehicleName: info?.vehicleName,
+				vehicleModel: info?.vehicleModel,
+				year: info?.year,
+				color: info?.color,
+				// boughtPrice: parseFloat(info.boughtPrice),
 			},
 			// this is re fetching the data
 			refetchQueries: [{ query: get_all_vehicles }],
@@ -72,59 +72,106 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 			});
 	};
 
+	const [sections, setSections] = useState([{ color: "" }]);
+
+	const addSection = () => {
+		setSections([...sections, { color: "" }]);
+	};
+
+	const handleInputChange = (e, index) => {
+		const updatedSections = sections.map((section, secIndex) => {
+			if (index === secIndex) {
+				return { ...section, [e.target.name]: e.target.value };
+			}
+			return section;
+		});
+		setSections(updatedSections);
+
+		// Update the info.cellPhone with the cell phone numbers from all sections
+		const updatedColors = updatedSections.map((section) => section.color);
+		setInfo({ ...info, color: updatedColors });
+	};
+
+	const deleteSection = (index) => {
+		const filteredSections = sections.filter(
+			(_, secIndex) => secIndex !== index
+		);
+		setSections(filteredSections);
+	};
+
 	// Component rendering
 	return (
-		<div>
-			<Link to={"/vehicles"}>
-				<button style={{ margin: "5px" }}>view clients</button>
-			</Link>
-			<form onSubmit={submit}>
-				<div>
-					<label htmlFor="vehicleName">Vehicle Name:</label>
-					<input
-						type="text"
-						name="vehicleName"
-						onChange={infoToBeSubmitted}
-						// value={info.clientName}
-					/>
+		<div className="children_content">
+			<form onSubmit={submit} className="createOneClientForm">
+				<div className="creteOneFullSection">
+					<div>
+						<input
+							type="text"
+							name="vehicleName"
+							onChange={infoToBeSubmitted}
+							placeholder="vehicle Name"
+							className="createOneClientInput"
+							// value={info.clientName}
+						/>
+					</div>
+					<div>
+						<input
+							name="vehicleModel"
+							onChange={infoToBeSubmitted}
+							placeholder="Vehicle Model"
+							className="createOneClientInput"
+							// value={info.clientLastName}
+						></input>
+					</div>
+					<div>
+						<input
+							type="text"
+							name="year"
+							onChange={infoToBeSubmitted}
+							placeholder="Year"
+							className="createOneClientInput"
+							// value={info.cellPhone}
+						/>
+					</div>
+					{sections.map((section, index) => (
+						<div key={index} className="newSection">
+							<input
+								type="text"
+								name="color"
+								value={section.color}
+								onChange={(e) => {
+									handleInputChange(e, index);
+									// infoToBeSubmitted(e);
+								}}
+								placeholder="Color"
+								className="createOneClientInput space"
+							/>
+							{sections.length > 1 && (
+								<div>
+									<button
+										type="button"
+										onClick={() => deleteSection(index)}
+										className="deleteSection"
+									>
+										<p>&#8722;</p>
+									</button>
+								</div>
+							)}
+						</div>
+					))}
+					<div className="btnNewSection">
+						<button
+							type="button"
+							onClick={addSection}
+							className="addSection"
+						>
+							<p>&#43;</p>
+						</button>
+					</div>
 				</div>
-				<div>
-					<label htmlFor="vehicleModel">Vehicle Model:</label>
-					<input
-						name="vehicleModel"
-						onChange={infoToBeSubmitted}
-						// value={info.clientLastName}
-					></input>
-				</div>
-				<div>
-					<label htmlFor="year">Year:</label>
-					<input
-						type="text"
-						name="year"
-						onChange={infoToBeSubmitted}
-						// value={info.cellPhone}
-					/>
-				</div>
-				<div>
-					<label htmlFor="color">Color:</label>
-					<input
-						type="text"
-						name="color"
-						onChange={infoToBeSubmitted}
-						// value={info.cellPhone}
-					/>
-				</div>
-
-				<div>
-					<label htmlFor="boughtPrice">Bought Price:</label>
-					<input
-						type="number"
-						name="boughtPrice"
-						onChange={infoToBeSubmitted}
-						// value={info.cellPhone}
-					/>
-				</div>
-				<button type="submit">Add a new vehicle</button>
+				<button type="submit" className="submit_btn">
+					Agregar Vehículo
+				</button>
 			</form>
 		</div>
 	);

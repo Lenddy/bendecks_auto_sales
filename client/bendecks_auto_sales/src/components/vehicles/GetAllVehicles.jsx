@@ -78,52 +78,102 @@ function GetAllVehicles() {
 	}, [error, loading, data]); // Dependencies for the useEffect hook
 
 	// Render the retrieved clients
+	const [search, setSearch] = useState("");
 
 	return (
-		<div>
-			<Link to={"/dashboard"}>
-				<button style={{ margin: "5px" }}>view clients</button>
-			</Link>
-			<button
-				style={{ margin: "5px" }}
-				onClick={() => navigateTO("/vehicles/add")}
-			>
-				add one vehicle
-			</button>
+		<div className="children_content">
+			<input
+				type="text"
+				className="filterInput"
+				placeholder="filtrar Por Nombre"
+				onChange={(e) => setSearch(e.target.value)}
+			></input>
 
-			{vehicles.map((v) => {
-				return (
-					<div key={v?.id}>
-						<h1> ID: {v?.id}</h1>
-						<p>
-							{" "}
-							Name and Model : {v?.vehicleName} {v?.vehicleModel}
-						</p>
-						<p>year: {v?.year}</p>
-						<p>
-							color(s):{" "}
-							{v?.color.map((c, idx) => {
-								return (
-									<span key={idx}>
-										<span>{c}</span> ,
-									</span>
-								);
-							})}
-						</p>
-						<Link to={`/vehicles/${v.id}`}>
-							<button>view</button>
-						</Link>
-						<Link to={`/vehicles/update/${v?.id}`}>
-							<button>update</button>
-						</Link>
-						<Link to={`/vehicles/delete/${v?.id}`}>
-							<button>delete</button>
-						</Link>
-					</div>
-				);
-			})}
+			<table>
+				<tr className="tableHeader">
+					{/* <th>
+							<h2>ID </h2>
+						</th> */}
+					<th>
+						<h2>Nombre/Modelo</h2>
+					</th>
+					<th>
+						<h2>color</h2>
+					</th>
+					{/* <th></th> */}
+				</tr>
+				{vehicles
+					.filter(
+						(v, idx) =>
+							v?.vehicleName
+
+								.toLowerCase()
+								.includes(search.toLowerCase()) ||
+							v?.vehicleModel
+								.toLowerCase()
+								.includes(search.toLowerCase())
+					)
+					.map((v) => {
+						return (
+							<tr key={v?.id} className="data">
+								{/* <td>
+										<p className="idInfo">{c?.id}</p>
+									</td> */}
+								<td>
+									<Link to={`/vehicles/${v?.id}`}>
+										<p className="getAllName">
+											{v?.vehicleName +
+												" " +
+												v?.vehicleModel}
+										</p>
+									</Link>
+								</td>
+								<td>
+									<p>
+										{/* {c?.cellPhone?.map((n, idx) => {
+												return (
+													<span key={idx}>
+														<span>{n}</span> ,
+													</span>
+												);
+											})} */}
+										{v?.color[0]}
+									</p>
+								</td>
+								{/*<td>
+										<Link to={`/${c?.id}`}>
+											<button className="utilBtn">
+												Ver
+											</button>
+										</Link>
+										 <Link to={`/update/${c?.id}`}>
+											<button className="utilBtn">
+												Editar
+											</button>
+										</Link>
+										<Link to={`/delete/${c?.id}`}>
+											<button className="utilBtn">
+												Delete
+											</button>
+										</Link> 
+									</td>*/}
+							</tr>
+						);
+					})}
+			</table>
 		</div>
 	);
 }
 
+{
+	/* <Link to={`/vehicles/${v.id}`}>
+				<button>view</button>
+			</Link>
+			<Link to={`/vehicles/update/${v?.id}`}>
+				<button>update</button>
+			</Link>
+			<Link to={`/vehicles/delete/${v?.id}`}>
+				<button>delete</button>
+			</Link> */
+}
 export default GetAllVehicles; // Export the GetAllList component
