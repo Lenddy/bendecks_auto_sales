@@ -100,9 +100,9 @@ const clientResolvers = {
 				update.clientLastName = clientLastName;
 			}
 			if (cellPhone !== undefined) {
+				// ! you have the data caming from the front end you just need to update the numbers  so find out how you have an example on deals resolvers
 				update.cellPhone = cellPhone;
 			}
-
 			return await Client.findByIdAndUpdate(id, update, {
 				new: true,
 			})

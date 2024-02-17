@@ -26,7 +26,7 @@ export const update_One_client = gql`
 		$id: ID!
 		$clientName: String
 		$clientLastName: String
-		$cellPhone: [String]
+		$cellPhone: [NumberInput]
 	) {
 		updateOneClient(
 			id: $id
@@ -44,6 +44,10 @@ export const update_One_client = gql`
 	}
 `;
 
+// {
+// 	id
+// 	number
+// }
 export const delete_one_client = gql`
 	mutation deleteOneClient($id: ID!) {
 		deleteOneClient(id: $id) {

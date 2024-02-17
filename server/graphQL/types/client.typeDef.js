@@ -26,6 +26,11 @@ const clientTypeDef = gql`
 		getOneClient(id: ID!): Client!
 	}
 
+	input NumberInput {
+		id: ID
+		number: String
+	}
+
 	#mutations
 	type Mutation {
 		createOneClient(
@@ -38,7 +43,7 @@ const clientTypeDef = gql`
 			id: ID!
 			clientName: String
 			clientLastName: String
-			cellPhone: [String]
+			cellPhone: [NumberInput]
 		): Client!
 
 		deleteOneClient(id: ID!): Client!

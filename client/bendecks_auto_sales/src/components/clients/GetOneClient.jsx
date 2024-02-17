@@ -28,6 +28,8 @@ function GetOneClient() {
 		// cellPhone: [],
 	});
 
+	const [sections, setSections] = useState();
+
 	useEffect(() => {
 		if (!loading && data) {
 			setClient(data.getOneClient);
@@ -55,25 +57,32 @@ function GetOneClient() {
 	const infoToBeSubmitted = (e) => {
 		setInfo({
 			...info,
-			[e.target.getAttribute("name")]: e.target.innerText,
+			[e.target.name]: e.target.innerText,
 		});
 	};
 
 	const submit = (e) => {
 		e.preventDefault();
-
+		let sectionInfo = [];
+		if (Object.keys(sections).length > 0) {
+			console.log("there are keys");
+			for (let [key, value] of Object.entries(sections)) {
+				sectionInfo.push({ id: key, number: value });
+			}
+		}
+		console.log("section info", sectionInfo);
 		updateOneClient({
 			variables: {
 				id,
 				clientName: info.clientName,
 				clientLastName: info.clientLastName,
-				cellPhone: info.cellPhone,
+				cellPhone: sectionInfo,
 			},
 			refetchQueries: [{ query: get_all_clients }],
 		})
 			.then((res) => {
 				console.log(res.data);
-				navigate(`/${id}`);
+				// navigate(`/${id}`);
 			})
 			.catch((error) => {
 				console.log("there was an error", error);
@@ -95,17 +104,30 @@ function GetOneClient() {
 		}
 	}, [error, loading, data]); // Dependencies for the useEffect hook
 
-	const [sections, setSections] = useState([{ cellPhone: "" }]);
-
 	const addSection = () => {
 		setSections([...sections, { cellPhone: "" }]);
 	};
 
+	// handles the Input Changes from the inputs that have multiple sections
 	const handleInputChange = (e, index) => {
+		//takes an event and indexes
+		// console.log("event and index");
+		console.log(e);
+		// console.table(e, index);
+
+		let outPut;
+
+		//mapping over all available sections
 		const updatedSections = sections.map((section, secIndex) => {
+			// console.log("section and section index");
+			// console.table(section, secIndex);
 			if (index === secIndex) {
-				return { ...section, [e.target.name]: e.target.value };
+				outPut = { ...section, [secIndex]: e.target.textContent };
+				// console.log("output in if");
+				// console.log(outPut);
+				return outPut;
 			}
+			console.log("output");
 			return section;
 		});
 		setSections(updatedSections);
@@ -124,13 +146,12 @@ function GetOneClient() {
 		setSections(filteredSections);
 	};
 
-	// ! find a way to edit all the numbers on there section  what i am thinking is to use the splice method to  and also you should add the btns of adding a deleting and they will show when one of the inputs is on focus and they will disappear when they stop being on focus  and the edit should only affect the specific item on the array so thats why i thought on using the splice
+	const changeSectionVal = (e, index) => {
+		// let newSectionInfo = { 1: "hello", 2: "there", 3: "how are you" };
 
-	// ?  fixx send an object that takes the index number and the new info of that number to change in the back end
+		setSections({ ...sections, [index]: e.target.textContent });
+	};
 
-	// check to see if you need to add diferent field to the number array so that you can make the update easier
-
-	// Render the retrieved lists
 	return (
 		<div className="getOne">
 			{/* <Link to={"/dashboard"}> */}
@@ -183,8 +204,13 @@ function GetOneClient() {
 										contentEditable
 										suppressContentEditableWarning
 										name={`cellPhone-${index}`}
-										onInput={infoToBeSubmitted}
-										// onChange={infoToBeSubmitted}
+										onInput={(e) => {
+											changeSectionVal(e, index);
+										}}
+										// handleInputChange
+										// onChange={(e) => {
+										// 	changeSectionVal(e, index);
+										// }}
 										className="editableField"
 									>
 										{phone}
@@ -197,7 +223,9 @@ function GetOneClient() {
 									contentEditable
 									suppressContentEditableWarning
 									name="cellPhone-0"
-									onInput={infoToBeSubmitted}
+									onInput={(e) => {
+										changeSectionVal(e, 0);
+									}}
 									// onChange={infoToBeSubmitted}
 									className="editableField"
 								>
