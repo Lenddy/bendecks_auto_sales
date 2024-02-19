@@ -92,6 +92,7 @@ const clientResolvers = {
 			const { id, clientName, clientLastName, cellPhone } = args;
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime scalar
 			// title,description
+			const updatedCellPhones = {};
 
 			if (clientName !== undefined) {
 				update.clientName = clientName;
@@ -99,10 +100,14 @@ const clientResolvers = {
 			if (clientLastName !== undefined) {
 				update.clientLastName = clientLastName;
 			}
-			if (cellPhone !== undefined) {
-				// ! you have the data caming from the front end you just need to update the numbers  so find out how you have an example on deals resolvers
-				update.cellPhone = cellPhone;
+			if (cellPhone !== undefined && cellPhone.length > 0) {
+				const updatedCellPhones = {};
+				cellPhone.forEach((phone) => {
+					updatedCellPhones[`cellPhone.${phone.id}`] = phone.number;
+				});
+				update.$set = updatedCellPhones;
 			}
+
 			return await Client.findByIdAndUpdate(id, update, {
 				new: true,
 			})

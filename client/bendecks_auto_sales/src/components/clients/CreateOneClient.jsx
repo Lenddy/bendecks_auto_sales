@@ -83,10 +83,6 @@ const CreateOneClient = ({ reload, setReload }) => {
 
 	const [sections, setSections] = useState([{ cellPhone: "" }]);
 
-	const addSection = () => {
-		setSections([...sections, { cellPhone: "" }]);
-	};
-
 	const handleInputChange = (e, index) => {
 		const updatedSections = sections.map((section, secIndex) => {
 			if (index === secIndex) {
@@ -101,6 +97,10 @@ const CreateOneClient = ({ reload, setReload }) => {
 			(section) => section.cellPhone
 		);
 		setInfo({ ...info, cellPhone: updatedCellPhones });
+	};
+
+	const addSection = () => {
+		setSections([...sections, { cellPhone: "" }]);
 	};
 
 	const deleteSection = (index) => {

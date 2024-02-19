@@ -290,14 +290,12 @@ const dealResolvers = {
 										paymentInfo.payment_id,
 								},
 								{
-									$set: {
-										"paymentDates.$.isLate":
-											paymentInfo.isLate,
-										"paymentDates.$.latenessFee":
-											paymentInfo.latenessFee,
-										"paymentDates.$.daysLate":
-											paymentInfo.daysLate,
-									},
+									"paymentDates.$.isLate": paymentInfo.isLate,
+									"paymentDates.$.latenessFee":
+										paymentInfo.latenessFee,
+									"paymentDates.$.daysLate":
+										paymentInfo.daysLate,
+									$set: {},
 								}
 							).catch((error) => {
 								console.log(

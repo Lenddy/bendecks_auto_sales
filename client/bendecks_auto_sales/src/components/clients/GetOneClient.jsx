@@ -1,6 +1,6 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
 import { useNavigate, Link, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { get_one_client } from "../../GraphQL/queries/clientQueries";
 import { useMutation, useQuery } from "@apollo/client";
 import { update_One_client } from "../../GraphQL/mutations/clientMutations";
@@ -8,6 +8,7 @@ import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 
 function GetOneClient() {
 	const { id } = useParams();
+	const newSectionRef = useRef(null);
 
 	const navigate = useNavigate();
 	const navigateTO = (url) => {
@@ -29,6 +30,7 @@ function GetOneClient() {
 	});
 
 	const [sections, setSections] = useState();
+	const [numberUpdate, setNumberUpdate] = useState();
 
 	useEffect(() => {
 		if (!loading && data) {
@@ -97,37 +99,20 @@ function GetOneClient() {
 		if (data) {
 			console.log(data); // Log the fetched data
 			setClient(data.getOneClient); // Set the lists retrieved from the query to the state
+			setSections(client?.cellPhone);
 		}
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
 			setNotFound(true);
 		}
-	}, [error, loading, data]); // Dependencies for the useEffect hook
-
-	const addSection = () => {
-		setSections([...sections, { cellPhone: "" }]);
-	};
+	}, [error, loading, data, client]); // Dependencies for the useEffect hook
 
 	// handles the Input Changes from the inputs that have multiple sections
 	const handleInputChange = (e, index) => {
-		//takes an event and indexes
-		// console.log("event and index");
-		console.log(e);
-		// console.table(e, index);
-
-		let outPut;
-
-		//mapping over all available sections
 		const updatedSections = sections.map((section, secIndex) => {
-			// console.log("section and section index");
-			// console.table(section, secIndex);
 			if (index === secIndex) {
-				outPut = { ...section, [secIndex]: e.target.textContent };
-				// console.log("output in if");
-				// console.log(outPut);
-				return outPut;
+				return { ...section, [e.target.name]: e.target.value };
 			}
-			console.log("output");
 			return section;
 		});
 		setSections(updatedSections);
@@ -137,6 +122,10 @@ function GetOneClient() {
 			(section) => section.cellPhone
 		);
 		setInfo({ ...info, cellPhone: updatedCellPhones });
+	};
+
+	const addSection = () => {
+		setSections((prevSections) => [...prevSections, ""]);
 	};
 
 	const deleteSection = (index) => {
@@ -149,15 +138,31 @@ function GetOneClient() {
 	const changeSectionVal = (e, index) => {
 		// let newSectionInfo = { 1: "hello", 2: "there", 3: "how are you" };
 
-		setSections({ ...sections, [index]: e.target.textContent });
+		setNumberUpdate({ ...numberUpdate, [index]: e.target.textContent });
 	};
+
+	const [confirmDelete, setConfirmDelete] = useState(
+		Array(sections?.length).fill(false)
+	);
+
+	const focusNewInput = () => {
+		if (newSectionRef.current) {
+			newSectionRef.current.focus();
+		}
+	};
+
+	const toggleConfirmDelete = (index) => {
+		setConfirmDelete((prevState) => {
+			const newState = [...prevState];
+			newState[index] = !newState[index];
+			return newState;
+		});
+	};
+
+	// now figure out how to delete the last deleted items from the database  maybe add a new field that says delete and update so that in the back end you can make the change to delete and or updated
 
 	return (
 		<div className="getOne">
-			{/* <Link to={"/dashboard"}> */}
-			{/* <button onClick={() => navigateTO("/dashboard")}>dashboard</button> */}
-			{/* </Link> */}
-
 			{notFound ? (
 				<h1 className="notFound">
 					cliente con ID:<span>{id}</span> no se pudo encontrara
@@ -193,28 +198,96 @@ function GetOneClient() {
 								</h1>
 							</div>
 						</div>
-
-						{client?.cellPhone?.length > 0 ? (
-							client.cellPhone.map((phone, index) => (
+						{/* so get the las index + 1 to make the new section be */}
+						{/* .cellPhone? */}
+						{sections?.length > 0 ? (
+							sections.map((phone, index) => (
 								<div
 									key={index}
 									className="editablePhoneSection"
 								>
-									<h1
-										contentEditable
-										suppressContentEditableWarning
-										name={`cellPhone-${index}`}
-										onInput={(e) => {
-											changeSectionVal(e, index);
-										}}
-										// handleInputChange
-										// onChange={(e) => {
-										// 	changeSectionVal(e, index);
-										// }}
-										className="editableField"
-									>
-										{phone}
-									</h1>
+									{index === sections.length - 1 ? (
+										<h1
+											contentEditable
+											suppressContentEditableWarning
+											name={`cellPhone-${index}`}
+											onInput={(e) => {
+												changeSectionVal(e, index);
+											}}
+											// handleInputChange
+											// onChange={(e) => {
+											// 	changeSectionVal(e, index);
+											// }}
+											className="editableField"
+											ref={
+												index === sections.length - 1
+													? newSectionRef
+													: null
+											}
+										>
+											{/*   */}
+											{phone}
+										</h1>
+									) : (
+										<h1
+											contentEditable
+											suppressContentEditableWarning
+											className="editableField"
+											name={`cellPhone-${index}`}
+											onInput={(e) => {
+												changeSectionVal(e, index);
+											}}
+										>
+											{phone}
+										</h1>
+									)}
+									{sections.length > 1 && (
+										<div>
+											{!confirmDelete[index] ? (
+												<button
+													type="button"
+													className="deleteSection -update"
+													onClick={() =>
+														toggleConfirmDelete(
+															index
+														)
+													}
+												>
+													<p>&#8722;</p>
+												</button>
+											) : (
+												<div className="confirmDeletionsSection -update">
+													<div className="btnNewSection">
+														<button
+															type="button"
+															onClick={() =>
+																deleteSection(
+																	index
+																)
+															}
+															className="deleteSection"
+														>
+															<p> &#10003;</p>
+														</button>
+													</div>
+
+													<div className="btnNewSection">
+														<button
+															type="button"
+															onClick={() =>
+																toggleConfirmDelete(
+																	index
+																)
+															}
+															className="deleteSection"
+														>
+															<p> &#10005;</p>
+														</button>
+													</div>
+												</div>
+											)}
+										</div>
+									)}
 								</div>
 							))
 						) : (
@@ -247,8 +320,23 @@ function GetOneClient() {
 									Delete Section
 								</button>
 							</div>
-						))}
-						<button onClick={addSection}>Add New Section</button> */}
+						))}*/}
+						<div className="btnNewSection">
+							<button
+								type="button"
+								onClick={async () => {
+									await addSection(), focusNewInput();
+									// setTimeout(
+									// 	() =>
+									// 		,
+									// 	50
+									// );
+								}}
+								className="addSection"
+							>
+								<p>&#43;</p>
+							</button>
+						</div>
 						<button type="submit" className="submit_btn">
 							Update Client
 						</button>
@@ -260,3 +348,32 @@ function GetOneClient() {
 }
 
 export default GetOneClient; // Export the GetAllList component
+
+// {index === sections.length - 1 ? (
+// 	<h1
+// 		contentEditable
+// 		suppressContentEditableWarning
+// 		name={`cellPhone-${index}`}
+// 		onInput={(e) => {
+// 			changeSectionVal(e, index);
+// 		}}
+// 		// handleInputChange
+// 		// onChange={(e) => {
+// 		// 	changeSectionVal(e, index);
+// 		// }}
+// 		className="editableField"
+// 		ref={
+// 			index === sections.length - 1
+// 				? newSectionRef
+// 				: null
+// 		}
+// 	>
+// 		{phone}
+// 	</h1>
+// ) : (
+// 	<h1
+// 		contentEditable
+// 		suppressContentEditableWarning
+// 		className="editableField"
+// 	/>
+// )}

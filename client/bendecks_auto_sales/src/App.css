@@ -381,6 +381,21 @@ td{
   justify-content: center;
 } */
 
+.editablePhoneSection ,.confirmDeletionsSection{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirmDeletionsSection{
+  display: flex;
+  justify-content:space-evenly;
+  align-items: center;
+}
+.-update{
+  margin-left: 10px;
+}
+
 }
 
 
