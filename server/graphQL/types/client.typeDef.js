@@ -29,6 +29,7 @@ const clientTypeDef = gql`
 	input NumberInput {
 		id: ID
 		number: String
+		status: String
 	}
 
 	#mutations
@@ -47,6 +48,8 @@ const clientTypeDef = gql`
 		): Client!
 
 		deleteOneClient(id: ID!): Client!
+
+		deleteOneClientItem(id: ID!, cellPhone: [NumberInput]): Boolean
 	}
 
 	#re renders data on data update

@@ -93,6 +93,7 @@ const clientResolvers = {
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime scalar
 			// title,description
 			const updatedCellPhones = {};
+			let deleteItem = false;
 
 			if (clientName !== undefined) {
 				update.clientName = clientName;
@@ -101,9 +102,32 @@ const clientResolvers = {
 				update.clientLastName = clientLastName;
 			}
 			if (cellPhone !== undefined && cellPhone.length > 0) {
-				const updatedCellPhones = {};
+				console.log("------->", cellPhone);
 				cellPhone.forEach((phone) => {
-					updatedCellPhones[`cellPhone.${phone.id}`] = phone.number;
+					if (phone.status === "update") {
+						updatedCellPhones[`cellPhone.${phone.id}`] =
+							phone.number;
+					} else if (phone.status === "delete") {
+						deleteItem = false;
+						// // Construct a filter that matches both number and index
+						// const filter = {
+						// 	$and: [
+						// 		{ [`cellPhone.${phone.id}`]: phone.number },
+						// 		{
+						// 			[`cellPhone.${phone.id}`]: {
+						// 				$exists: true,
+						// 			},
+						// 		},
+						// 	],
+						// };
+						// // Initialize as an empty object if it doesn't exist
+						// if (!updatedCellPhones.$pull) {
+						// 	updatedCellPhones.$pull = {};
+						// }
+						// // Merge with existing $pull operations
+						// updatedCellPhones.$pull[`cellPhone.${phone.id}`] =
+						// 	filter;
+					}
 				});
 				update.$set = updatedCellPhones;
 			}
@@ -113,6 +137,10 @@ const clientResolvers = {
 			})
 				.then((updatedClient) => {
 					// When a client is updated
+
+					if (deleteItem) {
+						deleteOneClientItem(null, { id, cellPhone });
+					}
 					pubsub.publish("CLIENT_UPDATED", {
 						onClientChange: {
 							eventType: "CLIENT_UPDATED",
@@ -162,8 +190,61 @@ const clientResolvers = {
 					throw err;
 				});
 		},
-	},
+		deleteOneClientItem: async (parent, args) => {
+			const { id, cellPhone } = args;
+			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime scalar
 
+			try {
+				// First, find the client document
+				const client = await Client.findById(id);
+				if (!client) {
+					throw new Error("Client not found");
+				}
+
+				// If cellPhone array is provided and not empty
+				if (Array.isArray(cellPhone) && cellPhone.length > 0) {
+					// Iterate through each phone item
+					for (const phone of cellPhone) {
+						if (phone.status === "delete") {
+							// Construct a filter to remove the specified number
+							const filter = {
+								$and: [
+									{ [`cellPhone.${phone.id}`]: phone.number },
+									// {
+									// 	[`cellPhone.${phone.id}`]: {
+									// 		$exists: true,
+									// 	},
+									// },
+								],
+							};
+							// Use updateOne to remove the specified number from the array
+							await Client.updateOne(
+								{ _id: id },
+								{ $pull: filter }
+							);
+						}
+					}
+				}
+
+				// Delete the client document
+				// const deletedClient = await Client.findByIdAndDelete(id);
+
+				// When a client is deleted
+				// pubsub.publish("CLIENT_DELETED", {
+				//     onClientChange: {
+				//         eventType: "CLIENT_DELETED",
+				//         clientChanges: deletedClient,
+				//     },
+				// });
+
+				console.log("A client item was deleted -------> ", true);
+				return true;
+			} catch (err) {
+				console.log("There was an error deleting a client item", err);
+				throw err;
+			}
+		},
+	},
 	Subscription: {
 		onClientChange: {
 			subscribe: () =>

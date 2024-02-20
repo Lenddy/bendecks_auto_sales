@@ -10,10 +10,6 @@ function GetOneClient() {
 	const { id } = useParams();
 	const newSectionRef = useRef(null);
 
-	const navigate = useNavigate();
-	const navigateTO = (url) => {
-		navigate(url);
-	};
 	// Fetch data using the useQuery hook by executing the getAllList query
 	const { error, loading, data } = useQuery(get_one_client, {
 		variables: { id },
@@ -24,19 +20,13 @@ function GetOneClient() {
 
 	const [notFound, setNotFound] = useState(false);
 
-	const [info, setInfo] = useState({
-		test: "hello",
-		// cellPhone: [],
-	});
+	const [info, setInfo] = useState({});
 
 	const [sections, setSections] = useState();
-	const [numberUpdate, setNumberUpdate] = useState();
-
-	useEffect(() => {
-		if (!loading && data) {
-			setClient(data.getOneClient);
-		}
-	}, [loading, data]);
+	const [numberUpdate, setNumberUpdate] = useState([]);
+	const [confirmDelete, setConfirmDelete] = useState(
+		Array(sections?.length).fill(false)
+	);
 
 	const [updateOneClient] = useMutation(
 		update_One_client
@@ -65,22 +55,23 @@ function GetOneClient() {
 
 	const submit = (e) => {
 		e.preventDefault();
-		let sectionInfo = [];
-		if (Object.keys(sections).length > 0) {
-			console.log("there are keys");
-			for (let [key, value] of Object.entries(sections)) {
-				sectionInfo.push({ id: key, number: value });
-			}
-		}
-		console.log("section info", sectionInfo);
+		// let sectionInfo = [];
+		// if (Object.keys(numberUpdate).length > 0) {
+		// 	console.log("there are keys");
+		// 	for (let [key, value] of Object.entries(numberUpdate)) {
+		// 		console.table(key, value);
+		// 		sectionInfo.push({ id: key, number: value });
+		// 	}
+		// }
+		// console.log("section info", sectionInfo);
 		updateOneClient({
 			variables: {
 				id,
 				clientName: info.clientName,
 				clientLastName: info.clientLastName,
-				cellPhone: sectionInfo,
+				cellPhone: numberUpdate,
 			},
-			refetchQueries: [{ query: get_all_clients }],
+			// refetchQueries: [{ query: get_all_clients }],
 		})
 			.then((res) => {
 				console.log(res.data);
@@ -107,43 +98,70 @@ function GetOneClient() {
 		}
 	}, [error, loading, data, client]); // Dependencies for the useEffect hook
 
-	// handles the Input Changes from the inputs that have multiple sections
-	const handleInputChange = (e, index) => {
-		const updatedSections = sections.map((section, secIndex) => {
-			if (index === secIndex) {
-				return { ...section, [e.target.name]: e.target.value };
-			}
-			return section;
-		});
-		setSections(updatedSections);
-
-		// Update the info.cellPhone with the cell phone numbers from all sections
-		const updatedCellPhones = updatedSections.map(
-			(section) => section.cellPhone
-		);
-		setInfo({ ...info, cellPhone: updatedCellPhones });
-	};
-
 	const addSection = () => {
 		setSections((prevSections) => [...prevSections, ""]);
 	};
 
+	// ! figure out a way to delete one or multiple number from he data base
 	const deleteSection = (index) => {
 		const filteredSections = sections.filter(
 			(_, secIndex) => secIndex !== index
 		);
 		setSections(filteredSections);
+
+		const filterConfirmDelete = confirmDelete.filter(
+			(_, deletedIndex) => deletedIndex !== index
+		);
+		setConfirmDelete(filterConfirmDelete);
+		let objectExists = false;
+
+		const updatedNumberUpdate = numberUpdate.map((item) => {
+			if (item.id === index) {
+				objectExists = true;
+				return {
+					...item,
+					number: sections[index],
+					status: "delete",
+				};
+			}
+			return item;
+		});
+		if (!objectExists) {
+			updatedNumberUpdate.push({
+				id: index,
+				number: sections[index],
+				status: "delete",
+			});
+		}
+
+		setNumberUpdate(updatedNumberUpdate);
 	};
 
 	const changeSectionVal = (e, index) => {
-		// let newSectionInfo = { 1: "hello", 2: "there", 3: "how are you" };
+		let objectExists = false;
 
-		setNumberUpdate({ ...numberUpdate, [index]: e.target.textContent });
+		const updatedNumberUpdate = numberUpdate.map((item) => {
+			if (item.id === index) {
+				objectExists = true;
+				return {
+					...item,
+					number: e.target.textContent,
+					status: "update",
+				};
+			}
+			return item;
+		});
+
+		if (!objectExists) {
+			updatedNumberUpdate.push({
+				id: index,
+				number: e.target.textContent,
+				status: "update",
+			});
+		}
+
+		setNumberUpdate(updatedNumberUpdate);
 	};
-
-	const [confirmDelete, setConfirmDelete] = useState(
-		Array(sections?.length).fill(false)
-	);
 
 	const focusNewInput = () => {
 		if (newSectionRef.current) {
@@ -349,31 +367,19 @@ function GetOneClient() {
 
 export default GetOneClient; // Export the GetAllList component
 
-// {index === sections.length - 1 ? (
-// 	<h1
-// 		contentEditable
-// 		suppressContentEditableWarning
-// 		name={`cellPhone-${index}`}
-// 		onInput={(e) => {
-// 			changeSectionVal(e, index);
-// 		}}
-// 		// handleInputChange
-// 		// onChange={(e) => {
-// 		// 	changeSectionVal(e, index);
-// 		// }}
-// 		className="editableField"
-// 		ref={
-// 			index === sections.length - 1
-// 				? newSectionRef
-// 				: null
+// // handles the Input Changes from the inputs that have multiple sections
+// const handleInputChange = (e, index) => {
+// 	const updatedSections = sections.map((section, secIndex) => {
+// 		if (index === secIndex) {
+// 			return { ...section, [e.target.name]: e.target.value };
 // 		}
-// 	>
-// 		{phone}
-// 	</h1>
-// ) : (
-// 	<h1
-// 		contentEditable
-// 		suppressContentEditableWarning
-// 		className="editableField"
-// 	/>
-// )}
+// 		return section;
+// 	});
+// 	setSections(updatedSections);
+
+// 	// Update the info.cellPhone with the cell phone numbers from all sections
+// 	const updatedCellPhones = updatedSections.map(
+// 		(section) => section.cellPhone
+// 	);
+// 	setInfo({ ...info, cellPhone: updatedCellPhones });
+// };
