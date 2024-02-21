@@ -4,11 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import { get_one_client } from "../../GraphQL/queries/clientQueries";
 import { useMutation, useQuery } from "@apollo/client";
 import { update_One_client } from "../../GraphQL/mutations/clientMutations";
+import { delete_one_client } from "../../GraphQL/mutations/clientMutations";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 
 function GetOneClient() {
 	const { id } = useParams();
 	const newSectionRef = useRef(null);
+
+	const navigate = useNavigate();
 
 	// Fetch data using the useQuery hook by executing the getAllList query
 	const { error, loading, data } = useQuery(get_one_client, {
@@ -21,6 +24,7 @@ function GetOneClient() {
 	const [notFound, setNotFound] = useState(false);
 
 	const [info, setInfo] = useState({});
+	const [focus, setFocus] = useState(false);
 
 	const [sections, setSections] = useState();
 	const [numberUpdate, setNumberUpdate] = useState([]);
@@ -71,7 +75,7 @@ function GetOneClient() {
 				clientLastName: info.clientLastName,
 				cellPhone: numberUpdate,
 			},
-			// refetchQueries: [{ query: get_all_clients }],
+			refetchQueries: [{ query: get_all_clients }],
 		})
 			.then((res) => {
 				console.log(res.data);
@@ -177,17 +181,57 @@ function GetOneClient() {
 		});
 	};
 
+	const [deleteOneClient] = useMutation(
+		delete_one_client
+		// 	 {
+		// 	update(cache, { data: { deleteItem } }) {
+		// 		cache.modify({
+		// 			fields: {
+		// 				allItems(existingItems, { readField }) {
+		// 					return existingItems.filter(itemRef => readField('id', itemRef) !== deleteItem.id);
+		// 				}
+		// 			}
+		// 		});
+		// 	}
+		// }
+	);
+
+	const [clientDelete, setClientDelete] = useState(false);
+
+	const deleteClient = () => {
+		deleteOneClient({
+			variables: {
+				id, // Only pass the ID to the deletion mutation
+			},
+			refetchQueries: [{ query: get_all_clients }],
+		})
+			.then(() => {
+				// Redirect after successful deletion
+				navigate("/dashboard");
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
 	// now figure out how to delete the last deleted items from the database  maybe add a new field that says delete and update so that in the back end you can make the change to delete and or updated
 
 	return (
 		<div className="getOne">
 			{notFound ? (
-				<h1 className="notFound">
-					cliente con ID:<span>{id}</span> no se pudo encontrara
-					asegúrese de que seal el id correcto
-				</h1>
+				<div>
+					<h1 className="notFound">
+						cliente con ID:<span>{id}</span> no se pudo encontrara
+						asegúrese de que seal el id correcto
+					</h1>
+
+					<button>regresar</button>
+				</div>
 			) : (
 				<div className="oneInfo">
+					<div>
+						<button className={`submit_btn`}>Borrar Cliente</button>
+					</div>
 					<h1 className="notFound">{id}</h1>
 					<form onSubmit={submit} className="getOneForm">
 						<div className="section_union">
@@ -198,7 +242,8 @@ function GetOneClient() {
 									name="clientName"
 									onInput={infoToBeSubmitted}
 									className="editableField "
-									// onFocus={}
+									onFocus={() => setFocus(true)}
+									onBlur={() => setFocus(false)}
 								>
 									{client?.clientName}
 								</h1>
@@ -211,6 +256,8 @@ function GetOneClient() {
 									name="clientLastName"
 									onInput={infoToBeSubmitted}
 									className="editableField"
+									onFocus={() => setFocus(true)}
+									onBlur={() => setFocus(false)}
 								>
 									{client?.clientLastName}
 								</h1>
@@ -232,10 +279,8 @@ function GetOneClient() {
 											onInput={(e) => {
 												changeSectionVal(e, index);
 											}}
-											// handleInputChange
-											// onChange={(e) => {
-											// 	changeSectionVal(e, index);
-											// }}
+											onFocus={() => setFocus(true)}
+											onBlur={() => setFocus(false)}
 											className="editableField"
 											ref={
 												index === sections.length - 1
@@ -255,10 +300,13 @@ function GetOneClient() {
 											onInput={(e) => {
 												changeSectionVal(e, index);
 											}}
+											onFocus={() => setFocus(true)}
+											onBlur={() => setFocus(false)}
 										>
 											{phone}
 										</h1>
 									)}
+
 									{sections.length > 1 && (
 										<div>
 											{!confirmDelete[index] ? (
@@ -324,21 +372,7 @@ function GetOneClient() {
 								</h1>
 							</div>
 						)}
-						{/* {sections.map((section, index) => (
-							<div key={index}>
-								<h1
-									contentEditable
-									suppressContentEditableWarning
-									onInput={(e) => handleInputChange(e, index)}
-									className="editableField"
-								>
-									{section.cellPhone}
-								</h1>
-								<button onClick={() => deleteSection(index)}>
-									Delete Section
-								</button>
-							</div>
-						))}*/}
+
 						<div className="btnNewSection">
 							<button
 								type="button"
@@ -355,9 +389,53 @@ function GetOneClient() {
 								<p>&#43;</p>
 							</button>
 						</div>
-						<button type="submit" className="submit_btn">
-							Update Client
-						</button>
+
+						<div className="submitSection">
+							<button
+								type="submit"
+								className={`submit_btn ${
+									focus ? "show" : "hide"
+								}`}
+								//
+								//
+							>
+								Actualizar Cliente
+							</button>
+
+							{clientDelete === false ? (
+								<button
+									type="button"
+									className={`submit_btn`}
+									onClick={() => setClientDelete(true)}
+								>
+									Borrar Cliente
+								</button>
+							) : (
+								<div className="confirmDeleteCLient">
+									<div className="btnNewSection">
+										<button
+											type="button"
+											onClick={() => deleteClient()}
+											className="deleteSection"
+										>
+											<p> &#10003;</p>
+										</button>
+									</div>
+
+									<div className="btnNewSection">
+										<button
+											type="button"
+											onClick={() =>
+												setClientDelete(false)
+											}
+											className="deleteSection"
+										>
+											<p> &#10005;</p>
+										</button>
+									</div>
+								</div>
+							)}
+						</div>
 					</form>
 				</div>
 			)}

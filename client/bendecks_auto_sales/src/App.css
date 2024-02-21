@@ -155,6 +155,33 @@ border-bottom: solid white 1px;
   transition: ;
 } */
 
+.hide{
+  /* display:none; */
+  transition: all 1.5s;
+  opacity: 0;
+  transform: translateX(-500%);
+}
+
+.show{
+  transition: opacity 1.5s;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
+.confirmDeleteCLient{
+  display: flex;
+  width: 150px;
+  height: 40px;
+  justify-content: space-around;
+}
+
+
+.submitSection{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 @media screen and (max-width: 500px) {
   /* nav bar */

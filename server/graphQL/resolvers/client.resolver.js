@@ -88,6 +88,7 @@ const clientResolvers = {
 				});
 		},
 
+		// ! find out how to delete numbers later
 		updateOneClient: async (parent, args, context, info) => {
 			const { id, clientName, clientLastName, cellPhone } = args;
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime scalar
@@ -108,28 +109,33 @@ const clientResolvers = {
 						updatedCellPhones[`cellPhone.${phone.id}`] =
 							phone.number;
 					} else if (phone.status === "delete") {
-						deleteItem = false;
-						// // Construct a filter that matches both number and index
-						// const filter = {
-						// 	$and: [
-						// 		{ [`cellPhone.${phone.id}`]: phone.number },
-						// 		{
-						// 			[`cellPhone.${phone.id}`]: {
-						// 				$exists: true,
-						// 			},
-						// 		},
-						// 	],
-						// };
-						// // Initialize as an empty object if it doesn't exist
-						// if (!updatedCellPhones.$pull) {
-						// 	updatedCellPhones.$pull = {};
-						// }
-						// // Merge with existing $pull operations
-						// updatedCellPhones.$pull[`cellPhone.${phone.id}`] =
-						// 	filter;
+						const index = parseInt(phone.id); // Parse the index from string to integer
+						console.log("Item to be deleted at index:", index);
+
+						// Construct a filter to remove the specified element by index
+						const filter = {
+							$and: [
+								{ [`cellPhone.${index}`]: phone.number },
+								{ [`cellPhone.${index}`]: { $exists: true } },
+							],
+						};
+
+						// Initialize as an empty object if it doesn't exist
+						if (!updatedCellPhones.$pull) {
+							updatedCellPhones.$pull = {};
+						}
+
+						// Merge with existing $pull operations
+						updatedCellPhones.$pull[`cellPhone.${index}`] =
+							phone.number;
 					}
+					console.log(
+						"this is the updateCellPhones ---------->",
+						updatedCellPhones
+					);
 				});
 				update.$set = updatedCellPhones;
+				console.log("this is the update object", update);
 			}
 
 			return await Client.findByIdAndUpdate(id, update, {
@@ -138,9 +144,12 @@ const clientResolvers = {
 				.then((updatedClient) => {
 					// When a client is updated
 
-					if (deleteItem) {
-						deleteOneClientItem(null, { id, cellPhone });
-					}
+					// if (deleteItem) {
+					// 	clientResolvers.Mutation.deleteOneClientItem(null, {
+					// 		id,
+					// 		cellPhone,
+					// 	});
+					// }
 					pubsub.publish("CLIENT_UPDATED", {
 						onClientChange: {
 							eventType: "CLIENT_UPDATED",
@@ -200,23 +209,28 @@ const clientResolvers = {
 				if (!client) {
 					throw new Error("Client not found");
 				}
+				console.log("client was found trying to delete the number");
 
 				// If cellPhone array is provided and not empty
 				if (Array.isArray(cellPhone) && cellPhone.length > 0) {
+					console.log("this is  cellphone array");
 					// Iterate through each phone item
 					for (const phone of cellPhone) {
 						if (phone.status === "delete") {
+							console.log("this number is to be deleted");
 							// Construct a filter to remove the specified number
 							const filter = {
 								$and: [
 									{ [`cellPhone.${phone.id}`]: phone.number },
-									// {
-									// 	[`cellPhone.${phone.id}`]: {
-									// 		$exists: true,
-									// 	},
-									// },
+									{
+										[`cellPhone.${phone.id}`]: {
+											$exists: true,
+										},
+									},
 								],
 							};
+
+							console.log("this is the filter for the deletion");
 							// Use updateOne to remove the specified number from the array
 							await Client.updateOne(
 								{ _id: id },
@@ -225,17 +239,6 @@ const clientResolvers = {
 						}
 					}
 				}
-
-				// Delete the client document
-				// const deletedClient = await Client.findByIdAndDelete(id);
-
-				// When a client is deleted
-				// pubsub.publish("CLIENT_DELETED", {
-				//     onClientChange: {
-				//         eventType: "CLIENT_DELETED",
-				//         clientChanges: deletedClient,
-				//     },
-				// });
 
 				console.log("A client item was deleted -------> ", true);
 				return true;

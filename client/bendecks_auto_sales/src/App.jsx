@@ -8,7 +8,7 @@ import Log_reg from "./components/Log_reg";
 import GetAllClients from "./components/clients/GetAllClients";
 import GetOneClient from "./components/clients/GetOneClient";
 import CreateOneClient from "./components/clients/CreateOneClient";
-import UpdateOneClient from "./components/clients/UpdateOneClient";
+
 import DeleteOneClient from "./components/clients/DeleteOneClient";
 import GetAllVehicles from "./components/vehicles/GetAllVehicles";
 import GetOneVehicle from "./components/vehicles/GetOneVehicle";
@@ -48,12 +48,6 @@ function App() {
 								setReload={setReload}
 							/>
 						}
-					/>
-
-					<Route
-						exact
-						path="/update/:id"
-						element={<UpdateOneClient />}
 					/>
 
 					<Route
