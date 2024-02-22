@@ -4,12 +4,17 @@ require("./dateTime");
 const clientTypeDef = gql`
 	scalar DateTime
 
+	type cellNumber {
+		numberId: ID!
+		number: String!
+	}
+
 	#Object
 	type Client {
 		id: ID!
 		clientName: String!
 		clientLastName: String!
-		cellPhone: [String!]!
+		cellPhones: [cellNumber!]!
 		createdAt: DateTime!
 		updatedAt: DateTime!
 	}
@@ -26,8 +31,13 @@ const clientTypeDef = gql`
 		getOneClient(id: ID!): Client!
 	}
 
+	input cellNumberInput {
+		numberId: ID
+		number: String!
+	}
+
 	input NumberInput {
-		id: ID
+		numberId: ID
 		number: String
 		status: String
 	}
@@ -37,14 +47,14 @@ const clientTypeDef = gql`
 		createOneClient(
 			clientName: String!
 			clientLastName: String!
-			cellPhone: [String!]!
+			cellPhones: [cellNumberInput!]!
 		): Client!
 
 		updateOneClient(
 			id: ID!
 			clientName: String
 			clientLastName: String
-			cellPhone: [NumberInput]
+			cellPhones: [NumberInput]
 		): Client!
 
 		deleteOneClient(id: ID!): Client!

@@ -7,7 +7,10 @@ export const get_all_clients = gql`
 			id
 			clientName
 			clientLastName
-			cellPhone
+			cellPhones {
+				numberId
+				number
+			}
 			createdAt
 			updatedAt
 		}
@@ -21,7 +24,10 @@ export const get_one_client = gql`
 			id
 			clientName
 			clientLastName
-			cellPhone
+			cellPhones {
+				numberId
+				number
+			}
 			createdAt
 			updatedAt
 		}

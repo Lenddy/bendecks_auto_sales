@@ -1,4 +1,5 @@
 const Client = require("../../models/client.model");
+const { v4: uuidv4 } = require("uuid");
 const pubsub = require("../pubsub");
 
 // const pubsub = new PubSub();
@@ -49,16 +50,27 @@ const clientResolvers = {
 	},
 
 	Mutation: {
-		createOneClient: async (_, args) => {
-			const { clientName, clientLastName, cellPhone } = args;
+		//! make it work with objects
+		// payment_id: uuidv4(),
+		createOneClient: async (
+			_,
+			{ clientName, clientLastName, cellPhones }
+		) => {
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
+
+			cellPhones = cellPhones.map((numberDate) => {
+				return {
+					...numberDate,
+					numberId: uuidv4(), // Generates a unique UUID
+				};
+			});
 
 			//Date;
 			return await Client.create({
 				clientName,
 				clientLastName,
-				cellPhone,
+				cellPhones,
 				createdAt,
 				updatedAt,
 			})
@@ -88,9 +100,9 @@ const clientResolvers = {
 				});
 		},
 
-		// ! find out how to delete numbers later
+		// !you change the cellPhones so get the change finish
 		updateOneClient: async (parent, args, context, info) => {
-			const { id, clientName, clientLastName, cellPhone } = args;
+			const { id, clientName, clientLastName, cellPhones } = args;
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime scalar
 			// title,description
 			const updatedCellPhones = {};
@@ -102,33 +114,34 @@ const clientResolvers = {
 			if (clientLastName !== undefined) {
 				update.clientLastName = clientLastName;
 			}
-			if (cellPhone !== undefined && cellPhone.length > 0) {
-				console.log("------->", cellPhone);
-				cellPhone.forEach((phone) => {
+			if (cellPhones !== undefined && cellPhones.length > 0) {
+				console.log("------->", cellPhones);
+				cellPhones.forEach((phone) => {
 					if (phone.status === "update") {
-						updatedCellPhones[`cellPhone.${phone.id}`] =
-							phone.number;
-					} else if (phone.status === "delete") {
-						const index = parseInt(phone.id); // Parse the index from string to integer
-						console.log("Item to be deleted at index:", index);
-
-						// Construct a filter to remove the specified element by index
-						const filter = {
-							$and: [
-								{ [`cellPhone.${index}`]: phone.number },
-								{ [`cellPhone.${index}`]: { $exists: true } },
-							],
-						};
-
-						// Initialize as an empty object if it doesn't exist
-						if (!updatedCellPhones.$pull) {
-							updatedCellPhones.$pull = {};
-						}
-
-						// Merge with existing $pull operations
-						updatedCellPhones.$pull[`cellPhone.${index}`] =
+						updatedCellPhones[`cellPhones.${phone.numberId}`] =
 							phone.number;
 					}
+					//  else if (phone.status === "delete") {
+					// 	const index = parseInt(phone.id); // Parse the index from string to integer
+					// 	console.log("Item to be deleted at index:", index);
+
+					// 	// Construct a filter to remove the specified element by index
+					// 	const filter = {
+					// 		$and: [
+					// 			{ [`cellPhone.${index}`]: phone.number },
+					// 			{ [`cellPhone.${index}`]: { $exists: true } },
+					// 		],
+					// 	};
+
+					// 	// Initialize as an empty object if it doesn't exist
+					// 	if (!updatedCellPhones.$pull) {
+					// 		updatedCellPhones.$pull = {};
+					// 	}
+
+					// 	// Merge with existing $pull operations
+					// 	updatedCellPhones.$pull[`cellPhone.${index}`] =
+					// 		phone.number;
+					// }
 					console.log(
 						"this is the updateCellPhones ---------->",
 						updatedCellPhones

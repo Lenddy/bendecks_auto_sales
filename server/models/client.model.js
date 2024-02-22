@@ -18,8 +18,8 @@ const ClientSchema = new Schema(
 			],
 		},
 
-		cellPhone: {
-			type: [String],
+		cellPhones: {
+			type: [Object],
 			required: true,
 			// min: [1, "Model Of The Vehicle Must Be At Least 1 Character Long"],
 		},

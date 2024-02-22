@@ -6,17 +6,20 @@ export const create_one_client = gql`
 	mutation createOneClient(
 		$clientName: String!
 		$clientLastName: String!
-		$cellPhone: [String!]!
+		$cellPhones: [cellNumberInput!]!
 	) {
 		createOneClient(
 			clientName: $clientName
 			clientLastName: $clientLastName
-			cellPhone: $cellPhone
+			cellPhones: $cellPhones
 		) {
 			id
 			clientName
 			clientLastName
-			cellPhone
+			cellPhones {
+				numberId
+				number
+			}
 		}
 	}
 `;

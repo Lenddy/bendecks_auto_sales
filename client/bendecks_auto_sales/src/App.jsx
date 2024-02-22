@@ -9,7 +9,6 @@ import GetAllClients from "./components/clients/GetAllClients";
 import GetOneClient from "./components/clients/GetOneClient";
 import CreateOneClient from "./components/clients/CreateOneClient";
 
-import DeleteOneClient from "./components/clients/DeleteOneClient";
 import GetAllVehicles from "./components/vehicles/GetAllVehicles";
 import GetOneVehicle from "./components/vehicles/GetOneVehicle";
 import CreateOneVehicle from "./components/vehicles/CreateOneVehicle";
@@ -48,12 +47,6 @@ function App() {
 								setReload={setReload}
 							/>
 						}
-					/>
-
-					<Route
-						exact
-						path="/delete/:id"
-						element={<DeleteOneClient />}
 					/>
 
 					{/* vehicles */}

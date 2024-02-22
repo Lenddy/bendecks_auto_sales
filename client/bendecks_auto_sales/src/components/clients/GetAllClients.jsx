@@ -163,26 +163,9 @@ function GetAllClients() {
 													</span>
 												);
 											})} */}
-											{c?.cellPhone[0]}
+											{c?.cellPhones[0]?.number}
 										</p>
 									</td>
-									{/*<td>
-										<Link to={`/${c?.id}`}>
-											<button className="utilBtn">
-												Ver
-											</button>
-										</Link>
-										 <Link to={`/update/${c?.id}`}>
-											<button className="utilBtn">
-												Editar
-											</button>
-										</Link>
-										<Link to={`/delete/${c?.id}`}>
-											<button className="utilBtn">
-												Delete
-											</button>
-										</Link> 
-									</td>*/}
 								</tr>
 							);
 						})}

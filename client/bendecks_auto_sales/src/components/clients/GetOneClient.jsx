@@ -59,15 +59,6 @@ function GetOneClient() {
 
 	const submit = (e) => {
 		e.preventDefault();
-		// let sectionInfo = [];
-		// if (Object.keys(numberUpdate).length > 0) {
-		// 	console.log("there are keys");
-		// 	for (let [key, value] of Object.entries(numberUpdate)) {
-		// 		console.table(key, value);
-		// 		sectionInfo.push({ id: key, number: value });
-		// 	}
-		// }
-		// console.log("section info", sectionInfo);
 		updateOneClient({
 			variables: {
 				id,
@@ -93,8 +84,10 @@ function GetOneClient() {
 		}
 		if (data) {
 			console.log(data); // Log the fetched data
-			setClient(data.getOneClient); // Set the lists retrieved from the query to the state
-			setSections(client?.cellPhone);
+			setClient(data?.getOneClient); // Set the lists retrieved from the query to the state
+			console.log("clients ----->", client); // Log the fetched data
+			setSections(client?.cellPhones);
+			// console.log("sections ----->", sections); // Log the fetched data
 		}
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
@@ -229,9 +222,6 @@ function GetOneClient() {
 				</div>
 			) : (
 				<div className="oneInfo">
-					<div>
-						<button className={`submit_btn`}>Borrar Cliente</button>
-					</div>
 					<h1 className="notFound">{id}</h1>
 					<form onSubmit={submit} className="getOneForm">
 						<div className="section_union">
@@ -265,10 +255,11 @@ function GetOneClient() {
 						</div>
 						{/* so get the las index + 1 to make the new section be */}
 						{/* .cellPhone? */}
+						{/* it goes here */}
 						{sections?.length > 0 ? (
 							sections.map((phone, index) => (
 								<div
-									key={index}
+									key={phone?.numberId}
 									className="editablePhoneSection"
 								>
 									{index === sections.length - 1 ? (
@@ -289,7 +280,7 @@ function GetOneClient() {
 											}
 										>
 											{/*   */}
-											{phone}
+											{phone?.number}
 										</h1>
 									) : (
 										<h1
@@ -303,7 +294,7 @@ function GetOneClient() {
 											onFocus={() => setFocus(true)}
 											onBlur={() => setFocus(false)}
 										>
-											{phone}
+											{phone?.number}
 										</h1>
 									)}
 
@@ -368,11 +359,11 @@ function GetOneClient() {
 									// onChange={infoToBeSubmitted}
 									className="editableField"
 								>
-									{client?.cellPhone[0]}
+									{client?.cellPhones[0]?.number}
 								</h1>
 							</div>
 						)}
-
+						{/* it goes here */}
 						<div className="btnNewSection">
 							<button
 								type="button"

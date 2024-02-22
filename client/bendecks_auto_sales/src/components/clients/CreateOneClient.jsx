@@ -8,7 +8,7 @@ import io from "socket.io-client"; //importing socket.io-client
 
 const CreateOneClient = ({ reload, setReload }) => {
 	const [info, setInfo] = useState({
-		cellPhone: [""],
+		// cellPhone: [{ number: "" }],
 	});
 
 	const navigate = useNavigate();
@@ -61,7 +61,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 			variables: {
 				clientName: info.clientName,
 				clientLastName: info.clientLastName,
-				cellPhone: info.cellPhone,
+				cellPhones: info.cellPhones,
 			},
 			// this is re fetching the data
 			refetchQueries: [{ query: get_all_clients }],
@@ -81,7 +81,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 			});
 	};
 
-	const [sections, setSections] = useState([{ cellPhone: "" }]);
+	const [sections, setSections] = useState([{ number: "" }]);
 
 	const handleInputChange = (e, index) => {
 		const updatedSections = sections.map((section, secIndex) => {
@@ -90,17 +90,19 @@ const CreateOneClient = ({ reload, setReload }) => {
 			}
 			return section;
 		});
+
 		setSections(updatedSections);
+		setInfo({ ...info, cellPhones: updatedSections });
 
 		// Update the info.cellPhone with the cell phone numbers from all sections
-		const updatedCellPhones = updatedSections.map(
-			(section) => section.cellPhone
-		);
-		setInfo({ ...info, cellPhone: updatedCellPhones });
+		// const updatedCellPhones = updatedSections.map(
+		// 	(section) => section.number
+		// );
+		// setInfo({ ...info, cellPhones: updatedCellPhones });
 	};
 
 	const addSection = () => {
-		setSections([...sections, { cellPhone: "" }]);
+		setSections([...sections, { number: "" }]);
 	};
 
 	const deleteSection = (index) => {
@@ -140,7 +142,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 						<div key={index} className="newSection">
 							<input
 								type="text"
-								name="cellPhone"
+								name="number"
 								value={section.cellPhone}
 								onChange={(e) => {
 									handleInputChange(e, index);
