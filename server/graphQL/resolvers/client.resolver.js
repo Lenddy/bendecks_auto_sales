@@ -100,13 +100,9 @@ const clientResolvers = {
 				});
 		},
 
-		// !you change the cellPhones so get the change finish
 		updateOneClient: async (parent, args, context, info) => {
 			const { id, clientName, clientLastName, cellPhones } = args;
-			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime scalar
-			// title,description
-			const updatedCellPhones = {};
-			let deleteItem = false;
+			const update = { updatedAt: new Date().toISOString() };
 
 			if (clientName !== undefined) {
 				update.clientName = clientName;
@@ -115,76 +111,115 @@ const clientResolvers = {
 				update.clientLastName = clientLastName;
 			}
 			if (cellPhones !== undefined && cellPhones.length > 0) {
-				console.log("------->", cellPhones);
-				cellPhones.forEach((phone) => {
+				console.log("cellPhone ------>", cellPhones);
+				// Loop through each phone object in cellPhones array
+				for (const phone of cellPhones) {
 					if (phone.status === "update") {
-						updatedCellPhones[`cellPhones.${phone.numberId}`] =
-							phone.number;
+						// If status is update, set the updated phone number
+						const numberId = phone.numberId;
+						const numberKey = `cellPhones.$[elem${
+							numberId ? "." + numberId : ""
+						}].number`;
+						update.$set = update.$set || {};
+						update.$set[numberKey] = phone.number;
 					}
-					//  else if (phone.status === "delete") {
-					// 	const index = parseInt(phone.id); // Parse the index from string to integer
-					// 	console.log("Item to be deleted at index:", index);
-
-					// 	// Construct a filter to remove the specified element by index
-					// 	const filter = {
-					// 		$and: [
-					// 			{ [`cellPhone.${index}`]: phone.number },
-					// 			{ [`cellPhone.${index}`]: { $exists: true } },
-					// 		],
-					// 	};
-
-					// 	// Initialize as an empty object if it doesn't exist
-					// 	if (!updatedCellPhones.$pull) {
-					// 		updatedCellPhones.$pull = {};
-					// 	}
-
-					// 	// Merge with existing $pull operations
-					// 	updatedCellPhones.$pull[`cellPhone.${index}`] =
-					// 		phone.number;
-					// }
-					console.log(
-						"this is the updateCellPhones ---------->",
-						updatedCellPhones
-					);
-				});
-				update.$set = updatedCellPhones;
-				console.log("this is the update object", update);
+				}
 			}
 
-			return await Client.findByIdAndUpdate(id, update, {
-				new: true,
-			})
-				.then((updatedClient) => {
-					// When a client is updated
+			console.log("update object ->>>>>>>>", update);
 
-					// if (deleteItem) {
-					// 	clientResolvers.Mutation.deleteOneClientItem(null, {
-					// 		id,
-					// 		cellPhone,
-					// 	});
-					// }
+			const options = {
+				arrayFilters: [{ "elem.numberId": { $exists: true } }],
+				new: true,
+			};
+
+			return await Client.findByIdAndUpdate(id, update, options)
+				.then((updatedClient) => {
+					// Publish event after client is updated
 					pubsub.publish("CLIENT_UPDATED", {
 						onClientChange: {
 							eventType: "CLIENT_UPDATED",
 							clientChanges: updatedClient,
 						},
 					});
-					console.log(
-						"client updated",
-						updatedClient,
-						"\n____________________"
-					);
+					console.log("Client updated:", updatedClient);
 					return updatedClient;
 				})
 				.catch((err) => {
-					console.log(
-						"there was an error updating a client",
-						err,
-						"\n____________________"
-					);
+					console.log("Error updating client:", err);
 					throw err;
 				});
 		},
+		// !you change the cellPhones so get the change finish
+
+		// updateOneClient: async (parent, args, context, info) => {
+		// 	const { id, clientName, clientLastName, cellPhones } = args;
+		// 	const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime scalar
+		// 	// title,description
+		// 	const updatedCellPhones = {};
+		// 	let deleteItem = false;
+
+		// 	if (clientName !== undefined) {
+		// 		update.clientName = clientName;
+		// 	}
+		// 	if (clientLastName !== undefined) {
+		// 		update.clientLastName = clientLastName;
+		// 	}
+		// 	if (cellPhones !== undefined && cellPhones.length > 0) {
+		// 		// ! send a array of object that contain number, numberid,status
+		// 		// ! loop over the array of objects   if the status is update just add the objects  if the status is delete  grab the number id and search for that element in the db and delete it
+
+		// 		console.log("cellPhones------->", cellPhones);
+
+		// 		cellPhones.forEach((phone) => {
+		// 			if (phone.status === "update") {
+		// 				updatedCellPhones[`cellPhones.${phone.numberId}`] =
+		// 					phone.number;
+		// 			}
+
+		// 			console.log(
+		// 				"this is the updateCellPhones ---------->",
+		// 				updatedCellPhones
+		// 			);
+		// 		});
+		// 		update.$set = updatedCellPhones;
+		// 		console.log("this is the update object", update);
+		// 	}
+
+		// 	return await Client.findByIdAndUpdate(id, update, {
+		// 		new: true,
+		// 	})
+		// 		.then((updatedClient) => {
+		// 			// When a client is updated
+
+		// 			// if (deleteItem) {
+		// 			// 	clientResolvers.Mutation.deleteOneClientItem(null, {
+		// 			// 		id,
+		// 			// 		cellPhone,
+		// 			// 	});
+		// 			// }
+		// 			pubsub.publish("CLIENT_UPDATED", {
+		// 				onClientChange: {
+		// 					eventType: "CLIENT_UPDATED",
+		// 					clientChanges: updatedClient,
+		// 				},
+		// 			});
+		// 			console.log(
+		// 				"client updated",
+		// 				updatedClient,
+		// 				"\n____________________"
+		// 			);
+		// 			return updatedClient;
+		// 		})
+		// 		.catch((err) => {
+		// 			console.log(
+		// 				"there was an error updating a client",
+		// 				err,
+		// 				"\n____________________"
+		// 			);
+		// 			throw err;
+		// 		});
+		// },
 
 		deleteOneClient: async (_, { id }) => {
 			return await Client.findByIdAndDelete(id)

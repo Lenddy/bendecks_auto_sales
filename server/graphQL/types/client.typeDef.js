@@ -4,11 +4,6 @@ require("./dateTime");
 const clientTypeDef = gql`
 	scalar DateTime
 
-	type cellNumber {
-		numberId: ID!
-		number: String!
-	}
-
 	#Object
 	type Client {
 		id: ID!
@@ -17,6 +12,11 @@ const clientTypeDef = gql`
 		cellPhones: [cellNumber!]!
 		createdAt: DateTime!
 		updatedAt: DateTime!
+	}
+
+	type cellNumber {
+		numberId: ID
+		number: String!
 	}
 
 	type ClientChange {

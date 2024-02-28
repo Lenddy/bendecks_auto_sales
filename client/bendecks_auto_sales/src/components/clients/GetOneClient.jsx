@@ -20,6 +20,7 @@ function GetOneClient() {
 
 	// Set up state to manage the lists fetched from the query
 	const [client, setClient] = useState();
+	const [clientDelete, setClientDelete] = useState(false);
 
 	const [notFound, setNotFound] = useState(false);
 
@@ -50,6 +51,37 @@ function GetOneClient() {
 		// }
 	);
 
+	const [deleteOneClient] = useMutation(
+		delete_one_client
+		// 	 {
+		// 	update(cache, { data: { deleteItem } }) {
+		// 		cache.modify({
+		// 			fields: {
+		// 				allItems(existingItems, { readField }) {
+		// 					return existingItems.filter(itemRef => readField('id', itemRef) !== deleteItem.id);
+		// 				}
+		// 			}
+		// 		});
+		// 	}
+		// }
+	);
+
+	const deleteClient = () => {
+		deleteOneClient({
+			variables: {
+				id, // Only pass the ID to the deletion mutation
+			},
+			refetchQueries: [{ query: get_all_clients }],
+		})
+			.then(() => {
+				// Redirect after successful deletion
+				navigate("/dashboard");
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
 	const infoToBeSubmitted = (e) => {
 		setInfo({
 			...info,
@@ -64,7 +96,7 @@ function GetOneClient() {
 				id,
 				clientName: info.clientName,
 				clientLastName: info.clientLastName,
-				cellPhone: numberUpdate,
+				cellPhones: numberUpdate,
 			},
 			refetchQueries: [{ query: get_all_clients }],
 		})
@@ -174,39 +206,6 @@ function GetOneClient() {
 		});
 	};
 
-	const [deleteOneClient] = useMutation(
-		delete_one_client
-		// 	 {
-		// 	update(cache, { data: { deleteItem } }) {
-		// 		cache.modify({
-		// 			fields: {
-		// 				allItems(existingItems, { readField }) {
-		// 					return existingItems.filter(itemRef => readField('id', itemRef) !== deleteItem.id);
-		// 				}
-		// 			}
-		// 		});
-		// 	}
-		// }
-	);
-
-	const [clientDelete, setClientDelete] = useState(false);
-
-	const deleteClient = () => {
-		deleteOneClient({
-			variables: {
-				id, // Only pass the ID to the deletion mutation
-			},
-			refetchQueries: [{ query: get_all_clients }],
-		})
-			.then(() => {
-				// Redirect after successful deletion
-				navigate("/dashboard");
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
 	// now figure out how to delete the last deleted items from the database  maybe add a new field that says delete and update so that in the back end you can make the change to delete and or updated
 
 	return (
@@ -278,6 +277,7 @@ function GetOneClient() {
 													? newSectionRef
 													: null
 											}
+											key={index}
 										>
 											{/*   */}
 											{phone?.number}
@@ -309,6 +309,7 @@ function GetOneClient() {
 															index
 														)
 													}
+													key={index}
 												>
 													<p>&#8722;</p>
 												</button>
@@ -323,6 +324,7 @@ function GetOneClient() {
 																)
 															}
 															className="deleteSection"
+															key={index}
 														>
 															<p> &#10003;</p>
 														</button>
@@ -337,6 +339,7 @@ function GetOneClient() {
 																)
 															}
 															className="deleteSection"
+															key={index}
 														>
 															<p> &#10005;</p>
 														</button>

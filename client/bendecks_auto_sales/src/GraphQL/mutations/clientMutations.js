@@ -29,18 +29,21 @@ export const update_One_client = gql`
 		$id: ID!
 		$clientName: String
 		$clientLastName: String
-		$cellPhone: [NumberInput]
+		$cellPhones: [NumberInput]
 	) {
 		updateOneClient(
 			id: $id
 			clientName: $clientName
 			clientLastName: $clientLastName
-			cellPhone: $cellPhone
+			cellPhones: $cellPhones
 		) {
 			id
 			clientName
 			clientLastName
-			cellPhone
+			cellPhones {
+				numberId
+				number
+			}
 			# createdAt
 			# updateAt
 		}
