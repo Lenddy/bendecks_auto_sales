@@ -40,6 +40,7 @@ const clientTypeDef = gql`
 		numberId: ID
 		number: String
 		status: String
+		# __typename: String
 	}
 
 	#mutations

@@ -28,6 +28,7 @@ function GetOneClient() {
 	const [focus, setFocus] = useState(false);
 
 	const [sections, setSections] = useState();
+
 	const [numberUpdate, setNumberUpdate] = useState([]);
 	const [confirmDelete, setConfirmDelete] = useState(
 		Array(sections?.length).fill(false)
@@ -101,8 +102,10 @@ function GetOneClient() {
 			refetchQueries: [{ query: get_all_clients }],
 		})
 			.then((res) => {
-				console.log(res.data);
-				// navigate(`/${id}`);
+				// console.log(res.data);
+				setFocus(false);
+
+				setNumberUpdate([]);
 			})
 			.catch((error) => {
 				console.log("there was an error", error);
@@ -128,10 +131,15 @@ function GetOneClient() {
 	}, [error, loading, data, client]); // Dependencies for the useEffect hook
 
 	const addSection = () => {
-		setSections((prevSections) => [...prevSections, ""]);
+		const newSection = {
+			numberId: Date.now(), // Generate a unique timestamp as the numberId
+			number: "", // Initial content is empty
+			status: "add", // Status for adding
+		};
+		setNumberUpdate([...numberUpdate, newSection]);
+		setSections((prevSections) => [...prevSections, newSection]);
 	};
 
-	// ! figure out a way to delete one or multiple number from he data base
 	const deleteSection = (index) => {
 		const filteredSections = sections.filter(
 			(_, secIndex) => secIndex !== index
@@ -142,48 +150,68 @@ function GetOneClient() {
 			(_, deletedIndex) => deletedIndex !== index
 		);
 		setConfirmDelete(filterConfirmDelete);
-		let objectExists = false;
 
+		// Check if section exists in numberUpdate
+		let objectExists = false;
 		const updatedNumberUpdate = numberUpdate.map((item) => {
 			if (item.id === index) {
 				objectExists = true;
-				return {
-					...item,
-					number: sections[index],
-					status: "delete",
-				};
+				return { ...item, status: "delete" }; // Update status to "delete"
 			}
 			return item;
 		});
-		if (!objectExists) {
-			updatedNumberUpdate.push({
-				id: index,
-				number: sections[index],
-				status: "delete",
-			});
-		}
 
-		setNumberUpdate(updatedNumberUpdate);
+		// If section doesn't exist, add it to numberUpdate
+		if (!objectExists) {
+			const { __typename, ...sectionWithoutTypename } = sections[index]; // Destructure __typename and get the rest of the properties
+			const deletedSection = {
+				...sectionWithoutTypename,
+				status: "delete",
+			}; // Create a new object without __typename and with status field
+			updatedNumberUpdate.push(deletedSection); // Add to numberUpdate
+		}
+		setNumberUpdate(updatedNumberUpdate); // Update numberUpdate state
+		setFocus(true);
 	};
 
 	const changeSectionVal = (e, index) => {
 		let objectExists = false;
 
+		const { __typename, numberId, ...sectionWithoutTypename } =
+			sections[index];
+
 		const updatedNumberUpdate = numberUpdate.map((item) => {
-			if (item.id === index) {
+			if (item.status === "add" && item.numberId === numberId) {
 				objectExists = true;
 				return {
-					...item,
+					numberId: item.numberId,
+					number: e.target.textContent,
+					status: "add",
+				};
+			}
+
+			if (
+				item.numberId === numberId &&
+				item.numberId !== undefined &&
+				item.status !== "add"
+			) {
+				objectExists = true;
+				return {
+					numberId: item.numberId,
 					number: e.target.textContent,
 					status: "update",
 				};
+			}
+
+			if (item.status === "add" && item.numberId === numberId) {
+				objectExists = true;
 			}
 			return item;
 		});
 
 		if (!objectExists) {
 			updatedNumberUpdate.push({
-				id: index,
+				numberId,
 				number: e.target.textContent,
 				status: "update",
 			});
@@ -232,7 +260,7 @@ function GetOneClient() {
 									onInput={infoToBeSubmitted}
 									className="editableField "
 									onFocus={() => setFocus(true)}
-									onBlur={() => setFocus(false)}
+									// onBlur={() => setFocus(false)}
 								>
 									{client?.clientName}
 								</h1>
@@ -246,15 +274,12 @@ function GetOneClient() {
 									onInput={infoToBeSubmitted}
 									className="editableField"
 									onFocus={() => setFocus(true)}
-									onBlur={() => setFocus(false)}
+									// onBlur={() => setFocus(false)}
 								>
 									{client?.clientLastName}
 								</h1>
 							</div>
 						</div>
-						{/* so get the las index + 1 to make the new section be */}
-						{/* .cellPhone? */}
-						{/* it goes here */}
 						{sections?.length > 0 ? (
 							sections.map((phone, index) => (
 								<div
@@ -270,7 +295,7 @@ function GetOneClient() {
 												changeSectionVal(e, index);
 											}}
 											onFocus={() => setFocus(true)}
-											onBlur={() => setFocus(false)}
+											// onBlur={() => setFocus(false)}
 											className="editableField"
 											ref={
 												index === sections.length - 1
@@ -279,7 +304,6 @@ function GetOneClient() {
 											}
 											key={index}
 										>
-											{/*   */}
 											{phone?.number}
 										</h1>
 									) : (
@@ -292,7 +316,7 @@ function GetOneClient() {
 												changeSectionVal(e, index);
 											}}
 											onFocus={() => setFocus(true)}
-											onBlur={() => setFocus(false)}
+											// onBlur={() => setFocus(false)}
 										>
 											{phone?.number}
 										</h1>
