@@ -84,9 +84,10 @@ function GetOneClient() {
 	};
 
 	const infoToBeSubmitted = (e) => {
+		console.log(e);
 		setInfo({
 			...info,
-			[e.target.name]: e.target.innerText,
+			[e.target.getAttribute("name")]: e.target.innerText,
 		});
 	};
 
