@@ -1,4 +1,5 @@
 const Vehicle = require("../../models/vehicle.model");
+const { v4: uuidv4 } = require("uuid");
 const pubsub = require("../pubsub");
 
 // const { PubSub } = require("graphql-subscriptions");
@@ -51,18 +52,39 @@ const vehicleResolvers = {
 	},
 
 	Mutation: {
-		createOneVehicle: async (_, args) => {
-			const { vehicleName, vehicleModel, year, color, boughtPrice } =
-				args;
+		createOneVehicle: async (
+			_,
+			{ vehicleName, vehicleModels, years, colors, boughtPrice }
+		) => {
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			//Date;
+
+			vehicleModels = vehicleModels.map((modelDate) => {
+				return {
+					modelId: uuidv4(), // Generates a unique UUID
+					...modelDate,
+				};
+			});
+
+			years = years.map((yearDate) => {
+				return {
+					yearId: uuidv4(), // Generates a unique UUID
+					...yearDate,
+				};
+			});
+
+			colors = colors.map((colorDate) => {
+				return {
+					colorId: uuidv4(), // Generates a unique UUID
+					...colorDate,
+				};
+			});
 			return await Vehicle.create({
 				vehicleName,
-				vehicleModel,
-				year,
-				color,
-				color,
+				vehicleModels,
+				years,
+				colors,
 				boughtPrice,
 				createdAt,
 				updatedAt,
@@ -100,9 +122,9 @@ const vehicleResolvers = {
 			const {
 				id,
 				vehicleName,
-				vehicleModel,
-				year,
-				color,
+				vehicleModels,
+				years,
+				colors,
 				boughtPrice,
 				sellingPrice,
 			} = args;
@@ -111,17 +133,195 @@ const vehicleResolvers = {
 			if (vehicleName !== undefined) {
 				update.vehicleName = vehicleName;
 			}
-			if (vehicleModel !== undefined) {
-				update.vehicleModel = vehicleModel;
-			}
-			if (year !== undefined) {
-				update.year = year;
-			}
-			if (color !== undefined) {
-				update.color = color;
-			}
+
 			if (boughtPrice !== undefined) {
 				update.boughtPrice = boughtPrice;
+			}
+
+			if (vehicleModels !== undefined && vehicleModels.length > 0) {
+				const bulkOps = [];
+				// ! find out why the models are not be updated
+				for (const model of vehicleModels) {
+					if (model.status === "add") {
+						const newModel = {
+							modelId: uuidv4(),
+							model: model.model,
+						};
+
+						bulkOps.push({
+							updateOne: {
+								filter: { _id: id },
+								update: {
+									$push: {
+										models: newModel,
+									},
+								},
+							},
+						});
+					} else if (model.status === "update") {
+						bulkOps.push({
+							updateOne: {
+								filter: {
+									_id: id,
+									"models.modelId": model.modelId,
+								},
+
+								update: {
+									$set: {
+										"models.$.model": model.model,
+									},
+								},
+							},
+						});
+					} else if (model.status === "delete") {
+						// If status is delete, push delete operation
+						bulkOps.push({
+							updateOne: {
+								filter: {
+									_id: id,
+									"models.modelId": model.modelId,
+								},
+
+								update: {
+									$pull: {
+										models: {
+											modelId: model.modelId,
+										},
+									},
+								},
+							},
+						});
+					}
+				}
+
+				// Execute all bulk operations together
+				if (bulkOps.length > 0) {
+					await Vehicle.bulkWrite(bulkOps);
+				}
+			}
+
+			if (years !== undefined && years.length > 0) {
+				const bulkOps = [];
+
+				for (const year of years) {
+					if (year.status === "add") {
+						const newYear = {
+							yearId: uuidv4(),
+							year: year.year,
+						};
+
+						bulkOps.push({
+							updateOne: {
+								filter: { _id: id },
+								update: {
+									$push: {
+										years: newYear,
+									},
+								},
+							},
+						});
+					} else if (year.status === "update") {
+						bulkOps.push({
+							updateOne: {
+								filter: {
+									_id: id,
+									"years.yearId": year.yearId,
+								},
+
+								update: {
+									$set: {
+										"years.$.year": year.year,
+									},
+								},
+							},
+						});
+					} else if (year.status === "delete") {
+						// If status is delete, push delete operation
+						bulkOps.push({
+							updateOne: {
+								filter: {
+									_id: id,
+									"years.yearId": year.yearId,
+								},
+
+								update: {
+									$pull: {
+										years: {
+											yearId: year.yearId,
+										},
+									},
+								},
+							},
+						});
+					}
+				}
+
+				// Execute all bulk operations together
+				if (bulkOps.length > 0) {
+					await Vehicle.bulkWrite(bulkOps);
+				}
+			}
+
+			if (colors !== undefined && colors.length > 0) {
+				const bulkOps = [];
+
+				for (const color of colors) {
+					if (color.status === "add") {
+						const newColor = {
+							colorId: uuidv4(),
+							color: color.color,
+						};
+
+						bulkOps.push({
+							updateOne: {
+								filter: { _id: id },
+								update: {
+									$push: {
+										colors: newColor,
+									},
+								},
+							},
+						});
+					} else if (color.status === "update") {
+						bulkOps.push({
+							updateOne: {
+								filter: {
+									_id: id,
+									"colors.colorId": color.colorId,
+								},
+
+								update: {
+									$set: {
+										"colors.$.color": color.color,
+									},
+								},
+							},
+						});
+					} else if (color.status === "delete") {
+						// If status is delete, push delete operation
+						bulkOps.push({
+							updateOne: {
+								filter: {
+									_id: id,
+									"colors.colorId": color.colorId,
+								},
+
+								update: {
+									$pull: {
+										colors: {
+											colorId: color.colorId,
+										},
+									},
+								},
+							},
+						});
+					}
+				}
+
+				// Execute all bulk operations together
+				if (bulkOps.length > 0) {
+					await Vehicle.bulkWrite(bulkOps);
+				}
 			}
 
 			return await Vehicle.findByIdAndUpdate(id, update, {

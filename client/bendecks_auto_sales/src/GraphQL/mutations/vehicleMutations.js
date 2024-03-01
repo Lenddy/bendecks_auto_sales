@@ -6,22 +6,28 @@ export const create_one_vehicle = gql`
 	mutation createOneVehicle(
 		$vehicleName: String!
 		$vehicleModel: String!
-		$year: String!
-		$color: [String]
+		$years: [yearType]
+		$colors: [colorInput]
 		$boughtPrice: Float
 	) {
 		createOneVehicle(
 			vehicleName: $vehicleName
 			vehicleModel: $vehicleModel
-			year: $year
-			color: $color
+			years: $years
+			colors: $colors
 			boughtPrice: $boughtPrice
 		) {
 			id
 			vehicleName
 			vehicleModel
-			year
-			color
+			years {
+				yearId
+				year
+			}
+			colors {
+				colorId
+				color
+			}
 			boughtPrice
 			createdAt
 			updatedAt
@@ -34,23 +40,29 @@ export const update_One_vehicle = gql`
 		$id: ID!
 		$vehicleName: String
 		$vehicleModel: String
-		$year: String
-		$color: [String]
+		$years: [yearType]
+		$colors: [colorInput]
 		$boughtPrice: Float
 	) {
 		updateOneVehicle(
 			id: $id
 			vehicleName: $vehicleName
 			vehicleModel: $vehicleModel
-			year: $year
-			color: $color
+			years: $years
+			colors: $colors
 			boughtPrice: $boughtPrice
 		) {
 			id
 			vehicleName
 			vehicleModel
-			year
-			color
+			years {
+				yearId
+				year
+			}
+			colors {
+				colorId
+				color
+			}
 			boughtPrice
 			createdAt
 			updatedAt

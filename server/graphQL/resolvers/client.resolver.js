@@ -118,8 +118,8 @@ const clientResolvers = {
 					if (phone.status === "add") {
 						// If status is add, generate numberId and push new phone object
 						const newPhone = {
-							number: phone.number,
 							numberId: uuidv4(),
+							number: phone.number,
 						};
 
 						bulkOps.push({

@@ -13,7 +13,6 @@ import GetAllVehicles from "./components/vehicles/GetAllVehicles";
 import GetOneVehicle from "./components/vehicles/GetOneVehicle";
 import CreateOneVehicle from "./components/vehicles/CreateOneVehicle";
 import DeleteOneVehicle from "./components/vehicles/DeleteOneVehicle";
-import UpdateOneVehicle from "./components/vehicles/UpdateOneVehicle";
 import GetAllDeals from "./components/deals/GetAllDeals";
 import GetOneDeal from "./components/deals/GetOneDeal";
 import CreateOneDeal from "./components/deals/CreateOneDeal";
@@ -60,20 +59,13 @@ function App() {
 					<Route
 						exact
 						path="/vehicles/:id"
-						element={<UpdateOneVehicle />}
-						// <GetOneVehicle />
+						element={<GetOneVehicle />}
 					/>
 
 					<Route
 						exact
 						path="/vehicles/add"
 						element={<CreateOneVehicle />}
-					/>
-
-					<Route
-						exact
-						path="/vehicles/update/:id"
-						element={<UpdateOneVehicle />}
 					/>
 
 					<Route

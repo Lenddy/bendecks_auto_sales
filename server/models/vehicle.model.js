@@ -10,20 +10,16 @@ const VehicleSchema = new Schema(
 			min: [1, "Name Of The Vehicle Must Be At Least 1 Characters Long"],
 		},
 
-		vehicleModel: {
-			type: String,
-			required: true,
-			min: [1, "Model Of The Vehicle Must Be At Least 1 Character Long"],
-		},
-		year: {
-			type: String,
-			required: true,
-			min: 2,
-			max: 4,
+		vehicleModels: {
+			type: [Object],
 		},
 
-		color: {
-			type: [String],
+		years: {
+			type: [Object],
+		},
+
+		colors: {
+			type: [Object],
 		},
 
 		boughtPrice: {

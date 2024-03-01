@@ -7,8 +7,14 @@ export const get_all_vehicles = gql`
 			id
 			vehicleName
 			vehicleModel
-			year
-			color
+			years {
+				yearId
+				year
+			}
+			colors {
+				colorId
+				color
+			}
 			boughtPrice
 			createdAt
 			updatedAt
@@ -23,8 +29,14 @@ export const get_one_vehicle = gql`
 			id
 			vehicleName
 			vehicleModel
-			year
-			color
+			years {
+				yearId
+				year
+			}
+			colors {
+				colorId
+				color
+			}
 			boughtPrice
 			createdAt
 			updatedAt

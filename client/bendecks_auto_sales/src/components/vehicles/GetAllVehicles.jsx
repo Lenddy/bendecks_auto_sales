@@ -5,14 +5,10 @@ import { useNavigate, Link } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
-import io from "socket.io-client"; //importing socket.io-client
 
 import { VEHICLE_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscriptions";
 
-// !!! make a funtion that has a loop that makes more of a tag so that uses can add more than on e number ,color
-
 function GetAllVehicles() {
-	// const [socket] = useState(() => io(":8080")); //connect to the server
 	const navigate = useNavigate();
 	const navigateTO = (url) => {
 		navigate(url);
@@ -25,7 +21,6 @@ function GetAllVehicles() {
 	const [vehicles, setVehicles] = useState([]);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!   find out why the subsciption is not updating the info on the page for others
-
 	// Subscription for client changes
 	useSubscription(VEHICLE_CHANGE_SUBSCRIPTION, {
 		onData: (infoChange) => {
@@ -91,16 +86,12 @@ function GetAllVehicles() {
 
 			<table>
 				<tr className="tableHeader">
-					{/* <th>
-							<h2>ID </h2>
-						</th> */}
 					<th>
 						<h2>Nombre/Modelo</h2>
 					</th>
 					<th>
 						<h2>color</h2>
 					</th>
-					{/* <th></th> */}
 				</tr>
 				{vehicles
 					.filter(
@@ -129,34 +120,9 @@ function GetAllVehicles() {
 									</Link>
 								</td>
 								<td>
-									<p>
-										{/* {c?.cellPhone?.map((n, idx) => {
-												return (
-													<span key={idx}>
-														<span>{n}</span> ,
-													</span>
-												);
-											})} */}
-										{v?.color[0]}
-									</p>
+									{/* <p>{v?.colors[0]}</p> */}
+									colors
 								</td>
-								{/*<td>
-										<Link to={`/${c?.id}`}>
-											<button className="utilBtn">
-												Ver
-											</button>
-										</Link>
-										 <Link to={`/update/${c?.id}`}>
-											<button className="utilBtn">
-												Editar
-											</button>
-										</Link>
-										<Link to={`/delete/${c?.id}`}>
-											<button className="utilBtn">
-												Delete
-											</button>
-										</Link> 
-									</td>*/}
 							</tr>
 						);
 					})}
@@ -165,15 +131,4 @@ function GetAllVehicles() {
 	);
 }
 
-{
-	/* <Link to={`/vehicles/${v.id}`}>
-				<button>view</button>
-			</Link>
-			<Link to={`/vehicles/update/${v?.id}`}>
-				<button>update</button>
-			</Link>
-			<Link to={`/vehicles/delete/${v?.id}`}>
-				<button>delete</button>
-			</Link> */
-}
-export default GetAllVehicles; // Export the GetAllList component
+export default GetAllVehicles;
