@@ -17,18 +17,46 @@ const GetOneVehicle = () => {
 	const [focus, setFocus] = useState(false);
 
 	const [sections, setSections] = useState();
+	const [yearSections, setYearSections] = useState();
+	const [colorSections, setColorSections] = useState();
 
 	const [vehicleModelUpdate, setVehicleModelUpdate] = useState([]);
+	const [yearUpdate, setYearUpdate] = useState([]);
+	const [colorUpdate, setColorUpdate] = useState([]);
+
 	const [confirmDelete, setConfirmDelete] = useState(
 		Array(sections?.length).fill(false)
 	);
+	const [confirmYearDelete, setConfirmYearDelete] = useState(
+		Array(yearSections?.length).fill(false)
+	);
+	const [confirmColorDelete, setConfirmColorDelete] = useState(
+		Array(yearSections?.length).fill(false)
+	);
+
 	const newSectionRef = useRef(null);
+	const newYearSectionRef = useRef(null);
+	const newColorSectionRef = useRef(null);
 
 	const { error, loading, data } = useQuery(get_one_vehicle, {
 		variables: { id },
 	});
 
 	const [updateOneVehicle] = useMutation(update_One_vehicle);
+	const [deleteOneClient] = useMutation(
+		delete_one_vehicle
+		// 	 {
+		// 	update(cache, { data: { deleteItem } }) {
+		// 		cache.modify({
+		// 			fields: {
+		// 				allItems(existingItems, { readField }) {
+		// 					return existingItems.filter(itemRef => readField('id', itemRef) !== deleteItem.id);
+		// 				}
+		// 			}
+		// 		});
+		// 	}
+		// }
+	);
 
 	useEffect(() => {
 		if (!loading && data) {
@@ -50,9 +78,9 @@ const GetOneVehicle = () => {
 			variables: {
 				id,
 				vehicleName: info.vehicleName,
-				vehicleModels: info.vehicleModels,
-				years: info.years,
-				colors: info.colors,
+				vehicleModels: vehicleModelUpdate,
+				years: yearUpdate,
+				colors: colorUpdate,
 				// boughtPrice: parseFloat(info.boughtPrice),
 			},
 			// this is re fetching the data
@@ -60,7 +88,8 @@ const GetOneVehicle = () => {
 		})
 			.then((res) => {
 				console.log(res.data);
-				navigate(`/vehicles/${id}`);
+				setFocus(false);
+				// navigate(`/vehicles/${id}`);
 			})
 			.catch((error) => {
 				console.log("there was an error", error);
@@ -76,6 +105,8 @@ const GetOneVehicle = () => {
 			console.log(data); // Log the fetched data
 			setVehicle(data.getOneVehicle); // Set the lists retrieved from the query to the state
 			setSections(vehicle?.vehicleModels);
+			setYearSections(vehicle?.years);
+			setColorSections(vehicle?.colors);
 		}
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
@@ -227,20 +258,6 @@ const GetOneVehicle = () => {
 		});
 	};
 
-	const [deleteOneClient] = useMutation(
-		delete_one_vehicle
-		// 	 {
-		// 	update(cache, { data: { deleteItem } }) {
-		// 		cache.modify({
-		// 			fields: {
-		// 				allItems(existingItems, { readField }) {
-		// 					return existingItems.filter(itemRef => readField('id', itemRef) !== deleteItem.id);
-		// 				}
-		// 			}
-		// 		});
-		// 	}
-		// }
-	);
 	const deleteClient = () => {
 		deleteOneClient({
 			variables: {
@@ -262,7 +279,220 @@ const GetOneVehicle = () => {
 			newSectionRef.current.focus();
 		}
 	};
-	//! fix this  you should make it work like the get one in clients
+
+	// ! for year
+
+	const changeYearSectionVal = (e, index) => {
+		let objectExists = false;
+
+		const { __typename, yearId, ...sectionWithoutTypename } =
+			yearSections[index];
+
+		const itemUpdate = yearUpdate.map((item) => {
+			if (item.status === "add" && item.yearId === yearId) {
+				objectExists = true;
+				return {
+					yearId: item.yearId,
+					year: e.target.textContent,
+					status: "add",
+				};
+			}
+
+			if (
+				item.yearId === yearId &&
+				item.yearId !== undefined &&
+				item.status !== "add"
+			) {
+				objectExists = true;
+				return {
+					yearId: item.yearId,
+					year: e.target.textContent,
+					status: "update",
+				};
+			}
+
+			if (item.status === "add" && item.yearId === yearId) {
+				objectExists = true;
+			}
+			return item;
+		});
+
+		if (!objectExists) {
+			itemUpdate.push({
+				yearId,
+				year: e.target.textContent,
+				status: "update",
+			});
+		}
+
+		setYearUpdate(itemUpdate);
+	};
+
+	const toggleConfirmYearDelete = (index) => {
+		setConfirmYearDelete((prevState) => {
+			const newState = [...prevState];
+			newState[index] = !newState[index];
+			return newState;
+		});
+	};
+
+	const deleteYearSection = (index) => {
+		const filteredSections = yearSections.filter(
+			(_, secIndex) => secIndex !== index
+		);
+		setYearSections(filteredSections);
+
+		const filterConfirmDelete = confirmYearDelete.filter(
+			(_, deletedIndex) => deletedIndex !== index
+		);
+		setConfirmYearDelete(filterConfirmDelete);
+
+		// Check if section exists in numberUpdate
+		let objectExists = false;
+		const itemUpdate = yearUpdate.map((item) => {
+			if (item.id === index) {
+				objectExists = true;
+				return { ...item, status: "delete" }; // Update status to "delete"
+			}
+			return item;
+		});
+
+		// If section doesn't exist, add it to numberUpdate
+		if (!objectExists) {
+			const { __typename, ...sectionWithoutTypename } =
+				yearSections[index]; // Destructure __typename and get the rest of the properties
+			const deletedSection = {
+				...sectionWithoutTypename,
+				status: "delete",
+			}; // Create a new object without __typename and with status field
+			itemUpdate.push(deletedSection); // Add to numberUpdate
+		}
+		setYearUpdate(itemUpdate); // Update numberUpdate state
+		setFocus(true);
+	};
+
+	const addYearSection = () => {
+		const newSection = {
+			yearId: Date.now(), // Generate a unique timestamp as the numberId
+			year: "", // Initial content is empty
+			status: "add", // Status for adding
+		};
+		setYearUpdate([...yearUpdate, newSection]);
+		setYearSections((prevSections) => [...prevSections, newSection]);
+	};
+
+	const focusYearNewInput = () => {
+		if (newYearSectionRef.current) {
+			newYearSectionRef.current.focus();
+		}
+	};
+
+	// !for color
+
+	const changeColorSectionVal = (e, index) => {
+		let objectExists = false;
+
+		const { __typename, colorId, ...sectionWithoutTypename } =
+			colorSections[index];
+
+		const itemUpdate = colorUpdate.map((item) => {
+			if (item.status === "add" && item.colorId === colorId) {
+				objectExists = true;
+				return {
+					colorId: item.colorId,
+					color: e.target.textContent,
+					status: "add",
+				};
+			}
+
+			if (
+				item.colorId === colorId &&
+				item.colorId !== undefined &&
+				item.status !== "add"
+			) {
+				objectExists = true;
+				return {
+					colorId: item.colorId,
+					color: e.target.textContent,
+					status: "update",
+				};
+			}
+
+			if (item.status === "add" && item.colorId === colorId) {
+				objectExists = true;
+			}
+			return item;
+		});
+
+		if (!objectExists) {
+			itemUpdate.push({
+				colorId,
+				color: e.target.textContent,
+				status: "update",
+			});
+		}
+
+		setColorUpdate(itemUpdate);
+	};
+
+	const toggleConfirmColorDelete = (index) => {
+		setConfirmColorDelete((prevState) => {
+			const newState = [...prevState];
+			newState[index] = !newState[index];
+			return newState;
+		});
+	};
+
+	const deleteColorSection = (index) => {
+		const filteredSections = colorSections.filter(
+			(_, secIndex) => secIndex !== index
+		);
+		setColorSections(filteredSections);
+
+		const filterConfirmDelete = confirmColorDelete.filter(
+			(_, deletedIndex) => deletedIndex !== index
+		);
+		setConfirmColorDelete(filterConfirmDelete);
+
+		// Check if section exists in numberUpdate
+		let objectExists = false;
+		const itemUpdate = colorUpdate.map((item) => {
+			if (item.id === index) {
+				objectExists = true;
+				return { ...item, status: "delete" }; // Update status to "delete"
+			}
+			return item;
+		});
+
+		// If section doesn't exist, add it to numberUpdate
+		if (!objectExists) {
+			const { __typename, ...sectionWithoutTypename } =
+				colorSections[index]; // Destructure __typename and get the rest of the properties
+			const deletedSection = {
+				...sectionWithoutTypename,
+				status: "delete",
+			}; // Create a new object without __typename and with status field
+			itemUpdate.push(deletedSection); // Add to numberUpdate
+		}
+		setColorUpdate(itemUpdate); // Update numberUpdate state
+		setFocus(true);
+	};
+
+	const addColorSection = () => {
+		const newSection = {
+			colorId: Date.now(), // Generate a unique timestamp as the numberId
+			color: "", // Initial content is empty
+			status: "add", // Status for adding
+		};
+		setColorUpdate([...colorUpdate, newSection]);
+		setColorSections((prevSections) => [...prevSections, newSection]);
+	};
+
+	const focusColorNewInput = () => {
+		if (newColorSectionRef.current) {
+			newColorSectionRef.current.focus();
+		}
+	};
 
 	return (
 		<div className="getOne">
@@ -296,6 +526,7 @@ const GetOneVehicle = () => {
 								</h1>
 							</div>
 						</div>
+						{/* models */}
 						{sections?.length > 0 ? (
 							sections.map((model, index) => (
 								<div
@@ -306,7 +537,7 @@ const GetOneVehicle = () => {
 										<h1
 											contentEditable
 											suppressContentEditableWarning
-											name={`vehicle-${index}`}
+											name={`model-${index}`}
 											onInput={(e) => {
 												changeSectionVal(e, index);
 											}}
@@ -327,7 +558,7 @@ const GetOneVehicle = () => {
 											contentEditable
 											suppressContentEditableWarning
 											className="editableField"
-											name={`vehicle-${index}`}
+											name={`model-${index}`}
 											onInput={(e) => {
 												changeSectionVal(e, index);
 											}}
@@ -406,12 +637,265 @@ const GetOneVehicle = () => {
 								</h1>
 							</div>
 						)}
+
 						{/* it goes here */}
 						<div className="btnNewSection">
 							<button
 								type="button"
 								onClick={async () => {
 									await addSection(), focusNewInput();
+								}}
+								className="addSection"
+							>
+								<p>&#43;</p>
+							</button>
+						</div>
+
+						{/* years */}
+						<h1>Years</h1>
+						{yearSections?.length > 0 ? (
+							yearSections.map((year, index) => (
+								<div
+									key={year?.yearId}
+									className="editablePhoneSection"
+								>
+									{index === yearSections.length - 1 ? (
+										<h1
+											contentEditable
+											suppressContentEditableWarning
+											name={`year-${index}`}
+											onInput={(e) => {
+												changeYearSectionVal(e, index);
+											}}
+											onFocus={() => setFocus(true)}
+											// onBlur={() => setFocus(false)}
+											className="editableField"
+											ref={
+												index ===
+												yearSections.length - 1
+													? newYearSectionRef
+													: null
+											}
+											key={index}
+										>
+											{year?.year}
+										</h1>
+									) : (
+										<h1
+											contentEditable
+											suppressContentEditableWarning
+											className="editableField"
+											name={`year-${index}`}
+											onInput={(e) => {
+												changeYearSectionVal(e, index);
+											}}
+											onFocus={() => setFocus(true)}
+											// onBlur={() => setFocus(false)}
+										>
+											{year?.year}
+										</h1>
+									)}
+
+									{yearSections.length > 1 && (
+										<div>
+											{!confirmYearDelete[index] ? (
+												<button
+													type="button"
+													className="deleteSection -update"
+													onClick={() =>
+														toggleConfirmYearDelete(
+															index
+														)
+													}
+													key={index}
+												>
+													<p>&#8722;</p>
+												</button>
+											) : (
+												<div className="confirmDeletionsSection -update">
+													<div className="btnNewSection">
+														<button
+															type="button"
+															onClick={() =>
+																deleteYearSection(
+																	index
+																)
+															}
+															className="deleteSection"
+															key={index}
+														>
+															<p> &#10003;</p>
+														</button>
+													</div>
+
+													<div className="btnNewSection">
+														<button
+															type="button"
+															onClick={() =>
+																toggleConfirmYearDelete(
+																	index
+																)
+															}
+															className="deleteSection"
+															key={index}
+														>
+															<p> &#10005;</p>
+														</button>
+													</div>
+												</div>
+											)}
+										</div>
+									)}
+								</div>
+							))
+						) : (
+							<div className="editablePhoneSection">
+								<h1
+									contentEditable
+									suppressContentEditableWarning
+									name={`vehicle-0`}
+									onInput={(e) => {
+										changeYearSectionVal(e, 0);
+									}}
+									// onChange={infoToBeSubmitted}
+									className="editableField"
+								>
+									{vehicle?.years[0]?.year}
+								</h1>
+							</div>
+						)}
+
+						<div className="btnNewSection">
+							<button
+								type="button"
+								onClick={async () => {
+									await addYearSection(), focusYearNewInput();
+								}}
+								className="addSection"
+							>
+								<p>&#43;</p>
+							</button>
+						</div>
+						<h1>Colores</h1>
+
+						{colorSections?.length > 0 ? (
+							colorSections.map((color, index) => (
+								<div
+									key={color?.colorId}
+									className="editablePhoneSection"
+								>
+									{index === colorSections.length - 1 ? (
+										<h1
+											contentEditable
+											suppressContentEditableWarning
+											name={`color-${index}`}
+											onInput={(e) => {
+												changeColorSectionVal(e, index);
+											}}
+											onFocus={() => setFocus(true)}
+											// onBlur={() => setFocus(false)}
+											className="editableField"
+											ref={
+												index ===
+												colorSections.length - 1
+													? newColorSectionRef
+													: null
+											}
+											key={index}
+										>
+											{color?.color}
+										</h1>
+									) : (
+										<h1
+											contentEditable
+											suppressContentEditableWarning
+											className="editableField"
+											name={`color-${index}`}
+											onInput={(e) => {
+												changeColorSectionVal(e, index);
+											}}
+											onFocus={() => setFocus(true)}
+											// onBlur={() => setFocus(false)}
+										>
+											{color?.color}
+										</h1>
+									)}
+
+									{colorSections.length > 1 && (
+										<div>
+											{!confirmColorDelete[index] ? (
+												<button
+													type="button"
+													className="deleteSection -update"
+													onClick={() =>
+														toggleConfirmColorDelete(
+															index
+														)
+													}
+													key={index}
+												>
+													<p>&#8722;</p>
+												</button>
+											) : (
+												<div className="confirmDeletionsSection -update">
+													<div className="btnNewSection">
+														<button
+															type="button"
+															onClick={() =>
+																deleteColorSection(
+																	index
+																)
+															}
+															className="deleteSection"
+															key={index}
+														>
+															<p> &#10003;</p>
+														</button>
+													</div>
+
+													<div className="btnNewSection">
+														<button
+															type="button"
+															onClick={() =>
+																toggleConfirmColorDelete(
+																	index
+																)
+															}
+															className="deleteSection"
+															key={index}
+														>
+															<p> &#10005;</p>
+														</button>
+													</div>
+												</div>
+											)}
+										</div>
+									)}
+								</div>
+							))
+						) : (
+							<div className="editablePhoneSection">
+								<h1
+									contentEditable
+									suppressContentEditableWarning
+									name={`vehicle-0`}
+									onInput={(e) => {
+										changeColorSectionVal(e, 0);
+									}}
+									// onChange={infoToBeSubmitted}
+									className="editableField"
+								>
+									{vehicle?.years[0]?.year}
+								</h1>
+							</div>
+						)}
+
+						<div className="btnNewSection">
+							<button
+								type="button"
+								onClick={async () => {
+									await addColorSection(),
+										focusColorNewInput();
 								}}
 								className="addSection"
 							>
@@ -471,69 +955,3 @@ const GetOneVehicle = () => {
 };
 
 export default GetOneVehicle;
-
-// {notFound ? (
-// 	<h1 className="notFound">
-// 		vehículo con ID:<span>{id}</span> no se pudo encontrara
-// 		asegúrese de que seal el id correcto
-// 	</h1>
-// ) : (
-// 	<div>
-// 		<Link to={"/vehicles"}>
-// 			<button style={{ margin: "5px" }}>view vehicles</button>
-// 		</Link>
-// 		<form onSubmit={submit}>
-// 			<div>
-// 				<label htmlFor="vehicleName">Vehicle Name:</label>
-// 				<input
-// 					type="text"
-// 					name="vehicleName"
-// 					onChange={infoToBeSubmitted}
-// 					placeholder={vehicle.vehicleName}
-// 					// value={info.clientName}
-// 				/>
-// 			</div>
-// 			<div>
-// 				<label htmlFor="vehicleModel">Vehicle Model:</label>
-// 				<input
-// 					name="vehicleModel"
-// 					onChange={infoToBeSubmitted}
-// 					placeholder={vehicle.vehicleModel}
-// 					// value={info.clientLastName}
-// 				></input>
-// 			</div>
-// 			<div>
-// 				<label htmlFor="year">Year:</label>
-// 				<input
-// 					type="text"
-// 					name="year"
-// 					onChange={infoToBeSubmitted}
-// 					placeholder={vehicle.year}
-// 					// value={info.cellPhone}
-// 				/>
-// 			</div>
-// 			<div>
-// 				<label htmlFor="color">Color:</label>
-// 				<input
-// 					type="text"
-// 					name="color"
-// 					onChange={infoToBeSubmitted}
-// 					placeholder={vehicle.color}
-// 					// value={info.cellPhone}
-// 				/>
-// 			</div>
-
-// 			<div>
-// 				<label htmlFor="boughtPrice">Bought Price:</label>
-// 				<input
-// 					type="number"
-// 					name="boughtPrice"
-// 					onChange={infoToBeSubmitted}
-// 					placeholder={vehicle.boughtPrice}
-// 					// value={info.cellPhone}
-// 				/>
-// 			</div>
-// 			<button type="submit">Add a new vehicle</button>
-// 		</form>
-// 	</div>
-// )}

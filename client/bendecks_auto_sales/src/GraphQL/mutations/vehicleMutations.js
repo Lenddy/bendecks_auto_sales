@@ -42,22 +42,25 @@ export const update_One_vehicle = gql`
 	mutation updateOneVehicle(
 		$id: ID!
 		$vehicleName: String
-		$vehicleModel: String
-		$years: [yearType]
+		$vehicleModels: [modelInput]
+		$years: [yearInput]
 		$colors: [colorInput]
 		$boughtPrice: Float
 	) {
 		updateOneVehicle(
 			id: $id
 			vehicleName: $vehicleName
-			vehicleModel: $vehicleModel
+			vehicleModels: $vehicleModels
 			years: $years
 			colors: $colors
 			boughtPrice: $boughtPrice
 		) {
 			id
 			vehicleName
-			vehicleModel
+			vehicleModels {
+				modelId
+				model
+			}
 			years {
 				yearId
 				year
