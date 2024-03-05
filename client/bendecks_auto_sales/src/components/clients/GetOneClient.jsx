@@ -121,7 +121,6 @@ function GetOneClient() {
 		if (data) {
 			console.log(data); // Log the fetched data
 			setClient(data?.getOneClient); // Set the lists retrieved from the query to the state
-			console.log("clients ----->", client); // Log the fetched data
 			setSections(client?.cellPhones);
 			// console.log("sections ----->", sections); // Log the fetched data
 		}

@@ -87,10 +87,10 @@ function GetAllVehicles() {
 			<table>
 				<tr className="tableHeader">
 					<th>
-						<h2>Nombre/Modelo</h2>
+						<h2>Id</h2>
 					</th>
 					<th>
-						<h2>color</h2>
+						<h2>Nombre</h2>
 					</th>
 				</tr>
 				{vehicles
@@ -107,21 +107,19 @@ function GetAllVehicles() {
 					.map((v) => {
 						return (
 							<tr key={v?.id} className="data">
-								{/* <td>
-										<p className="idInfo">{c?.id}</p>
-									</td> */}
 								<td>
 									<Link to={`/vehicles/${v?.id}`}>
-										<p className="getAllName">
-											{v?.vehicleName +
-												" " +
-												v?.vehicleModel}
+										<p className="idInfo getAllName">
+											{v?.id}
 										</p>
 									</Link>
 								</td>
 								<td>
-									{/* <p>{v?.colors[0]}</p> */}
-									colors
+									<Link to={`/vehicles/${v?.id}`}>
+										<p className="getAllName">
+											{v?.vehicleName}
+										</p>
+									</Link>
 								</td>
 							</tr>
 						);

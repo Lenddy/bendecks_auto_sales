@@ -6,7 +6,10 @@ export const get_all_vehicles = gql`
 		getAllVehicles {
 			id
 			vehicleName
-			vehicleModel
+			vehicleModels {
+				modelId
+				model
+			}
 			years {
 				yearId
 				year
@@ -28,7 +31,10 @@ export const get_one_vehicle = gql`
 		getOneVehicle(id: $id) {
 			id
 			vehicleName
-			vehicleModel
+			vehicleModels {
+				modelId
+				model
+			}
 			years {
 				yearId
 				year

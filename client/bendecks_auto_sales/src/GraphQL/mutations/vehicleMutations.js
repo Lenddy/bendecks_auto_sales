@@ -5,21 +5,24 @@ import { gql } from "@apollo/client";
 export const create_one_vehicle = gql`
 	mutation createOneVehicle(
 		$vehicleName: String!
-		$vehicleModel: String!
-		$years: [yearType]
-		$colors: [colorInput]
+		$vehicleModels: [modelInput!]!
+		$years: [yearInput!]!
+		$colors: [colorInput!]!
 		$boughtPrice: Float
 	) {
 		createOneVehicle(
 			vehicleName: $vehicleName
-			vehicleModel: $vehicleModel
+			vehicleModels: $vehicleModels
 			years: $years
 			colors: $colors
 			boughtPrice: $boughtPrice
 		) {
 			id
 			vehicleName
-			vehicleModel
+			vehicleModels {
+				modelId
+				model
+			}
 			years {
 				yearId
 				year

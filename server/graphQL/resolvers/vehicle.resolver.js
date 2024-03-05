@@ -128,6 +128,7 @@ const vehicleResolvers = {
 				boughtPrice,
 				sellingPrice,
 			} = args;
+
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
 			if (vehicleName !== undefined) {
@@ -141,6 +142,7 @@ const vehicleResolvers = {
 			if (vehicleModels !== undefined && vehicleModels.length > 0) {
 				const bulkOps = [];
 				// ! find out why the models are not be updated
+
 				for (const model of vehicleModels) {
 					if (model.status === "add") {
 						const newModel = {
@@ -152,9 +154,7 @@ const vehicleResolvers = {
 							updateOne: {
 								filter: { _id: id },
 								update: {
-									$push: {
-										models: newModel,
-									},
+									$push: { vehicleModels: newModel },
 								},
 							},
 						});
@@ -163,12 +163,12 @@ const vehicleResolvers = {
 							updateOne: {
 								filter: {
 									_id: id,
-									"models.modelId": model.modelId,
+									"vehicleModels.modelId": model.modelId,
 								},
 
 								update: {
 									$set: {
-										"models.$.model": model.model,
+										"vehicleModels.$.model": model.model,
 									},
 								},
 							},
@@ -179,12 +179,12 @@ const vehicleResolvers = {
 							updateOne: {
 								filter: {
 									_id: id,
-									"models.modelId": model.modelId,
+									"vehicleModels.modelId": model.modelId,
 								},
 
 								update: {
 									$pull: {
-										models: {
+										vehicleModels: {
 											modelId: model.modelId,
 										},
 									},

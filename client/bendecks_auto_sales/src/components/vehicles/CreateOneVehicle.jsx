@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@apollo/client";
 import { useNavigate, Link } from "react-router-dom";
 import { create_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
@@ -6,23 +6,9 @@ import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 
 import io from "socket.io-client"; //importing socket.io-client
 
-// !!! make a funtion that has a loop that makes more of a tag so that uses can add more than on e number ,color
-
 const CreateOneVehicle = ({ reload, setReload }) => {
-	// const [socket] = useState(() => io(":8080")); //connect to the server
-
-	// socket.on("new_connection", (data) => {
-	// 	console.log(data);
-	// });
-
-	// State to manage form data
-	// Dependencies for the useEffect hook
 	const [info, setInfo] = useState({
-		// title: "",
-		// description: "",
-		// isDone: false,
-		// cellPhone: [],
-		color: [],
+		// cellPhone: [{ number: "" }],
 	});
 
 	const navigate = useNavigate();
@@ -39,31 +25,28 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 	};
 
 	// Function to handle form submission
-	const submit = (e) => {
-		e.preventDefault(); // Prevent default form submission behavior
-		console.log("hello there");
-		createOneVehicle({
+	const submit = async (e) => {
+		e.preventDefault();
+
+		await createOneVehicle({
 			variables: {
 				vehicleName: info?.vehicleName,
-				vehicleModel: info?.vehicleModel,
-				year: info?.year,
-				color: info?.color,
+				vehicleModels: info?.vehicleModels,
+				years: info?.years,
+				colors: info?.colors,
 				// boughtPrice: parseFloat(info.boughtPrice),
 			},
 			// this is re fetching the data
 			refetchQueries: [{ query: get_all_vehicles }],
 		})
-			.then((res) => {
-				// Reset the form fields after successful submission
+			.then(async (res) => {
+				let id = res.data.createOneVehicle.id;
+				await navigate(`/vehicles/${id}`);
 
-				// setInfo({
-				// 	// title: "",
-				// 	// description: "",
-				// 	// isDone: false,
-				// 	cellPhone: [],
-				// });
-				navigate("/vehicles");
-				console.log("here is the response", res.data.createOneVehicle);
+				await console.log(
+					"here is the response",
+					res.data.createOneVehicle
+				);
 				// socket.emit("new_client_added", res.data.createOneVehicle);
 				// setReload(!reload);
 			})
@@ -72,10 +55,16 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 			});
 	};
 
-	const [sections, setSections] = useState([{ color: "" }]);
+	// const newSectionRef = useRef(null);
+	// const [confirmDelete, setConfirmDelete] = useState(
+	// 	Array(sections?.length).fill(false)
+	// );
+	const [sections, setSections] = useState([{ model: "" }]);
+	const [sections2, setSections2] = useState([{ year: "" }]);
+	const [sections3, setSections3] = useState([{ color: "" }]);
 
 	const addSection = () => {
-		setSections([...sections, { color: "" }]);
+		setSections([...sections, { model: "" }]);
 	};
 
 	const handleInputChange = (e, index) => {
@@ -86,10 +75,10 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 			return section;
 		});
 		setSections(updatedSections);
+		setInfo({ ...info, vehicleModels: updatedSections });
 
 		// Update the info.cellPhone with the cell phone numbers from all sections
-		const updatedColors = updatedSections.map((section) => section.color);
-		setInfo({ ...info, color: updatedColors });
+		// const updatedColors = updatedSections.map((section) => section.color);
 	};
 
 	const deleteSection = (index) => {
@@ -98,6 +87,69 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 		);
 		setSections(filteredSections);
 	};
+
+	const addSection2 = () => {
+		setSections2([...sections2, { year: "" }]);
+	};
+
+	const handleInputChange2 = (e, index) => {
+		const updatedSections = sections2.map((section2, secIndex) => {
+			if (index === secIndex) {
+				return { ...section2, [e.target.name]: e.target.value };
+			}
+			return section2;
+		});
+		setSections2(updatedSections);
+		setInfo({ ...info, years: updatedSections });
+
+		// Update the info.cellPhone with the cell phone numbers from all sections
+		// const updatedColors = updatedSections.map((section) => section.color);
+	};
+
+	const deleteSection2 = (index) => {
+		const filteredSections = sections2.filter(
+			(_, secIndex) => secIndex !== index
+		);
+		setSections2(filteredSections);
+	};
+
+	const addSection3 = () => {
+		setSections3([...sections3, { color: "" }]);
+	};
+
+	const handleInputChange3 = (e, index) => {
+		const updatedSections = sections3.map((section3, secIndex) => {
+			if (index === secIndex) {
+				return { ...section3, [e.target.name]: e.target.value };
+			}
+			return section3;
+		});
+		setSections3(updatedSections);
+		setInfo({ ...info, colors: updatedSections });
+		// Update the info.cellPhone with the cell phone numbers from all sections
+		// const updatedColors = updatedSections.map((section) => section.color);
+	};
+
+	const deleteSection3 = (index) => {
+		const filteredSections = sections3.filter(
+			(_, secIndex) => secIndex !== index
+		);
+		setSections3(filteredSections);
+	};
+
+	// const focusNewInput = () => {
+	// 	if (newSectionRef.current) {
+	// 		newSectionRef.current.focus();
+	// 	}
+	// };
+
+	// const toggleConfirmDelete = (index) => {
+	// 	setConfirmDelete((prevState) => {
+	// 		const newState = [...prevState];
+	// 		newState[index] = !newState[index];
+	// 		return newState;
+	// 	});
+	// };
 
 	// Component rendering
 	return (
@@ -108,42 +160,21 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 						<input
 							type="text"
 							name="vehicleName"
-							onChange={infoToBeSubmitted}
-							placeholder="vehicle Name"
+							onChange={(e) => infoToBeSubmitted(e)}
+							placeholder="Nombre Del Vehículo"
 							className="createOneClientInput"
-							// value={info.clientName}
 						/>
 					</div>
-					<div>
-						<input
-							name="vehicleModel"
-							onChange={infoToBeSubmitted}
-							placeholder="Vehicle Model"
-							className="createOneClientInput"
-							// value={info.clientLastName}
-						></input>
-					</div>
-					<div>
-						<input
-							type="text"
-							name="year"
-							onChange={infoToBeSubmitted}
-							placeholder="Year"
-							className="createOneClientInput"
-							// value={info.cellPhone}
-						/>
-					</div>
+
 					{sections.map((section, index) => (
 						<div key={index} className="newSection">
 							<input
 								type="text"
-								name="color"
-								value={section.color}
+								name="model"
 								onChange={(e) => {
 									handleInputChange(e, index);
-									// infoToBeSubmitted(e);
 								}}
-								placeholder="Color"
+								placeholder="Modelo Del Vehículo"
 								className="createOneClientInput space"
 							/>
 							{sections.length > 1 && (
@@ -159,16 +190,88 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 							)}
 						</div>
 					))}
+
 					<div className="btnNewSection">
 						<button
 							type="button"
-							onClick={addSection}
+							onClick={() => addSection()}
+							className="addSection"
+						>
+							<p>&#43;</p>
+						</button>
+					</div>
+
+					{sections2.map((section2, index) => (
+						<div key={index} className="newSection">
+							<input
+								type="text"
+								name="year"
+								onChange={(e) => {
+									handleInputChange2(e, index);
+								}}
+								placeholder="Año"
+								className="createOneClientInput space"
+							/>
+							{sections2.length > 1 && (
+								<div>
+									<button
+										type="button"
+										onClick={() => deleteSection2(index)}
+										className="deleteSection"
+									>
+										<p>&#8722;</p>
+									</button>
+								</div>
+							)}
+						</div>
+					))}
+
+					<div className="btnNewSection">
+						<button
+							type="button"
+							onClick={() => addSection2()}
+							className="addSection"
+						>
+							<p>&#43;</p>
+						</button>
+					</div>
+
+					{sections3.map((section3, index) => (
+						<div key={index} className="newSection">
+							<input
+								type="text"
+								name="color"
+								onChange={(e) => {
+									handleInputChange3(e, index);
+								}}
+								placeholder="Color"
+								className="createOneClientInput space"
+							/>
+							{sections3.length > 1 && (
+								<div>
+									<button
+										type="button"
+										onClick={() => deleteSection3(index)}
+										className="deleteSection"
+									>
+										<p>&#8722;</p>
+									</button>
+								</div>
+							)}
+						</div>
+					))}
+
+					<div className="btnNewSection">
+						<button
+							type="button"
+							onClick={() => addSection3()}
 							className="addSection"
 						>
 							<p>&#43;</p>
 						</button>
 					</div>
 				</div>
+
 				<button type="submit" className="submit_btn">
 					Agregar Vehículo
 				</button>

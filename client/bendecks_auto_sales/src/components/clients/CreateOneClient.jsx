@@ -83,6 +83,10 @@ const CreateOneClient = ({ reload, setReload }) => {
 
 	const [sections, setSections] = useState([{ number: "" }]);
 
+	const addSection = () => {
+		setSections([...sections, { number: "" }]);
+	};
+
 	const handleInputChange = (e, index) => {
 		const updatedSections = sections.map((section, secIndex) => {
 			if (index === secIndex) {
@@ -99,10 +103,6 @@ const CreateOneClient = ({ reload, setReload }) => {
 		// 	(section) => section.number
 		// );
 		// setInfo({ ...info, cellPhones: updatedCellPhones });
-	};
-
-	const addSection = () => {
-		setSections([...sections, { number: "" }]);
 	};
 
 	const deleteSection = (index) => {
@@ -143,10 +143,8 @@ const CreateOneClient = ({ reload, setReload }) => {
 							<input
 								type="text"
 								name="number"
-								value={section.cellPhone}
 								onChange={(e) => {
 									handleInputChange(e, index);
-									// infoToBeSubmitted(e);
 								}}
 								placeholder="Teléfono"
 								className="createOneClientInput space"
