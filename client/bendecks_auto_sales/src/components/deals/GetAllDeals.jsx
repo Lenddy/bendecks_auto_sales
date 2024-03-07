@@ -9,7 +9,6 @@ import { get_all_deals } from "../../GraphQL/queries/dealQueries";
 import io from "socket.io-client"; //importing socket.io-client
 
 function GetAllDeals() {
-	const [socket] = useState(() => io(":8080")); //connect to the server
 	const navigate = useNavigate();
 	const navigateTO = (url) => {
 		navigate(url);

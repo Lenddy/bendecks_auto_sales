@@ -8,7 +8,7 @@ import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 import moment from "moment";
 
 const CreateOneDeal = ({ reload, setReload }) => {
-	const [socket] = useState(() => io(":8080")); //connect to the server
+	// const [socket] = useState(() => io(":8080")); //connect to the server
 	const navigate = useNavigate();
 
 	const GetClients = useQuery(get_all_clients);
@@ -153,104 +153,115 @@ const CreateOneDeal = ({ reload, setReload }) => {
 
 	// Component rendering
 	return (
-		<div>
-			<div>
-				<Link to={"/deals"}>
-					<button>view deals</button>
-				</Link>
-			</div>
-			<form onSubmit={submit}>
-				<div>
-					<label htmlFor="sellingPrice">sellingPrice:</label>
-					<input
-						type="number"
-						step="0.01"
-						name="sellingPrice"
-						onChange={(e) => {
-							infoToBeSubmitted(e);
-						}}
-						// value={info.cellPhone}
-					/>
+		<div className="children_content">
+			<form onSubmit={submit} className="createOneClientForm">
+				<div className="creteOneFullSection">
+					<div>
+						<select
+							name="client_id"
+							id=""
+							onChange={infoToBeSubmitted}
+							className="createOneClientInput"
+						>
+							<option value="">clients</option>
+							{clients?.map((c) => {
+								return (
+									<option key={c?.id} value={`${c?.id}`}>
+										{c?.clientName} {c?.clientLastName}
+									</option>
+								);
+							})}
+						</select>
+					</div>
+
+					<div>
+						<select
+							name="vehicle_id"
+							id=""
+							onChange={infoToBeSubmitted}
+							className="createOneClientInput"
+						>
+							<option value="">vehicles</option>
+							{vehicles?.map((v) => {
+								return (
+									<option key={v?.id} value={`${v?.id}`}>
+										{v?.vehicleName} {v?.vehicleModel}
+									</option>
+								);
+							})}
+						</select>
+					</div>
+
+					<div>
+						<input
+							type="number"
+							step="0.01"
+							name="sellingPrice"
+							onChange={(e) => {
+								infoToBeSubmitted(e);
+							}}
+							// value={info.cellPhone}
+							placeholder="sellingPrice:"
+							className="createOneClientInput"
+						/>
+					</div>
+
+					<div>
+						<input
+							type="number"
+							name="downPayment"
+							onChange={(e) => infoToBeSubmitted(e)}
+							// value={info.clientName}
+							step="0.01"
+							maxLength={20}
+							// minLength={1}
+							placeholder="downPayment:"
+							className="createOneClientInput"
+						/>
+					</div>
+
+					<div>
+						<input
+							step="0.01"
+							type="number"
+							name="payment"
+							onChange={(e) => infoToBeSubmitted(e)}
+							// value={info.clientLastName}
+							placeholder="Payment"
+							className="createOneClientInput"
+						></input>
+					</div>
+					<div>
+						<input
+							type="date"
+							name="dayOfDeal"
+							// onClick={infoToBeSubmitted}
+							onChange={(e) => infoToBeSubmitted(e)}
+							// value={info.cellPhone}
+							placeholder="Date of the deal"
+							className="createOneClientInput"
+						/>
+					</div>
+
+					<div>
+						<input
+							step="0.01"
+							type="number"
+							name="remainingBalance"
+							onChange={(e) => infoToBeSubmitted(e)}
+							disabled
+							placeholder={`Balance Pendiente: ${
+								parseFloat(info?.remainingBalance) ||
+								parseFloat(0.0)
+							}`}
+							className="createOneClientInput"
+						/>
+					</div>
 				</div>
 
-				<div>
-					<label htmlFor="downPayment">downPayment:</label>
-					<input
-						type="number"
-						name="downPayment"
-						onChange={(e) => infoToBeSubmitted(e)}
-						// value={info.clientName}
-						step="0.01"
-						maxLength={20}
-						// minLength={1}
-					/>
-				</div>
-				<div>
-					<label htmlFor="payment">payment:</label>
-					<input
-						step="0.01"
-						type="number"
-						name="payment"
-						onChange={(e) => infoToBeSubmitted(e)}
-						// value={info.clientLastName}
-					></input>
-				</div>
-				<div>
-					<label htmlFor="dayOfDeal">Date of the deal:</label>
-					<input
-						type="date"
-						name="dayOfDeal"
-						// onClick={infoToBeSubmitted}
-						onChange={(e) => infoToBeSubmitted(e)}
-						// value={info.cellPhone}
-					/>
-				</div>
-				<div>
-					<label htmlFor="remainingBalance">remainingBalance:</label>
-					<input
-						step="0.01"
-						type="number"
-						name="remainingBalance"
-						onChange={(e) => infoToBeSubmitted(e)}
-						disabled
-						placeholder={
-							parseFloat(info?.remainingBalance) || parseFloat(0)
-						}
-					/>
-				</div>
-
-				<div>
-					<label htmlFor="client_id">client_id:</label>
-
-					<select name="client_id" id="" onChange={infoToBeSubmitted}>
-						<option value="">clients</option>
-						{clients?.map((c) => {
-							return (
-								<option key={c?.id} value={`${c?.id}`}>
-									{c?.clientName} {c?.clientLastName}
-								</option>
-							);
-						})}
-					</select>
-				</div>
-				<div>
-					<label name="vehicle_id">vehicle_id:</label>
-					<select
-						name="vehicle_id"
-						id=""
-						onChange={infoToBeSubmitted}
-					>
-						<option value="">vehicles</option>
-						{vehicles?.map((v) => {
-							return (
-								<option key={v?.id} value={`${v?.id}`}>
-									{v?.vehicleName} {v?.vehicleModel}
-								</option>
-							);
-						})}
-					</select>
-				</div>
-				<button type="submit">Add a new client</button>
+				<button type="submit" className="submit_btn">
+					Agregar Venta
+				</button>
 			</form>
 		</div>
 	);

@@ -15,7 +15,6 @@ const dealResolvers = {
 		getAllDeals: async () => {
 			return await Deal.find()
 				.populate("client_id")
-				.populate("vehicle_id")
 				.then((deals) => {
 					console.log(
 						"all the deals",
@@ -37,7 +36,6 @@ const dealResolvers = {
 		getOneDeal: async (_, { id }) => {
 			return await Deal.findById(id)
 				.populate("client_id")
-				.populate("vehicle_id")
 				.then((deal) => {
 					console.log("one deal ", deal, "\n____________________");
 					return deal;
@@ -63,8 +61,9 @@ const dealResolvers = {
 				paymentDates,
 				remainingBalance,
 				sellingPrice,
+				carName,
+				carModel,
 				client_id,
-				vehicle_id,
 			}
 		) => {
 			paymentDates = paymentDates.map((paymentDate) => {
@@ -84,8 +83,9 @@ const dealResolvers = {
 				paymentDates,
 				remainingBalance,
 				sellingPrice,
+				carName,
+				carModel,
 				client_id,
-				vehicle_id,
 				createdAt,
 				updatedAt,
 			})

@@ -12,7 +12,7 @@ const GetOneVehicle = () => {
 	const [info, setInfo] = useState({});
 	const [vehicle, setVehicle] = useState();
 	const [notFound, setNotFound] = useState(false);
-	const [clientDelete, setClientDelete] = useState(false);
+	const [vehicleDelete, setVehicleDelete] = useState(false);
 
 	const [focus, setFocus] = useState(false);
 
@@ -43,7 +43,7 @@ const GetOneVehicle = () => {
 	});
 
 	const [updateOneVehicle] = useMutation(update_One_vehicle);
-	const [deleteOneClient] = useMutation(
+	const [deleteOneVehicle] = useMutation(
 		delete_one_vehicle
 		// 	 {
 		// 	update(cache, { data: { deleteItem } }) {
@@ -204,52 +204,6 @@ const GetOneVehicle = () => {
 		setFocus(true);
 	};
 
-	// const changeSectionVal = (e, index) => {
-	// 	let objectExists = false;
-
-	// 	const { __typename, numberId, ...sectionWithoutTypename } =
-	// 		sections[index];
-
-	// 	const updatedNumberUpdate = numberUpdate.map((item) => {
-	// 		if (item.status === "add" && item.numberId === numberId) {
-	// 			objectExists = true;
-	// 			return {
-	// 				numberId: item.numberId,
-	// 				number: e.target.textContent,
-	// 				status: "add",
-	// 			};
-	// 		}
-
-	// 		if (
-	// 			item.numberId === numberId &&
-	// 			item.numberId !== undefined &&
-	// 			item.status !== "add"
-	// 		) {
-	// 			objectExists = true;
-	// 			return {
-	// 				numberId: item.numberId,
-	// 				number: e.target.textContent,
-	// 				status: "update",
-	// 			};
-	// 		}
-
-	// 		if (item.status === "add" && item.numberId === numberId) {
-	// 			objectExists = true;
-	// 		}
-	// 		return item;
-	// 	});
-
-	// 	if (!objectExists) {
-	// 		updatedNumberUpdate.push({
-	// 			numberId,
-	// 			number: e.target.textContent,
-	// 			status: "update",
-	// 		});
-	// 	}
-
-	// 	setNumberUpdate(updatedNumberUpdate);
-	// };
-
 	const toggleConfirmDelete = (index) => {
 		setConfirmDelete((prevState) => {
 			const newState = [...prevState];
@@ -258,16 +212,16 @@ const GetOneVehicle = () => {
 		});
 	};
 
-	const deleteClient = () => {
-		deleteOneClient({
+	const deleteVehicle = () => {
+		deleteOneVehicle({
 			variables: {
 				id, // Only pass the ID to the deletion mutation
 			},
-			refetchQueries: [{ query: get_one_vehicle }],
+			refetchQueries: [{ query: get_all_vehicles }],
 		})
 			.then(() => {
 				// Redirect after successful deletion
-				navigate("/dashboard");
+				navigate("/vehicles");
 			})
 			.catch((error) => {
 				console.log(error);
@@ -913,20 +867,20 @@ const GetOneVehicle = () => {
 								Actualizar Cliente
 							</button>
 
-							{clientDelete === false ? (
+							{vehicleDelete === false ? (
 								<button
 									type="button"
 									className={`submit_btn`}
-									onClick={() => setClientDelete(true)}
+									onClick={() => setVehicleDelete(true)}
 								>
-									Borrar Cliente
+									Borrar Vehículo
 								</button>
 							) : (
 								<div className="confirmDeleteCLient">
 									<div className="btnNewSection">
 										<button
 											type="button"
-											onClick={() => deleteClient()}
+											onClick={() => deleteVehicle()}
 											className="deleteSection"
 										>
 											<p> &#10003;</p>
@@ -937,7 +891,7 @@ const GetOneVehicle = () => {
 										<button
 											type="button"
 											onClick={() =>
-												setClientDelete(false)
+												setVehicleDelete(false)
 											}
 											className="deleteSection"
 										>

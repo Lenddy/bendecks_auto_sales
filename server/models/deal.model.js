@@ -15,14 +15,17 @@ const DealSchema = new Schema(
 			required: true,
 			// min: [1, "Model Of The Vehicle Must Be At Least 1 Character Long"],
 		},
+
 		dayOfDeal: {
 			type: String,
 			require: true,
 		},
+
 		paymentDates: {
 			type: Array,
 			required: true,
 		},
+
 		sellingPrice: {
 			type: Number,
 			required: true,
@@ -32,16 +35,38 @@ const DealSchema = new Schema(
 			type: Number,
 		},
 
+		carName: {
+			type: String,
+			required: true,
+		},
+
+		carModel: {
+			type: String,
+			required: true,
+		},
+
+		carColor: {
+			type: String,
+		},
+
+		carYear: {
+			type: Object,
+		},
+
+		boughtPrice: {
+			type: Number,
+		},
+
 		client_id: {
 			type: mongoose.SchemaTypes.ObjectId,
 			ref: "Clients",
 			required: true,
 		},
-		vehicle_id: {
-			type: mongoose.SchemaTypes.ObjectId,
-			ref: "vehicles",
-			required: true,
-		},
+		// vehicle_id: {
+		// 	type: mongoose.SchemaTypes.ObjectId,
+		// 	ref: "vehicles",
+		// 	required: true,
+		// },
 	},
 	{ timestamps: true }
 );
