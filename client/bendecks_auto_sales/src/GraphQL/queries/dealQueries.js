@@ -20,19 +20,18 @@ export const get_all_deals = gql`
 			}
 			remainingBalance
 			sellingPrice
+			carName
+			carModel
+			carColor
+			carYear
 			client_id {
 				id
 				clientName
 				clientLastName
-				cellPhone
-			}
-			vehicle_id {
-				id
-				vehicleName
-				vehicleModel
-				year
-				color
-				boughtPrice
+				cellPhones {
+					numberId
+					number
+				}
 			}
 			createdAt
 			updatedAt
@@ -45,11 +44,8 @@ export const get_one_deal = gql`
 	query getOneDeal($id: ID!) {
 		getOneDeal(id: $id) {
 			id
-			dayOfDeal
 			downPayment
 			payment
-			remainingBalance
-			sellingPrice
 			paymentDates {
 				payment_id
 				monthFullyPay
@@ -61,19 +57,20 @@ export const get_one_deal = gql`
 				latenessFee
 				daysLate
 			}
+			remainingBalance
+			sellingPrice
+			carName
+			carModel
+			carColor
+			carYear
 			client_id {
 				id
 				clientName
 				clientLastName
-				cellPhone
-			}
-			vehicle_id {
-				id
-				vehicleName
-				vehicleModel
-				year
-				color
-				boughtPrice
+				cellPhones {
+					numberId
+					number
+				}
 			}
 			createdAt
 			updatedAt

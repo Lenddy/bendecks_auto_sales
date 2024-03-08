@@ -63,9 +63,22 @@ const dealResolvers = {
 				sellingPrice,
 				carName,
 				carModel,
+				carColor,
+				carYear,
 				client_id,
 			}
 		) => {
+			const create = {
+				dayOfDeal,
+				downPayment,
+				payment,
+				remainingBalance,
+				sellingPrice,
+				carName,
+				carModel,
+				client_id,
+			};
+
 			paymentDates = paymentDates.map((paymentDate) => {
 				return {
 					...paymentDate,
@@ -75,20 +88,19 @@ const dealResolvers = {
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			//Date;
+			create.createdAt = createdAt;
+			create.updatedAt = updatedAt;
+			create.paymentDates = paymentDates;
 
-			return await Deal.create({
-				dayOfDeal,
-				downPayment,
-				payment,
-				paymentDates,
-				remainingBalance,
-				sellingPrice,
-				carName,
-				carModel,
-				client_id,
-				createdAt,
-				updatedAt,
-			})
+			if (carColor !== undefined) {
+				create.carColor = carColor;
+			}
+
+			if (carYear !== undefined) {
+				create.carYear = carYear;
+			}
+
+			return await Deal.create(create)
 				.then(async (newDeal) => {
 					console.log(
 						"new deal created",
@@ -121,9 +133,12 @@ const dealResolvers = {
 				id,
 				downPayment,
 				payment,
-				paymentDate,
 				remainingBalance,
 				sellingPrice,
+				carName,
+				carModel,
+				carColor,
+				carYear,
 			} = args;
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
@@ -133,14 +148,23 @@ const dealResolvers = {
 			if (payment !== undefined) {
 				update.payment = payment;
 			}
-			if (paymentDate !== undefined) {
-				update.paymentDate = paymentDate;
-			}
 			if (remainingBalance !== undefined) {
 				update.remainingBalance = remainingBalance;
 			}
 			if (sellingPrice !== undefined) {
 				update.sellingPrice = sellingPrice;
+			}
+			if (carName !== undefined) {
+				update.carName = carName;
+			}
+			if (carModel !== undefined) {
+				update.carModel = carModel;
+			}
+			if (carColor !== undefined) {
+				update.carColor = carColor;
+			}
+			if (carYear !== undefined) {
+				update.carYear = carYear;
 			}
 
 			return await Deal.findByIdAndUpdate(id, update, {

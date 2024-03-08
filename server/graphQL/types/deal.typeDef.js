@@ -87,6 +87,10 @@ const dealTypeDef = gql`
 			paymentDates: [PaymentDateInput]
 			remainingBalance: Float
 			sellingPrice: Float
+			carName: String
+			carModel: String
+			carColor: String
+			carYear: String
 		): Deal!
 
 		updateOneDealPayment(
