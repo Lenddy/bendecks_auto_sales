@@ -9,7 +9,6 @@ const dealTypeDef = gql`
 	${vehicleTypeDef}
 
 	#Object
-
 	type Deal {
 		id: ID!
 		dayOfDeal: String!
@@ -18,14 +17,24 @@ const dealTypeDef = gql`
 		paymentDates: [PaymentDate]!
 		remainingBalance: Float!
 		sellingPrice: Float!
-		carName: String!
-		carModel: String!
+		carName: Car!
+		carModel: Model!
 		carColor: String
 		carYear: String
 		boughtPrice: Float
 		client_id: Client!
 		createdAt: DateTime!
 		updatedAt: DateTime!
+	}
+
+	type Car {
+		id: ID!
+		vehicle: String!
+	}
+
+	type Model {
+		id: ID!
+		model: String!
 	}
 
 	type PaymentDate {
@@ -64,6 +73,16 @@ const dealTypeDef = gql`
 		daysLate: Int!
 	}
 
+	input CarInput {
+		id: ID!
+		vehicle: String!
+	}
+
+	input ModelInput {
+		id: ID!
+		model: String!
+	}
+
 	#mutations
 	type Mutation {
 		createOneDeal(
@@ -73,8 +92,8 @@ const dealTypeDef = gql`
 			paymentDates: [PaymentDateInput]!
 			remainingBalance: Float!
 			sellingPrice: Float!
-			carName: String!
-			carModel: String!
+			carName: CarInput!
+			carModel: ModelInput!
 			carColor: String
 			carYear: String
 			client_id: ID!
@@ -87,8 +106,8 @@ const dealTypeDef = gql`
 			paymentDates: [PaymentDateInput]
 			remainingBalance: Float
 			sellingPrice: Float
-			carName: String
-			carModel: String
+			carName: ModelInput
+			carModel: ModelInput
 			carColor: String
 			carYear: String
 		): Deal!

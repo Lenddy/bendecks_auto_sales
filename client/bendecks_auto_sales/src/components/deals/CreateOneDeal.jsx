@@ -69,14 +69,17 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				paymentDates: info?.paymentDates,
 				remainingBalance: parseFloat(info?.remainingBalance),
 				sellingPrice: parseFloat(info.sellingPrice),
+				carName: info?.vehicle,
+				carModel: info?.model,
+				carColor: info?.color,
+				carYear: info?.year,
 				client_id: info?.client_id,
-				vehicle_id: info?.vehicle_id,
 			},
 		})
 			.then((res) => {
 				navigate("/deals");
 				console.log("here is the response", res.data.createOneDeal);
-				socket.emit("new_client_added", res.data.createOneDeal);
+				// socket.emit("new_client_added", res.data.createOneDeal);
 				setReload(!reload);
 			})
 			.catch((error) => {
@@ -112,16 +115,22 @@ const CreateOneDeal = ({ reload, setReload }) => {
 		const { name, value } = e.target;
 		console.log(`Selected ${name}: ${value}`); // This will log which field is being updated and its value
 
-		const numericValue =
+		let newValue = value; // Initialize newValue to the value directly
+		if (name === "carName" || name === "carModel") {
+			// If the name is "vehicle", parse the value into an object
+			newValue = JSON.parse(value);
+		} else if (
 			name === "sellingPrice" ||
 			name === "downPayment" ||
 			name === "payment"
-				? parseFloat(value)
-				: value;
+		) {
+			// If it's a numeric field, parse the value into a float
+			newValue = parseFloat(value);
+		}
 
 		setInfo((prevInfo) => ({
 			...prevInfo,
-			[name]: numericValue,
+			[name]: newValue,
 		}));
 	};
 
@@ -151,6 +160,8 @@ const CreateOneDeal = ({ reload, setReload }) => {
 		return paymentDates;
 	}
 
+	// const [selectedVehicle, setSelectedVehicle] = useState();
+
 	// Component rendering
 	return (
 		<div className="children_content">
@@ -161,7 +172,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 							name="client_id"
 							id=""
 							onChange={infoToBeSubmitted}
-							className="createOneClientInput"
+							// className="createOneClientInput"
 						>
 							<option value="">clients</option>
 							{clients?.map((c) => {
@@ -176,16 +187,102 @@ const CreateOneDeal = ({ reload, setReload }) => {
 
 					<div>
 						<select
-							name="vehicle_id"
-							id=""
+							name="carName"
 							onChange={infoToBeSubmitted}
-							className="createOneClientInput"
+							// className="createOneClientInput"
 						>
 							<option value="">vehicles</option>
 							{vehicles?.map((v) => {
 								return (
-									<option key={v?.id} value={`${v?.id}`}>
-										{v?.vehicleName} {v?.vehicleModel}
+									<option
+										key={v?.id}
+										value={JSON.stringify({
+											id: v?.id,
+											vehicle: v.vehicleName,
+										})}
+									>
+										{v?.vehicleName}
+									</option>
+								);
+							})}
+						</select>
+					</div>
+
+					<div>
+						<select
+							name="carModel"
+							onChange={infoToBeSubmitted}
+							// className="createOneClientInput"
+						>
+							<option disabled selected value="">
+								Modelos
+							</option>
+							{(
+								(
+									vehicles.find(
+										(v) => info?.carName?.id === v?.id
+									) || {}
+								).vehicleModels || []
+							).map((m) => {
+								return (
+									<option
+										key={m?.modelId}
+										value={JSON.stringify({
+											id: m?.modelId,
+											model: m?.model,
+										})}
+									>
+										{m?.model}
+									</option>
+								);
+							})}
+						</select>
+					</div>
+
+					<div>
+						<select
+							name="carYear"
+							onChange={infoToBeSubmitted}
+							// className="createOneClientInput"
+						>
+							<option disabled selected value="">
+								Año
+							</option>
+							{(
+								(
+									vehicles.find(
+										(v) => info?.carName?.id === v?.id
+									) || {}
+								).years || []
+							).map((y) => {
+								return (
+									<option key={y?.yearId} value={y?.year}>
+										{y?.year}
+									</option>
+								);
+							})}
+						</select>
+					</div>
+
+					<div>
+						<select
+							name="carColor"
+							onChange={infoToBeSubmitted}
+							// className="createOneClientInput"
+						>
+							<option disabled selected value="">
+								color
+							</option>
+							{(
+								(
+									vehicles.find(
+										(v) => info?.carName?.id === v?.id
+									) || {}
+								).colors || []
+							).map((c) => {
+								return (
+									<option key={c?.colorId} value={c?.color}>
+										{c?.color}
 									</option>
 								);
 							})}

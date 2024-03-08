@@ -20,8 +20,14 @@ export const get_all_deals = gql`
 			}
 			remainingBalance
 			sellingPrice
-			carName
-			carModel
+			carName {
+				id
+				vehicle
+			}
+			carModel {
+				id
+				model
+			}
 			carColor
 			carYear
 			client_id {
@@ -29,7 +35,6 @@ export const get_all_deals = gql`
 				clientName
 				clientLastName
 				cellPhones {
-					numberId
 					number
 				}
 			}
@@ -59,8 +64,14 @@ export const get_one_deal = gql`
 			}
 			remainingBalance
 			sellingPrice
-			carName
-			carModel
+			carName {
+				id
+				vehicle
+			}
+			carModel {
+				id
+				model
+			}
 			carColor
 			carYear
 			client_id {
@@ -68,7 +79,6 @@ export const get_one_deal = gql`
 				clientName
 				clientLastName
 				cellPhones {
-					numberId
 					number
 				}
 			}

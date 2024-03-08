@@ -36,12 +36,12 @@ const DealSchema = new Schema(
 		},
 
 		carName: {
-			type: String,
+			type: Object,
 			required: true,
 		},
 
 		carModel: {
-			type: String,
+			type: Object,
 			required: true,
 		},
 

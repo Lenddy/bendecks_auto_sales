@@ -84,8 +84,9 @@ function GetAllDeals() {
 									<Link to={`/deals/${d.id}`}>
 										<p className="idInfo getAllName">
 											{
-												d?.paymentDates.filter()
-													?.dateOfPayment
+												d?.paymentDates.find(
+													(p) => !p.monthFullyPay
+												)?.dateOfPayment
 											}
 										</p>
 									</Link>

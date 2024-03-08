@@ -10,8 +10,11 @@ export const create_one_deal = gql`
 		$paymentDates: [PaymentDateInput]!
 		$remainingBalance: Float!
 		$sellingPrice: Float!
+		$carName: CarInput!
+		$carModel: ModelInput!
+		$carColor: String
+		$carYear: String
 		$client_id: ID!
-		$vehicle_id: ID!
 	) {
 		createOneDeal(
 			dayOfDeal: $dayOfDeal
@@ -20,15 +23,18 @@ export const create_one_deal = gql`
 			paymentDates: $paymentDates
 			remainingBalance: $remainingBalance
 			sellingPrice: $sellingPrice
+			carName: $carName
+			carModel: $carModel
+			carColor: $carColor
+			carYear: $carYear
 			client_id: $client_id
-			vehicle_id: $vehicle_id
+			client_id: $client_id
 		) {
-			dayOfDeal
+			id
 			downPayment
 			payment
-			remainingBalance
-			sellingPrice
 			paymentDates {
+				payment_id
 				monthFullyPay
 				isLate
 				dateOfPayment
@@ -38,19 +44,25 @@ export const create_one_deal = gql`
 				latenessFee
 				daysLate
 			}
+			remainingBalance
+			sellingPrice
+			carName {
+				id
+				vehicle
+			}
+			carModel {
+				id
+				model
+			}
+			carColor
+			carYear
 			client_id {
 				id
 				clientName
 				clientLastName
-				cellPhone
-			}
-			vehicle_id {
-				id
-				vehicleName
-				vehicleModel
-				year
-				color
-				boughtPrice
+				cellPhones {
+					number
+				}
 			}
 			createdAt
 			updatedAt
