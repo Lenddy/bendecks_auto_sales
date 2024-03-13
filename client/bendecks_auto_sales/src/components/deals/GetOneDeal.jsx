@@ -1,75 +1,126 @@
-// Import necessary modules from Apollo Client and custom GraphQL queries
-import { useQuery } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
-import { useNavigate, Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { get_one_deal } from "../../GraphQL/queries/dealQueries";
+import { update_One_deal_payment } from "../../GraphQL/mutations/dealMutations";
+import { get_all_clients } from "../../GraphQL/queries/clientQueries";
+import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 
 function GetOneDeal() {
 	const { id } = useParams();
+	const navigate = useNavigate();
 
-	// Fetch data using the useQuery hook by executing the getAllList query
 	const { error, loading, data } = useQuery(get_one_deal, {
 		variables: { id },
 	});
 
-	// Set up state to manage the lists fetched from the query
-	const [deals, setDeals] = useState();
+	const [updateOneDealPayment] = useMutation(update_One_deal_payment);
+	const [info, setInfo] = useState({});
+	const [deal, setDeal] = useState();
 
-	// useEffect hook to handle changes in error, loading, and data states
+	const [notFound, setNotFound] = useState(false);
+
 	useEffect(() => {
 		if (loading) {
-			console.log("loading"); // Log a message when data is loading
+			console.log("loading", loading);
 		}
+
 		if (data) {
-			console.log(data); // Log the fetched data
-			setDeals(data.getOneDeal); // Set the lists retrieved from the query to the state
+			console.log("data", data);
+			setDeal(data.getOneDeal);
 		}
 		if (error) {
-			console.log("there was an error", error); // Log an error message if an error occurs
+			setNotFound(true);
+			console.log("error", error);
 		}
-	}, [error, loading, data]); // Dependencies for the useEffect hook
+	}, [loading, data, error]);
 
-	// Render the retrieved lists
+	const infoToBeSubmitted = (e) => {
+		const { name, value } = e.target;
+		const typeValue =
+			name === "amountPayedThisMonth" ? parseFloat(value) : value;
+		setInfo((prevInfo) => ({
+			...prevInfo,
+			[name]: typeValue,
+		}));
+	};
+
+	const submit = (e) => {
+		e.preventDefault();
+
+		updateOneDealPayment({
+			variables: {
+				id,
+				payment_id: info?.payment_id,
+				amountPayedThisMonth: info?.amountPayedThisMonth,
+			},
+		})
+			.then((res) => {
+				console.log(res.data);
+			})
+			.catch((error) => {
+				console.log("there was an error", error);
+			});
+	};
+
+	//! make 2 forms of payment  one is the one that you already have that is with the drop down menu
+
+	//! and make another one that is inputting the values  in an input field and that depending on the amount that is inputted will target multiple or one payment
+
 	return (
-		<div>
-			<Link to={"/dashboard"}>
-				<button>dashboard</button>
-			</Link>
+		<div className="getOne">
+			{notFound ? (
+				<div>
+					<h1 className="notFound">
+						Venta con ID:<span>{id}</span> no se pudo encontrara
+						asegúrese de que sea el id correcto
+					</h1>
 
-			<div key={deals?.id}>
-				<h1> ID: {deals?.id}</h1>
-				<p> down payment: {deals?.downPayment}</p>
-				<p>
-					payment date:{" "}
-					{deals?.paymentDate?.map((pd, idx) => {
-						return (
-							<span key={idx}>
-								<span>{pd}</span> ,
-							</span>
-						);
-					})}
-				</p>
-				<p>
-					remainingBalance:
-					{deals?.remainingBalance}
-				</p>
-				<p>
-					remainingBalance:
-					{deals?.sellingPrice}
-				</p>
-				<p>client id here: {deals?.client_id?.id}</p>
-				<p>vehicle id here {deals?.vehicle_id?.id}</p>
+					<button onClick={() => navigate("/deals")}>regresar</button>
+				</div>
+			) : (
+				<div>
+					<h1 className="notFound">{id}</h1>
 
-				<Link to={`/deals/${deals?.id}`}>
-					<button>view</button>
-				</Link>
-				<Link to={`/deals/update/${deals?.id}`}>
-					<button>update</button>
-				</Link>
-				<Link to={`/deals/delete/${deals?.id}`}>
-					<button>delete</button>
-				</Link>
-			</div>
+					<form onSubmit={submit}>
+						<div className="oneInfo">
+							<label htmlFor="payment_id">payments:</label>
+							<select
+								name="payment_id"
+								id=""
+								onChange={infoToBeSubmitted}
+							>
+								<option value="">payments</option>
+								{deal?.paymentDates?.map((pd, idx) => {
+									return (
+										<option
+											key={pd?.payment_id}
+											value={pd?.payment_id}
+										>
+											payment number {idx + 1}:{" "}
+											{pd?.hasToPay}
+										</option>
+									);
+								})}
+							</select>
+							<div>
+								<label htmlFor="amountPayedThisMonth">
+									{" "}
+									amount payed
+								</label>
+								<input
+									type="number"
+									name="amountPayedThisMonth"
+									step={0.01}
+									maxLength={20}
+									onChange={infoToBeSubmitted}
+								/>
+							</div>
+						</div>
+						<button type="submit">update a deal</button>
+					</form>
+				</div>
+			)}
 		</div>
 	);
 }

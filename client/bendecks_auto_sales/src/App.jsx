@@ -17,7 +17,6 @@ import GetAllDeals from "./components/deals/GetAllDeals";
 import GetOneDeal from "./components/deals/GetOneDeal";
 import CreateOneDeal from "./components/deals/CreateOneDeal";
 import DeleteOneDeal from "./components/deals/DeleteOneDeal";
-import UpdateOneDeal from "./components/deals/UpdateOneDeal";
 
 import Container from "./components/Container";
 
@@ -83,12 +82,6 @@ function App() {
 						exact
 						path="/deals/add"
 						element={<CreateOneDeal />}
-					/>
-
-					<Route
-						exact
-						path="/deals/update/:id"
-						element={<UpdateOneDeal />}
 					/>
 
 					<Route

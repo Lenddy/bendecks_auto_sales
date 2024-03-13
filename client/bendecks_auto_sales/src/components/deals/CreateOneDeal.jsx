@@ -61,6 +61,20 @@ const CreateOneDeal = ({ reload, setReload }) => {
 	const submit = (e) => {
 		e.preventDefault(); // Prevent default form submission behavior
 
+		// console.log("this is the new deal", {
+		// 	dayOfDeal: info?.dayOfDeal,
+		// 	downPayment: parseFloat(info.downPayment),
+		// 	payment: parseFloat(info.payment),
+		// 	paymentDates: info?.paymentDates,
+		// 	remainingBalance: parseFloat(info?.remainingBalance),
+		// 	sellingPrice: parseFloat(info.sellingPrice),
+		// 	carName: info?.carName,
+		// 	carModel: info?.carModel,
+		// 	carColor: info?.carColor,
+		// 	carYear: info?.carYear,
+		// 	client_id: info?.client_id,
+		// });
+
 		createOneDeal({
 			variables: {
 				dayOfDeal: info?.dayOfDeal,
@@ -69,10 +83,10 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				paymentDates: info?.paymentDates,
 				remainingBalance: parseFloat(info?.remainingBalance),
 				sellingPrice: parseFloat(info.sellingPrice),
-				carName: info?.vehicle,
-				carModel: info?.model,
-				carColor: info?.color,
-				carYear: info?.year,
+				carName: info?.carName,
+				carModel: info?.carModel,
+				carColor: info?.carColor,
+				carYear: info?.carYear,
 				client_id: info?.client_id,
 			},
 		})
@@ -151,7 +165,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				amountPayedThisMonth: 0,
 				latenessFee: 0,
 				daysLate: 0,
-				latestLatenessFeeUpdate: null,
+				// latestLatenessFeeUpdate: null,
 			});
 
 			remainingBalance -= amountToPay;

@@ -71,6 +71,7 @@ const dealTypeDef = gql`
 		remainingBalance: Float!
 		latenessFee: Float!
 		daysLate: Int!
+		# latestLatenessFeeUpdate
 	}
 
 	input CarInput {

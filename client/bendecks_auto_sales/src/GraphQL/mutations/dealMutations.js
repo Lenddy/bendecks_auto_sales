@@ -28,7 +28,6 @@ export const create_one_deal = gql`
 			carColor: $carColor
 			carYear: $carYear
 			client_id: $client_id
-			client_id: $client_id
 		) {
 			id
 			downPayment
@@ -71,18 +70,18 @@ export const create_one_deal = gql`
 `;
 
 // Define the PaymentDateInput input type
-export const PaymentDateInput = gql`
-	input PaymentDateInput {
-		monthFullyPay: Boolean!
-		isLate: Boolean!
-		dateOfPayment: DateTime!
-		hasToPay: Float!
-		AmountPayedThisMonth: Float!
-		remainingBalance: Float!
-		latenessFee: Float!
-		daysLate: Int!
-	}
-`;
+// export const PaymentDateInput = gql`
+// 	input PaymentDateInput {
+// 		monthFullyPay: Boolean!
+// 		isLate: Boolean!
+// 		dateOfPayment: DateTime!
+// 		hasToPay: Float!
+// 		AmountPayedThisMonth: Float!
+// 		remainingBalance: Float!
+// 		latenessFee: Float!
+// 		daysLate: Int!
+// 	}
+// `;
 
 export const update_One_deal = gql`
 	mutation updateOneDeal(

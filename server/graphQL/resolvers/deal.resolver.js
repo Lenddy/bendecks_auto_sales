@@ -253,6 +253,33 @@ const dealResolvers = {
 				});
 		},
 
+		deleteOneDeal: async (_, { id }) => {
+			return await Deal.findByIdAndDelete(id)
+				.then(async (deletedDeal) => {
+					pubsub.publish("DEAL_DELETED", {
+						onDealChange: {
+							eventType: "DEAL_DELETED",
+							dealChanges: deletedDeal,
+						},
+					});
+
+					console.log(
+						" a deal was deleted",
+						deletedDeal,
+						"\n____________________"
+					);
+					return true;
+				})
+				.catch((err) => {
+					console.log(
+						"there was an error deleting a deal",
+						err,
+						"\n____________________"
+					);
+					throw err;
+				});
+		},
+
 		// !!!!! fix the function so that i can handle multiple days  late you can make use of a if that checks if the isLate field is set to true so you can add a multiplier base on how many days the payment is late you might want to the nested else if //todo   and you might want to add a new field on the paymentDates  to lattestUpdate and the update is going to be the latest date that it was updated  so you so you have to make use of the  deals updated at
 		isDealPaymentPayed: async (parent, args, context, info) => {
 			// Retrieve all deals using a query function 'getAllDeals'.
@@ -334,33 +361,6 @@ const dealResolvers = {
 
 			// Return the list of all deals, possibly with their updated statuses.
 			return allDeals;
-		},
-
-		deleteOneDeal: async (_, { id }) => {
-			return await Deal.findByIdAndDelete(id)
-				.then(async (deletedDeal) => {
-					pubsub.publish("DEAL_DELETED", {
-						onDealChange: {
-							eventType: "DEAL_DELETED",
-							dealChanges: deletedDeal,
-						},
-					});
-
-					console.log(
-						" a deal was deleted",
-						deletedDeal,
-						"\n____________________"
-					);
-					return true;
-				})
-				.catch((err) => {
-					console.log(
-						"there was an error deleting a deal",
-						err,
-						"\n____________________"
-					);
-					throw err;
-				});
 		},
 	},
 
