@@ -17,6 +17,7 @@ function GetOneDeal() {
 	const [updateOneDealPayment] = useMutation(update_One_deal_payment);
 	const [info, setInfo] = useState({});
 	const [deal, setDeal] = useState();
+	const [selectedPayment, setSelectedPayment] = useState();
 
 	const [notFound, setNotFound] = useState(false);
 
@@ -35,24 +36,15 @@ function GetOneDeal() {
 		}
 	}, [loading, data, error]);
 
-	const infoToBeSubmitted = (e) => {
-		const { name, value } = e.target;
-		const typeValue =
-			name === "amountPayedThisMonth" ? parseFloat(value) : value;
-		setInfo((prevInfo) => ({
-			...prevInfo,
-			[name]: typeValue,
-		}));
-	};
-
 	const submit = (e) => {
 		e.preventDefault();
 
 		updateOneDealPayment({
 			variables: {
 				id,
-				payment_id: info?.payment_id,
-				amountPayedThisMonth: info?.amountPayedThisMonth,
+				selectedPayments: selectedPayment,
+				amountPayed: null,
+				// amountPayed||
 			},
 		})
 			.then((res) => {
@@ -63,9 +55,40 @@ function GetOneDeal() {
 			});
 	};
 
-	//! make 2 forms of payment  one is the one that you already have that is with the drop down menu
+	const paymentSelected = (payment_id) => {
+		const AllPayments = [];
+
+		for (const payment of deal.paymentDates) {
+			if (!payment.monthFullyPay) {
+				// Remove __typename field
+				const { __typename, ...paymentWithoutTypename } = payment;
+				AllPayments.push(paymentWithoutTypename);
+			}
+			if (payment.payment_id === payment_id) {
+				break; // Stop collecting payments if the payment_id matches the given payment_id
+			}
+		}
+		setSelectedPayment(AllPayments);
+
+		console.log("These are all the payments:", AllPayments);
+		return;
+	};
+
+	const infoToBeSubmitted = (e) => {
+		const { name, value } = e.target;
+		const typeValue =
+			name === "amountPayedThisMonth" ? parseFloat(value) : value;
+		setInfo((prevInfo) => ({
+			...prevInfo,
+			[name]: typeValue,
+		}));
+	};
+
+	//* now make it work on the front end
 
 	//! and make another one that is inputting the values  in an input field and that depending on the amount that is inputted will target multiple or one payment
+
+	//? make a function that will take the payments that have ben paid and subtract the amount of those to the remaining balance
 
 	return (
 		<div className="getOne">
@@ -88,7 +111,10 @@ function GetOneDeal() {
 							<select
 								name="payment_id"
 								id=""
-								onChange={infoToBeSubmitted}
+								onChange={(e) => {
+									infoToBeSubmitted(e);
+									paymentSelected(e.target.value);
+								}}
 							>
 								<option value="">payments</option>
 								{deal?.paymentDates?.map((pd, idx) => {
@@ -126,5 +152,3 @@ function GetOneDeal() {
 }
 
 export default GetOneDeal; // Export the GetAllList component
-
-// {list.map((l, idx) => {})}

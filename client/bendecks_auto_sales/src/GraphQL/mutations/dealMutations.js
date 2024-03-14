@@ -129,20 +129,17 @@ export const update_One_deal = gql`
 export const update_One_deal_payment = gql`
 	mutation updateOneDealPayment(
 		$id: ID!
-		$payment_id: ID!
-		$amountPayedThisMonth: Float!
+		$selectedPayments: [PaymentDateInput!]
+		$amountPayed: Float
 	) {
 		updateOneDealPayment(
 			id: $id
-			payment_id: $payment_id
-			amountPayedThisMonth: $amountPayedThisMonth
+			selectedPayments: selectedPayments
+			amountPayed: amountPayed
 		) {
 			id
-			dayOfDeal
 			downPayment
 			payment
-			remainingBalance
-			sellingPrice
 			paymentDates {
 				payment_id
 				monthFullyPay
@@ -154,19 +151,25 @@ export const update_One_deal_payment = gql`
 				latenessFee
 				daysLate
 			}
+			remainingBalance
+			sellingPrice
+			carName {
+				id
+				vehicle
+			}
+			carModel {
+				id
+				model
+			}
+			carColor
+			carYear
 			client_id {
 				id
 				clientName
 				clientLastName
-				cellPhone
-			}
-			vehicle_id {
-				id
-				vehicleName
-				vehicleModel
-				year
-				color
-				boughtPrice
+				cellPhones {
+					number
+				}
 			}
 			createdAt
 			updatedAt

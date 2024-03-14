@@ -115,8 +115,8 @@ const dealTypeDef = gql`
 
 		updateOneDealPayment(
 			id: ID!
-			payment_id: ID!
-			amountPayedThisMonth: Float!
+			selectedPayments: [PaymentDateInput!]
+			amountPayed: Float
 		): Deal!
 
 		isDealPaymentPayed: [Deal!]!

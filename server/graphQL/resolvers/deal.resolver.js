@@ -191,39 +191,68 @@ const dealResolvers = {
 		},
 
 		updateOneDealPayment: async (parent, args, context, info) => {
-			const { id, payment_id, amountPayedThisMonth } = args;
-			// const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
+			const { id, selectedPayments, amountPayed } = args;
+			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 			// const updatedDeal =
+			let newRemainingBalance;
 
-			const oneDeal = await dealResolvers?.Query?.getOneDeal(null, {
-				id,
-			});
-			const paymentInfo = oneDeal.paymentDates.find(
-				(pd) => pd?.payment_id === payment_id
-			);
+			// const oneDeal = await dealResolvers?.Query?.getOneDeal(null, {
+			// 	id,
+			// });
 
-			if (!paymentInfo) {
-				throw new Error("Payment not found");
+			if (selectedPayments !== undefined && selectedPayments.length > 0) {
+				console.log("the selectedPayments hit");
+				const bulkOps = [];
+
+				for (payment of selectedPayments) {
+					bulkOps.push({
+						updateOne: {
+							filter: {
+								_id: id,
+								"paymentDates.payment_id": payment.payment_id,
+							},
+
+							update: {
+								$set: {
+									"paymentDates.$.monthFullyPay": true,
+									"paymentDates.$.amountPayedThisMonth":
+										payment.hasToPay,
+									// "paymentDates.$.remainingBalance":payment.remainingBalance -payment.hasToPay,
+									"paymentDates.$.hasToPay":
+										payment.hasToPay - payment.hasToPay,
+								},
+							},
+						},
+					});
+				}
+				console.log("after the loop");
+
+				if (bulkOps.length > 0) {
+					await Deal.bulkWrite(bulkOps);
+					// let lastPayment =
+					// 	selectedPayments[selectedPayments.length - 1]
+					// 		.payment_id;
+
+					// newRemainingBalance = oneDeal.paymentDates.find((p) => {
+					// 	p.payment_id === lastPayment;
+					// });
+					// console.log("this is the fined one :", newRemainingBalance);
+					// update["remainingBalance"] =
+					// 	newRemainingBalance?.remainingBalance;
+				}
 			}
-			// Calculate the new total amount paid
-			const newAmountPayedThisMonth =
-				paymentInfo?.amountPayedThisMonth + amountPayedThisMonth;
 
-			// Check if the total amount exceeds hasToPay
-			const monthFullyPay =
-				newAmountPayedThisMonth >= paymentInfo?.hasToPay;
+			// $set: {
+			// 	// "paymentDates.isPaid": true,
+			// 	"paymentDates.$.amountPayedThisMonth":
+			// 		newAmountPayedThisMonth,
+			// 	"paymentDates.$.monthFullyPay": monthFullyPay,
+			// 	updatedAt: new Date().toISOString(),
+			// },
 
 			return await Deal.findOneAndUpdate(
-				{ id, "paymentDates.payment_id": payment_id },
-				{
-					$set: {
-						// "paymentDates.isPaid": true,
-						"paymentDates.$.amountPayedThisMonth":
-							newAmountPayedThisMonth,
-						"paymentDates.$.monthFullyPay": monthFullyPay,
-						updatedAt: new Date().toISOString(),
-					},
-				},
+				{ id },
+				update,
 				{ new: true } // Return the updated document
 			)
 				.then(async (updatedDeal) => {
