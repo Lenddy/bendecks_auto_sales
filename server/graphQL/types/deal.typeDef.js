@@ -84,6 +84,11 @@ const dealTypeDef = gql`
 		model: String!
 	}
 
+	input AmountPayedInput {
+		amount: Float
+		paymentDates: [PaymentDateInput]
+	}
+
 	#mutations
 	type Mutation {
 		createOneDeal(
@@ -116,7 +121,7 @@ const dealTypeDef = gql`
 		updateOneDealPayment(
 			id: ID!
 			selectedPayments: [PaymentDateInput!]
-			amountPayed: Float
+			amountPayed: AmountPayedInput
 		): Deal!
 
 		isDealPaymentPayed: [Deal!]!

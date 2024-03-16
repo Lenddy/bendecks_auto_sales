@@ -43,12 +43,13 @@ function GetOneDeal() {
 			variables: {
 				id,
 				selectedPayments: selectedPayment,
-				amountPayed: null,
+				amountPayed: info?.amountPayed,
 				// amountPayed||
 			},
 		})
 			.then((res) => {
 				console.log(res.data);
+				navigate(`/deals/${id}`);
 			})
 			.catch((error) => {
 				console.log("there was an error", error);
@@ -69,26 +70,33 @@ function GetOneDeal() {
 			}
 		}
 		setSelectedPayment(AllPayments);
-
-		console.log("These are all the payments:", AllPayments);
 		return;
 	};
 
 	const infoToBeSubmitted = (e) => {
 		const { name, value } = e.target;
-		const typeValue =
-			name === "amountPayedThisMonth" ? parseFloat(value) : value;
-		setInfo((prevInfo) => ({
-			...prevInfo,
-			[name]: typeValue,
-		}));
+
+		const AllPayments = [];
+
+		for (const payment of deal.paymentDates) {
+			if (!payment.monthFullyPay) {
+				// Remove __typename field
+				const { __typename, ...paymentWithoutTypename } = payment;
+				AllPayments.push(paymentWithoutTypename);
+			}
+		}
+		setInfo({
+			// ...prevInfo,
+			[name]: {
+				amount: parseFloat(value),
+				paymentDates: AllPayments,
+			},
+		});
 	};
 
-	//* now make it work on the front end
+	// !show more information of the deals   like the remaining balance and the  name of the deal owner and even the  info of the car
 
-	//! and make another one that is inputting the values  in an input field and that depending on the amount that is inputted will target multiple or one payment
-
-	//? make a function that will take the payments that have ben paid and subtract the amount of those to the remaining balance
+	//! make the second for or payment not be there until a btn is click like another form of payment
 
 	return (
 		<div className="getOne">
@@ -112,31 +120,30 @@ function GetOneDeal() {
 								name="payment_id"
 								id=""
 								onChange={(e) => {
-									infoToBeSubmitted(e);
+									// infoToBeSubmitted(e);
 									paymentSelected(e.target.value);
 								}}
 							>
 								<option value="">payments</option>
 								{deal?.paymentDates?.map((pd, idx) => {
-									return (
-										<option
-											key={pd?.payment_id}
-											value={pd?.payment_id}
-										>
-											payment number {idx + 1}:{" "}
-											{pd?.hasToPay}
-										</option>
-									);
+									if (pd?.monthFullyPay === false) {
+										return (
+											<option
+												key={pd?.payment_id}
+												value={pd?.payment_id}
+											>
+												payment number {idx + 1}:{" "}
+												{pd?.hasToPay}
+											</option>
+										);
+									}
 								})}
 							</select>
 							<div>
-								<label htmlFor="amountPayedThisMonth">
-									{" "}
-									amount payed
-								</label>
 								<input
+									placeholder="cantidad"
 									type="number"
-									name="amountPayedThisMonth"
+									name="amountPayed"
 									step={0.01}
 									maxLength={20}
 									onChange={infoToBeSubmitted}

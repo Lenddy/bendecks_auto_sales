@@ -5,6 +5,7 @@ import { create_one_deal } from "../../GraphQL/mutations/dealMutations";
 import io from "socket.io-client"; //importing socket.io-client
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
+import { get_one_deal } from "../../GraphQL/queries/dealQueries";
 import moment from "moment";
 
 const CreateOneDeal = ({ reload, setReload }) => {
@@ -89,6 +90,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				carYear: info?.carYear,
 				client_id: info?.client_id,
 			},
+			refetchQueries: [{ query: get_one_deal }],
 		})
 			.then((res) => {
 				navigate("/deals");

@@ -130,12 +130,12 @@ export const update_One_deal_payment = gql`
 	mutation updateOneDealPayment(
 		$id: ID!
 		$selectedPayments: [PaymentDateInput!]
-		$amountPayed: Float
+		$amountPayed: AmountPayedInput
 	) {
 		updateOneDealPayment(
 			id: $id
-			selectedPayments: selectedPayments
-			amountPayed: amountPayed
+			selectedPayments: $selectedPayments
+			amountPayed: $amountPayed
 		) {
 			id
 			downPayment

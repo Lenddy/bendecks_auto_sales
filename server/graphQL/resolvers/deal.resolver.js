@@ -12,6 +12,7 @@ const dealResolvers = {
 		hello: async () => {
 			return "hello world";
 		},
+
 		getAllDeals: async () => {
 			return await Deal.find()
 				.populate("client_id")
@@ -190,20 +191,17 @@ const dealResolvers = {
 				});
 		},
 
-		updateOneDealPayment: async (parent, args, context, info) => {
-			const { id, selectedPayments, amountPayed } = args;
+		updateOneDealPayment: async (
+			parent,
+			{ id, selectedPayments, amountPayed },
+			context,
+			info
+		) => {
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
-			// const updatedDeal =
-			let newRemainingBalance;
-
-			// const oneDeal = await dealResolvers?.Query?.getOneDeal(null, {
-			// 	id,
-			// });
 
 			if (selectedPayments !== undefined && selectedPayments.length > 0) {
 				console.log("the selectedPayments hit");
 				const bulkOps = [];
-
 				for (payment of selectedPayments) {
 					bulkOps.push({
 						updateOne: {
@@ -211,7 +209,6 @@ const dealResolvers = {
 								_id: id,
 								"paymentDates.payment_id": payment.payment_id,
 							},
-
 							update: {
 								$set: {
 									"paymentDates.$.monthFullyPay": true,
@@ -229,29 +226,53 @@ const dealResolvers = {
 
 				if (bulkOps.length > 0) {
 					await Deal.bulkWrite(bulkOps);
-					// let lastPayment =
-					// 	selectedPayments[selectedPayments.length - 1]
-					// 		.payment_id;
-
-					// newRemainingBalance = oneDeal.paymentDates.find((p) => {
-					// 	p.payment_id === lastPayment;
-					// });
-					// console.log("this is the fined one :", newRemainingBalance);
-					// update["remainingBalance"] =
-					// 	newRemainingBalance?.remainingBalance;
 				}
 			}
 
-			// $set: {
-			// 	// "paymentDates.isPaid": true,
-			// 	"paymentDates.$.amountPayedThisMonth":
-			// 		newAmountPayedThisMonth,
-			// 	"paymentDates.$.monthFullyPay": monthFullyPay,
-			// 	updatedAt: new Date().toISOString(),
-			// },
+			if (amountPayed !== undefined) {
+				const bulkOps = [];
+				let remainingAmount = amountPayed.amount;
+
+				for (const payment of amountPayed.paymentDates) {
+					if (remainingAmount <= 0) {
+						console.log("breaking the loop");
+						break;
+					}
+					// Calculate the amount to be paid for this payment
+					const paymentAmount = Math.min(
+						remainingAmount,
+						payment.hasToPay
+					);
+
+					bulkOps.push({
+						updateOne: {
+							filter: {
+								_id: id,
+								"paymentDates.payment_id": payment.payment_id,
+							},
+							update: {
+								$set: {
+									"paymentDates.$.monthFullyPay":
+										paymentAmount >= payment.hasToPay, // Check if the payment is fully paid
+									"paymentDates.$.amountPayedThisMonth":
+										paymentAmount,
+									"paymentDates.$.hasToPay":
+										payment.hasToPay - paymentAmount,
+								},
+							},
+						},
+					});
+					remainingAmount -= paymentAmount;
+				}
+				console.log("after the loop");
+
+				if (bulkOps.length > 0) {
+					await Deal.bulkWrite(bulkOps);
+				}
+			}
 
 			return await Deal.findOneAndUpdate(
-				{ id },
+				{ _id: id },
 				update,
 				{ new: true } // Return the updated document
 			)
@@ -263,11 +284,11 @@ const dealResolvers = {
 						},
 					});
 
-					console.log(
-						"deal updated",
-						updatedDeal,
-						"\n____________________"
-					);
+					// console.log(
+					// 	"deal updated",
+					// 	updatedDeal,
+					// 	"\n____________________"
+					// );
 					return await dealResolvers.Query.getOneDeal(null, {
 						id: updatedDeal.id,
 					});
