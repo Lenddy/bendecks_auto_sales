@@ -236,6 +236,10 @@ function GetOneClient() {
 
 	// now figure out how to delete the last deleted items from the database  maybe add a new field that says delete and update so that in the back end you can make the change to delete and or updated
 
+	// TODO   show the submit button only when all fields are fill to the specific  requairments
+
+	// TODO 	add the validations
+
 	return (
 		<div className="getOne">
 			{notFound ? (

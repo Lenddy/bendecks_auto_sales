@@ -1,302 +1,321 @@
+:root{
+    --clr-background:#081717 ;
+    --clr-primary:#0f2334;
+    --clr-secondary:#172531;
+    --clr-text:#F8F8FF;
+    --clr-clk-text:#0b95e5;
+}
+
 #root {
-  /* max-width: 3000px; */
-  max-width: 2560px;
-  padding: 0px;
-  margin: 0px auto;
-  text-align: center;
+    max-width: 2560px;
+    padding: 0px;
+    margin: 0px auto;
+    text-align: center;
 } 
 
+/* base */
 
 
+/* for all */
 *{
-  text-align: center;
-  padding: 0 ;
-  margin: 0;
-  
+    text-align: center;
+    padding: 0 ;
+    margin: 0;
 }
 
-
+/* for the container */
 .container{
-  max-width:2560px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  /* background-color: violet; */
+    max-width:2560px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
+
+
+/* for the children of the container */
 .children{
-  display: flex;
-  justify-content: center;
-  /* background-color: gray; */
+    display: flex;
+    justify-content: center;
 }
 
 .children_content{
- width: 100%;
-  /* background-color:darkgreen; */
-  /* display: flex;
-  justify-content: center; */
+    width: 100%;
+}
+
+
+/* for the nav-bar */
+
+
+
+
+.nav-bar{
+    /* width: 100%;
+    height: 60px; */
+    display: flex;
+    justify-content: start;
+    margin-bottom:30px ;
+    color:  var(--clr-text);
+    z-index: 3;
+}
+
+.nav-bar-icon{
+    height: 50px;
+    filter: invert();
+}
+
+
+/* for the side-bar version */
+
+
+.side-bar-close{
+    background-color:var(--clr-secondary);
+    width: 100%;
+}
+
+.side-bar-container{
+}
+
+.side-bar-item{
+    display: flex;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid var(--clr-text);
+    flex-direction: column;
+}
+
+.dropdown-title{
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    /* transition: height 0.5s ease-out; */
+}
+
+.dropdown-menu{
+    background-color: red;
+    /* transition:height 0.5s; */
+    transition: max-height 2s ease-in-out;
+}
+
+.dropdown-menu-button{
+    background-color: var(--clr-background);
+    border-top: solid var(--clr-text) 2px;
+    border-bottom: solid var(--clr-text) 2px;
+    border-radius:10px ;
+    width: 90%;
+    
+}
+
+
+.nav-bar-sub-icon{
+    height: 25px;
+    filter: invert();
+    transform: rotate(0);
+    transition: transform 0.5s;
+}
+
+
+.hide{
+    /* display:none; */
+    transition: all 1.5s;
+    opacity: 0;
+    transform: translateX(-500%);
+}
+
+.show{
+    transition: opacity 1.5s;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+.rotate{
+    transform: rotate(-90deg);
+    transition: transform 0.5s;
+}
+
+.animate{
+    transition:all 2s;
 }
 
 
 
-/* nav bar */
- .navBar{
-  width: 100%;
-  height: 60px;
-  display: flex;
-  justify-content: start;
-  /* align-items: center; */
-  margin-bottom:30px ;
-  /* background-color: red; */
-  /* z-index:9999999; */
-}
 
 
-
-.navBar ul li button{
-  background-color: transparent;
-  border: none;
-  border-bottom: 3px solid white;
-}
-
-
-.navBar ul li{
-  color:  white;
-
-}
 
 
 /* filter input */
 .filterInput{
-  width: 30%;
-  height: 30px;
-  margin: 10px;
-  border:solid 10px #172531;
-  border-radius: 10px;
-  background-color: transparent;
-  margin-bottom: 30px;
+    width: 30%;
+    height: 30px;
+    margin: 10px;
+    border:solid 10px var(--clr-secondary);
+    border-radius: 10px;
+    background-color: transparent;
+    margin-bottom: 30px;
 }
 
 .filterInput::placeholder{
-  font-size: 20px;
-  /* color: rgba(255, 255, 255, 0.761); */
+    font-size: 20px;
 }
 
 .idInfo{
-  color:  rgb(11, 149, 229);
+    color: var(--clr-clk-text);
 }
-
 
 
 
 /* get all  */
 table{
-  width:100%;
-  /* max-width: px; */
-  /* background-color: red; */
-  border-collapse: collapse;
-  border:3px #172531 solid;
-  background-color: #172531;
+    width:100%;
+    border-collapse: collapse;
+    border:3px solid var(--clr-primary) ;  
+    background-color: var(--clr-secondary);
 }
 
 table th{
-  background-color: #0f2334;
-  /* border: solid 1px white; */
-  border-radius: 10px;
+    background-color: var(--clr-primary);
+    border-radius: 10px;
 }
 
 td{
-  border: solid white 1px ;
-    /* vertical-align: bottom; */
+    border: solid  1px  var(--clr-text) ;
 }
 
 .utilBtn{
-  width: 70px;
-  height: 50px;
-  margin: 5px;
-}
-
-
-.burgerIcon{
-  height: 50px;
-  /* color: white; */
-  filter: invert();
-  /* position: absolute; */
-}
-
-
-
-.close{
-  background-color:  #172531;
-  width: 100%;
-}
-.sidebar button{
-background-color: none;
-}
-
-.subBtn{
-  background-color: #081717;
-/* border-top: solid white 1px; */
-border-bottom: solid white 1px;
-}
-
-.dropDownTitle{
- display: flex;
- justify-content: center;
- align-items:center;
-}
-
-
-.subIcon{
-  height: 25px;
-  /* color: white; */
-  filter: invert();
-  /* position: absolute; */
-}
-/* .dropdown-menu{
-  transition: ;
-} */
-
-.hide{
-  /* display:none; */
-  transition: all 1.5s;
-  opacity: 0;
-  transform: translateX(-500%);
-}
-
-.show{
-  transition: opacity 1.5s;
-  opacity: 1;
-  transform: translateX(0);
+    width: 70px;
+    height: 50px;
+    margin: 5px;
 }
 
 
 .confirmDeleteCLient{
-  display: flex;
-  width: 150px;
-  height: 40px;
-  justify-content: space-around;
+    display: flex;
+    width: 150px;
+    height: 40px;
+    justify-content: space-around;
 }
 
 
 .submitSection{
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @media screen and (max-width: 500px) {
 
 
   /* nav bar */
-  .sidebar {
+.side-bar {
     height: 100%;
-    width: 0; /* Sidebar is hidden initially */
+    width: 0; /* side-bar is hidden initially */
     position: fixed;
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: #081717; /* Sidebar background */
+    background-color:var(--clr-background); /* side-bar background */
     overflow-x: hidden; /* Prevent horizontal scroll */
-    transition: all 0.5s; /* Smooth transition for opening/closing */
-    border: 1px solid white;
+    transition: width 0.5s; /* Smooth transition for opening/closing */
+    border: 1px solid var(--clr-text);
     border-radius: 10px;
-  }
-  
-  .sidebar li {
+}
+
+.side-bar.open {
+    width: 250px; /* Width of the side-bar when open */
+    }
+
+.side-bar li {
     margin: 10px auto;
     /* font-size: 15px; */
     display: block;
-    transition: 0.3s;
-  }
-  
-  .sidebar.open {
-    width: 250px; /* Width of the sidebar when open */
-  }
-  
-  .dropdown-menu {
+}
+
+
+
+    .dropdown-menu {
     display: flex;
     justify-content: space-around;
     flex-direction: column;
     /* align-items: ; */
-    background-color: #172531; /* Background color */
+    background-color:    var(--clr-secondary);  
     min-width: 160px; /* Set a minimum width */
     min-height: 130px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Add some shadow */
     z-index: 1; /* Ensure it's on top of other elements */
-    border: white 1px solid;
+    border: var(--clr-text) 1px solid;
     border-radius: 10px;
     margin:0px 10px 10px 10px;
     overflow: hidden;
-  max-height: 0; /* Start with a max-height of 0 */
-  transition: max-height 0.5s ease-out; /* Transition for max-height */
-  }
+  /* max-height: 0;  */
+  /* Start with a max-height of 0 */
+  /* transition: min-height 0.5s ease-out;  */
+    }
 
-  .dropdown-visible {
+    .dropdown-visible {
     max-height: 500px; /* Adjust this value based on the content size */
     /* transition will automatically apply when max-height changes */
-  }
+    }
 
   /* filter input */
 
-  .filterInput {
+    .filterInput {
     min-width:250px;
     
-  }
+    }
 
-  .filterInput::placeholder{
+    .filterInput::placeholder{
     font-size: 15px;
-  }
+    }
 
 
   /* get all  */
 
 table th{
-  background-color: #0f2334;
-  /* border: solid 1px white; */
-  border-radius: 10px;
+    background-color:var(--clr-primary);
+    border-radius: 10px;
 }
 
 td{
-  border: solid white 1px ;
+    border: solid var(--clr-text) 1px ;
     /* vertical-align: bottom; */
     height: 50px;
 }
 
 
 .getAllName{
-  color:  rgb(11, 149, 229);
-  text-decoration: underline;
+    color:  var(--clr-clk-text);
+    text-decoration: underline;
 }
 
 
 .utilBtn{
-  width: 70px;
-  height: 50px;
-  margin: 5px;
+    width: 70px;
+    height: 50px;
+    margin: 5px;
 }
 
 /* get one */
 .getOne{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+} 
 
 .oneInfo{
-  width: 90%;
+    width: 90%;
 }
 
 
 .title{
-  font-size: 25px;
+    font-size: 25px;
 
 }
 
 .notFound {
-  color:  rgb(11, 149, 229);
-  font-size: 20px;;
+    color:  var(--clr-clk-text);
+    font-size: 20px;;
 }
 
 
@@ -309,32 +328,32 @@ td{
 }
 .creteOneFullSection{
   /* background-color: blue; */
-  min-height: 200px;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  justify-content: space-between;
+    min-height: 200px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .createOneClientInput{
-  height: 30px;
-  margin: 10px;
-  border:solid 10px #172531;
-  border-radius: 10px;
-  background-color: transparent;
+    height: 30px;
+    margin: 10px;
+    border:solid 10px #172531;
+    border-radius: 10px;
+    background-color: transparent;
   /* margin-bottom: 20px; */
-  min-width:250px;
-  max-width: 300px;
+    min-width:250px;
+    max-width: 300px;
 }
 
 
 .createOneClientInput::placeholder{
-  font-size: 15px;
+    font-size: 15px;
 }
 .newSection{
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   /* background-color: yellow; */
 }
 
@@ -343,10 +362,10 @@ td{
   /* margin-right: 0px; */
 }
 .btnNewSection{
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: end;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: end;
 
   /* background-color: red; */
   /* margin: 0px; */
@@ -355,77 +374,77 @@ td{
 
 
 .addSection ,.deleteSection{
-  width: 30px;
-  height: 30px;
-  font-size:25px;
-  margin: auto;
-  background-color: transparent;
-  border: #172531 solid 5px;
-  border-radius:50px;
+    width: 30px;
+    height: 30px;
+    font-size:25px;
+    margin: auto;
+    background-color: transparent;
+    border:var(--clr-secondary) solid 5px;
+    border-radius:50px;
   /* box-shadow: red ; */
 }
 
 
 
 .addSection> p ,.deleteSection >p{
-  margin: auto;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .submit_btn{
-  height: 40px;
-  margin: 10px;
-  border:solid 5px #172531;
-  border-radius: 10px;
-  background-color: transparent;
+    height: 40px;
+    margin: 10px;
+    border:solid 5px var(--clr-secondary);
+    border-radius: 10px;
+    background-color: transparent;
   /* margin-bottom: 20px; */
-  width: 150px;
-  font-size: 15px;
+    width: 150px;
+    font-size: 15px;
 }
 
 .addSection:active ,.submit_btn:active , .deleteSection:active {
-  box-shadow: 0px 4px 5px white;
+    box-shadow: 0px 4px 5px var(--clr-text);
 }
 
 .section_union{
   /* background-color: red; */
-  display: flex;
-  justify-content: center;
-  max-width: 400px;
+    display: flex;
+    justify-content: center;
+    max-width: 400px;
 }
 
 .editableField{
   /* display: inline-block; */
-  min-width: 100px;
+    min-width: 100px;
   /* max-width: 200px; */
-  margin: 5px;
+    margin: 5px;
   /* background-color: red; */
-  caret-color: rgb(0, 162, 255);
-  caret-shape:block;
+    caret-color: var(--clr-clk-text);
+    caret-shape:block;
 }
 
 /* .getOneForm{
-  display: flex;
-  justify-content: center;
+    display: flex;
+    justify-content: center;
 } */
 
 .editablePhoneSection ,.confirmDeletionsSection{
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .confirmDeletionsSection{
-  display: flex;
-  justify-content:space-evenly;
-  align-items: center;
+    display: flex;
+    justify-content:space-evenly;
+    align-items: center;
 }
 .-update{
-  margin-left: 10px;
+    margin-left: 10px;
 }
 
 }

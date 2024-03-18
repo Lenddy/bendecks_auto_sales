@@ -106,6 +106,7 @@ function GetAllClients() {
 
 	return (
 		<div className="children_content">
+			<h1>Clientes</h1>
 			<input
 				type="text"
 				className="filterInput"

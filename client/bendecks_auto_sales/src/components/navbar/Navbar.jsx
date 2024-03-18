@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import burgerMenu from "../../assets/burgerMenu.svg";
 import close from "../../assets/close.svg";
@@ -7,14 +7,29 @@ import dropDown from "../../assets/dropDown.svg";
 function Navbar() {
 	const navigate = useNavigate();
 	const [isOpen, setIsOpen] = useState(false);
-	const [dropdownVisibility, setDropdownVisibility] = useState({});
+	const [dropdownVisibility, setDropdownVisibility] = useState(null);
+	const [rotate, setRotate] = useState(false);
+	const [rotate2, setRotate2] = useState(false);
+	const [rotate3, setRotate3] = useState(false);
+	const sidebarRef = useRef(null);
 
-	// Toggle the visibility of a specific dropdown
 	const toggleDropdown = (id) => {
-		setDropdownVisibility((prevState) => ({
-			...prevState,
-			[id]: !prevState[id],
-		}));
+		setDropdownVisibility((prevId) => (prevId === id ? null : id));
+		if (id === "clients") {
+			setRotate((prev) => !prev);
+			setRotate2(false);
+			setRotate3(false);
+		}
+		if (id === "deals") {
+			setRotate2((prev) => !prev);
+			setRotate(false);
+			setRotate3(false);
+		}
+		if (id === "vehicles") {
+			setRotate3((prev) => !prev);
+			setRotate(false);
+			setRotate2(false);
+		}
 	};
 
 	// Navigate to a route and close the sidebar
@@ -23,17 +38,18 @@ function Navbar() {
 		setIsOpen(false);
 		if (dropdownId) {
 			toggleDropdown(dropdownId);
+			setRotate(false);
 		}
 	};
 
 	// Render a dropdown menu
 	const renderDropdown = (id, items) =>
-		dropdownVisibility[id] && (
-			<ul className="dropdown-menu">
+		dropdownVisibility === id && (
+			<ul className={`dropdown-menu ${rotate ? "animate" : ""}`}>
 				{items.map((item, index) => (
 					<li
 						key={index}
-						className="subBtn"
+						className="dropdown-menu-button"
 						onClick={() => navigateTo(item.path, id)}
 					>
 						<h2>{item.label}</h2>
@@ -42,27 +58,56 @@ function Navbar() {
 			</ul>
 		);
 
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (
+				sidebarRef.current &&
+				!sidebarRef.current.contains(event.target)
+			) {
+				setIsOpen(false);
+			}
+		};
+
+		document.addEventListener("click", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("click", handleClickOutside);
+		};
+	}, []);
+
 	return (
-		<div className="navBar">
+		<div className="nav-bar" ref={sidebarRef}>
 			<img
 				src={burgerMenu}
 				onClick={() => setIsOpen(!isOpen)}
 				alt=""
-				className="burgerIcon"
+				className="nav-bar-icon"
 			/>
 
-			<div className={`sidebar ${isOpen ? "open" : ""}`}>
-				<div className="close" onClick={() => setIsOpen(!isOpen)}>
-					<img src={close} alt="" className="burgerIcon" />
+			<div className={`side-bar ${isOpen ? "open" : ""}`}>
+				<div
+					className="side-bar-close"
+					onClick={() => setIsOpen(!isOpen)}
+				>
+					<img src={close} alt="" className="nav-bar-icon" />
 				</div>
-				<ul>
-					<li>
+
+				<ul className="side-bar-container">
+					<li className={`side-bar-item `}>
 						<div
-							onClick={() => toggleDropdown("clients")}
-							className="dropDownTitle"
+							onClick={() => {
+								toggleDropdown("clients");
+							}}
+							className="dropdown-title"
 						>
 							<h1>Clientes</h1>
-							<img src={dropDown} alt="" className="subIcon" />
+							<img
+								src={dropDown}
+								alt=""
+								className={`nav-bar-sub-icon ${
+									rotate ? "rotate" : ""
+								}`}
+							/>
 						</div>
 						{renderDropdown("clients", [
 							{ label: "Ver Clientes", path: "/dashboard" },
@@ -73,13 +118,21 @@ function Navbar() {
 						])}
 					</li>
 
-					<li>
+					<li className="side-bar-item">
 						<div
-							onClick={() => toggleDropdown("deals")}
-							className="dropDownTitle"
+							onClick={() => {
+								toggleDropdown("deals");
+							}}
+							className="dropdown-title"
 						>
 							<h1>Ventas</h1>
-							<img src={dropDown} alt="" className="subIcon" />
+							<img
+								src={dropDown}
+								alt=""
+								className={`nav-bar-sub-icon ${
+									rotate2 ? "rotate" : ""
+								}`}
+							/>
 						</div>
 						{renderDropdown("deals", [
 							{ label: "Ver Ventas", path: "/deals" },
@@ -87,13 +140,21 @@ function Navbar() {
 						])}
 					</li>
 
-					<li>
+					<li className="side-bar-item">
 						<div
-							onClick={() => toggleDropdown("vehicles")}
-							className="dropDownTitle"
+							onClick={() => {
+								toggleDropdown("vehicles");
+							}}
+							className="dropdown-title"
 						>
 							<h1>Vehículos</h1>
-							<img src={dropDown} alt="" className="subIcon" />
+							<img
+								src={dropDown}
+								alt=""
+								className={`nav-bar-sub-icon ${
+									rotate3 ? "rotate" : ""
+								}`}
+							/>
 						</div>
 						{renderDropdown("vehicles", [
 							{ label: "Ver Vehículos", path: "/vehicles" },
