@@ -2,6 +2,7 @@
     --clr-background:#081717 ;
     --clr-primary:#0f2334;
     --clr-secondary:#172531;
+    --clr-tertiary:#17324a;
     --clr-text:#F8F8FF;
     --clr-clk-text:#0b95e5;
 }
@@ -38,15 +39,12 @@
     justify-content: center;
 }
 
-.children_content{
+.children-content{
     width: 100%;
 }
 
 
 /* for the nav-bar */
-
-
-
 
 .nav-bar{
     /* width: 100%;
@@ -64,7 +62,26 @@
 }
 
 
-/* for the side-bar version */
+/* nav bar */
+
+.side-bar {
+    height: 100%;
+    width: 0; 
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color:var(--clr-background); 
+    overflow-x: hidden; 
+    transition: width 0.5s; 
+    border: 1px solid var(--clr-text);
+    border-top-right-radius:10px ;
+    border-bottom-right-radius: 10px;
+}
+
+.open {
+    width: 250px; /* Width of the side-bar when open */
+}
 
 
 .side-bar-close{
@@ -75,6 +92,14 @@
 .side-bar-container{
 }
 
+
+.side-bar li {
+    margin: 10px auto;
+    /* font-size: 15px; */
+    display: block;
+}
+
+
 .side-bar-item{
     display: flex;
     background-color: transparent;
@@ -82,6 +107,7 @@
     border-bottom: 3px solid var(--clr-text);
     flex-direction: column;
 }
+
 
 .dropdown-title{
     display: flex;
@@ -91,20 +117,35 @@
 }
 
 .dropdown-menu{
-    background-color: red;
     /* transition:height 0.5s; */
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    /* align-items: ; */
+    /* background-color:    var(--clr-secondary);   */
+    min-width: 160px; /* Set a minimum width */
+    min-height: 130px;
+    box-shadow: 0 0 6px var(--clr-secondary);
+    z-index: 1; /* Ensure it's on top of other elements */
+    border: var(--clr-text) 1px solid;
+    border-radius: 10px;
+    margin:0px 10px 10px 10px;
+    overflow: hidden;
     transition: max-height 2s ease-in-out;
 }
 
+.dropdown-visible {
+    max-height: 500px; /* Adjust this value based on the content size */
+    /* transition will automatically apply when max-height changes */
+}
+
 .dropdown-menu-button{
-    background-color: var(--clr-background);
+    background-color: var(--clr-secondary);
     border-top: solid var(--clr-text) 2px;
     border-bottom: solid var(--clr-text) 2px;
     border-radius:10px ;
     width: 90%;
-    
 }
-
 
 .nav-bar-sub-icon{
     height: 25px;
@@ -112,7 +153,6 @@
     transform: rotate(0);
     transition: transform 0.5s;
 }
-
 
 .hide{
     /* display:none; */
@@ -127,7 +167,6 @@
     transform: translateX(0);
 }
 
-
 .rotate{
     transform: rotate(-90deg);
     transition: transform 0.5s;
@@ -139,12 +178,8 @@
 
 
 
-
-
-
-
 /* filter input */
-.filterInput{
+.filter{
     width: 30%;
     height: 30px;
     margin: 10px;
@@ -154,12 +189,8 @@
     margin-bottom: 30px;
 }
 
-.filterInput::placeholder{
+.filter::placeholder{
     font-size: 20px;
-}
-
-.idInfo{
-    color: var(--clr-clk-text);
 }
 
 
@@ -170,22 +201,51 @@ table{
     border-collapse: collapse;
     border:3px solid var(--clr-primary) ;  
     background-color: var(--clr-secondary);
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 0;
+    box-shadow: 0 0 6px rgba(0,0,0,1);
 }
 
-table th{
+.table-header{
     background-color: var(--clr-primary);
-    border-radius: 10px;
 }
 
 td{
-    border: solid  1px  var(--clr-text) ;
+    border: solid var(--clr-text) 1px ;
+    vertical-align: center;
+    height: 50px;
 }
 
-.utilBtn{
-    width: 70px;
-    height: 50px;
-    margin: 5px;
+.table-data:nth-child(even){
+background-color: var(--clr-primary);
+/* background-color: red; */
 }
+
+.link-connection{
+    color:  var(--clr-clk-text);
+    text-decoration: underline;
+}
+
+
+.table-multi-data{
+    overflow-x: scroll-y; 
+    border: 1px solid var(--clr-text);
+    /* max-width: 300px; */
+    height: 50px;
+}
+
+
+
+
+
+.input-validation{
+    color: red;
+}
+
+
+
+
 
 
 .confirmDeleteCLient{
@@ -195,66 +255,11 @@ td{
     justify-content: space-around;
 }
 
-
 .submitSection{
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
-@media screen and (max-width: 500px) {
-
-
-  /* nav bar */
-.side-bar {
-    height: 100%;
-    width: 0; /* side-bar is hidden initially */
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color:var(--clr-background); /* side-bar background */
-    overflow-x: hidden; /* Prevent horizontal scroll */
-    transition: width 0.5s; /* Smooth transition for opening/closing */
-    border: 1px solid var(--clr-text);
-    border-radius: 10px;
-}
-
-.side-bar.open {
-    width: 250px; /* Width of the side-bar when open */
-    }
-
-.side-bar li {
-    margin: 10px auto;
-    /* font-size: 15px; */
-    display: block;
-}
-
-
-
-    .dropdown-menu {
-    display: flex;
-    justify-content: space-around;
-    flex-direction: column;
-    /* align-items: ; */
-    background-color:    var(--clr-secondary);  
-    min-width: 160px; /* Set a minimum width */
-    min-height: 130px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Add some shadow */
-    z-index: 1; /* Ensure it's on top of other elements */
-    border: var(--clr-text) 1px solid;
-    border-radius: 10px;
-    margin:0px 10px 10px 10px;
-    overflow: hidden;
-  /* max-height: 0;  */
-  /* Start with a max-height of 0 */
-  /* transition: min-height 0.5s ease-out;  */
-    }
-
-    .dropdown-visible {
-    max-height: 500px; /* Adjust this value based on the content size */
-    /* transition will automatically apply when max-height changes */
-    }
 
   /* filter input */
 
@@ -268,31 +273,7 @@ td{
     }
 
 
-  /* get all  */
 
-table th{
-    background-color:var(--clr-primary);
-    border-radius: 10px;
-}
-
-td{
-    border: solid var(--clr-text) 1px ;
-    /* vertical-align: bottom; */
-    height: 50px;
-}
-
-
-.getAllName{
-    color:  var(--clr-clk-text);
-    text-decoration: underline;
-}
-
-
-.utilBtn{
-    width: 70px;
-    height: 50px;
-    margin: 5px;
-}
 
 /* get one */
 .getOne{
@@ -307,10 +288,8 @@ td{
     width: 90%;
 }
 
-
 .title{
     font-size: 25px;
-
 }
 
 .notFound {
@@ -318,10 +297,7 @@ td{
     font-size: 20px;;
 }
 
-
-
 /** create one  */
-
 .createOneClientForm{
   /* background-color: red; */
   /* min-height: 400px; */
@@ -346,7 +322,6 @@ td{
     max-width: 300px;
 }
 
-
 .createOneClientInput::placeholder{
     font-size: 15px;
 }
@@ -361,17 +336,13 @@ td{
 .space{
   /* margin-right: 0px; */
 }
+
 .btnNewSection{
     width: 40px;
     height: 40px;
     display: flex;
     justify-content: end;
-
-  /* background-color: red; */
-  /* margin: 0px; */
-
 }
-
 
 .addSection ,.deleteSection{
     width: 30px;
@@ -383,8 +354,6 @@ td{
     border-radius:50px;
   /* box-shadow: red ; */
 }
-
-
 
 .addSection> p ,.deleteSection >p{
     margin: auto;
@@ -446,6 +415,12 @@ td{
 .-update{
     margin-left: 10px;
 }
+
+
+
+
+@media screen and (max-width: 500px) {
+
 
 }
 

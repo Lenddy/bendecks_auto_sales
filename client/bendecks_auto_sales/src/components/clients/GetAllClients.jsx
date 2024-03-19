@@ -27,6 +27,7 @@ function GetAllClients() {
 	// State to manage Clients and new changes
 	const [search, setSearch] = useState("");
 	const [clients, setClients] = useState([]);
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	// const [newChange, setNewChange] = useState();
 
 	// Subscription for client changes
@@ -104,72 +105,104 @@ function GetAllClients() {
 		}
 	}, [error, loading, data]); //newChange
 
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+
+		// Cleanup
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []); // Empty dependency array ensures that this effect runs only once on mount
+
 	return (
-		<div className="children_content">
+		<div className="children-content">
 			<h1>Clientes</h1>
 			<input
 				type="text"
-				className="filterInput"
-				placeholder="filtrar Por Nombre"
+				className="filter"
+				placeholder="Filtrar Por Nombre"
 				onChange={(e) => setSearch(e.target.value)}
-			></input>
+			/>
 
 			{loading ? (
 				<h1>loading</h1>
 			) : (
 				<table>
-					<tr className="tableHeader">
-						{/* <th>
-							<h2>ID </h2>
-						</th> */}
-						<th>
-							<h2>Nombre </h2>
-						</th>
-						<th>
-							<h2>Teléfono(s)</h2>
-						</th>
-						<th></th>
-					</tr>
-					{clients
-						.filter(
-							(c, idx) =>
-								c?.clientName
-									.toLowerCase()
-									.includes(search.toLowerCase()) ||
-								c?.clientLastName
-									.toLowerCase()
-									.includes(search.toLowerCase())
-						)
-						.map((c) => {
-							return (
-								<tr key={c?.id} className="data">
-									{/* <td>
-										<p className="idInfo">{c?.id}</p>
-									</td> */}
-									<td>
-										<Link to={`/${c?.id}`}>
-											<p className="getAllName">
-												{c?.clientName +
-													" " +
-													c?.clientLastName}
-											</p>
-										</Link>
-									</td>
-									<td>
-										<p>
-											{/* {c?.cellPhone?.map((n, idx) => {
+					<thead>
+						<tr className="table-header">
+							{windowWidth > 500 ? (
+								<th>
+									<h2>ID</h2>
+								</th>
+							) : (
+								<th></th>
+							)}
+							<th>
+								<h2>Nombre </h2>
+							</th>
+							<th>
+								<h2>Teléfono(s)</h2>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{clients
+							.filter(
+								(c, idx) =>
+									c?.clientName
+										.toLowerCase()
+										.includes(search.toLowerCase()) ||
+									c?.clientLastName
+										.toLowerCase()
+										.includes(search.toLowerCase())
+							)
+							.map((c) => {
+								return (
+									<tr key={c?.id} className="table-data">
+										{windowWidth > 500 ? (
+											<td>
+												<Link to={`/${c?.id}`}>
+													<p className="link-connection">
+														{c?.id}
+													</p>
+												</Link>
+											</td>
+										) : (
+											<td></td>
+										)}
+
+										<td>
+											<Link to={`/${c?.id}`}>
+												<p className="link-connection">
+													{c?.clientName +
+														" " +
+														c?.clientLastName}
+												</p>
+											</Link>
+										</td>
+										<td className="table-multi-data">
+											{/* {c?.cellPhones?.map((n, idx) => {
 												return (
-													<span key={idx}>
-														<span>{n}</span> ,
+													<span
+														key={idx}
+														className=""
+													>
+														<span>{n.number}</span>{" "}
+														,
+														<br />
 													</span>
 												);
 											})} */}
 											{c?.cellPhones[0]?.number}
-										</p>
-									</td>
-								</tr>
-							);
-						})}
+										</td>
+									</tr>
+								);
+							})}
+					</tbody>
 				</table>
 			)}
 		</div>

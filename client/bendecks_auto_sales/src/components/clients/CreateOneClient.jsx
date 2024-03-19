@@ -87,22 +87,61 @@ const CreateOneClient = ({ reload, setReload }) => {
 		setSections([...sections, { number: "" }]);
 	};
 
+	// const handleInputChange = (e, index) => {
+	// 	const updatedSections = sections.map((section, secIndex) => {
+	// 		if (index === secIndex) {
+	// 			return { ...section, [e.target.name]: e.target.value };
+	// 		}
+	// 		return section;
+	// 	});
+
+	// 	setSections(updatedSections);
+	// 	setInfo({ ...info, cellPhones: updatedSections });
+	// 	// Update the info.cellPhone with the cell phone numbers from all sections
+	// 	// const updatedCellPhones = updatedSections.map(
+	// 	// 	(section) => section.number
+	// 	// );
+	// 	// setInfo({ ...info, cellPhones: updatedCellPhones });
+	// };
+
 	const handleInputChange = (e, index) => {
 		const updatedSections = sections.map((section, secIndex) => {
 			if (index === secIndex) {
-				return { ...section, [e.target.name]: e.target.value };
+				let value = e.target.value;
+				if (!value) return { ...section, [e.target.name]: value };
+
+				const phoneNumber = value.replace(/[^\d]/g, "");
+				const phoneNumberLength = phoneNumber.length;
+
+				if (phoneNumberLength < 4)
+					return { ...section, [e.target.name]: phoneNumber };
+				if (phoneNumberLength < 7) {
+					return {
+						...section,
+						[e.target.name]: `(${phoneNumber.slice(
+							0,
+							3
+						)} ${phoneNumber.slice(3)}`,
+					};
+				}
+				return {
+					...section,
+					[e.target.name]: `(${phoneNumber.slice(
+						0,
+						3
+					)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
+				};
 			}
 			return section;
 		});
 
 		setSections(updatedSections);
-		setInfo({ ...info, cellPhones: updatedSections });
 
-		// Update the info.cellPhone with the cell phone numbers from all sections
-		// const updatedCellPhones = updatedSections.map(
-		// 	(section) => section.number
-		// );
-		// setInfo({ ...info, cellPhones: updatedCellPhones });
+		// Assuming you want to update the info object after formatting the phone number
+		const updatedCellPhones = updatedSections.map(
+			(section) => section.number
+		);
+		setInfo({ ...info, cellPhones: updatedCellPhones });
 	};
 
 	const deleteSection = (index) => {
@@ -111,6 +150,10 @@ const CreateOneClient = ({ reload, setReload }) => {
 		);
 		setSections(filteredSections);
 	};
+
+	// TODO   show the submit button only when all fields are fill to the specific  requairments
+
+	// TODO 	add the validations
 
 	// Component rendering
 	return (
@@ -126,6 +169,12 @@ const CreateOneClient = ({ reload, setReload }) => {
 							placeholder="Nombre"
 							className="createOneClientInput"
 						/>
+						{info?.clientName?.length > 0 &&
+						info?.clientName?.length < 2 ? (
+							<p className="input-validation">
+								Nombre Debe De Tener Por Lo Menos 2 Caracteres
+							</p>
+						) : null}
 					</div>
 
 					<div>
@@ -136,6 +185,12 @@ const CreateOneClient = ({ reload, setReload }) => {
 							placeholder="Apellido"
 							className="createOneClientInput"
 						/>
+						{info?.clientLastName?.length > 0 &&
+						info?.clientLastName?.length < 2 ? (
+							<p className="input-validation">
+								Apellido Debe De Tener Por Lo Menos 2 Caracteres
+							</p>
+						) : null}
 					</div>
 
 					{sections.map((section, index) => (
@@ -149,6 +204,14 @@ const CreateOneClient = ({ reload, setReload }) => {
 								placeholder="Teléfono"
 								className="createOneClientInput space"
 							/>
+							{/* {info?.cellPhones[index]?.number?.length > 0 &&
+							info?.cellPhones[index]?.number?.length > 0 ? (
+								<p>hello</p>
+							) : null} */}
+
+							{info?.cellPhones?.[index]?.number?.length > 0 ? (
+								<p>hello</p>
+							) : null}
 							{sections.length > 1 && (
 								<div>
 									<button

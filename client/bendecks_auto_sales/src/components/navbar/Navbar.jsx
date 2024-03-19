@@ -65,6 +65,10 @@ function Navbar() {
 				!sidebarRef.current.contains(event.target)
 			) {
 				setIsOpen(false);
+				setRotate(false);
+				setRotate2(false);
+				setRotate3(false);
+				setDropdownVisibility(null);
 			}
 		};
 

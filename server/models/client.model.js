@@ -9,6 +9,7 @@ const ClientSchema = new Schema(
 			required: true,
 			min: [2, "Name Of The Client Must Be At Least 2 Characters Long"],
 		},
+
 		clientLastName: {
 			type: String,
 			required: true,
