@@ -181,16 +181,16 @@ const CreateOneClient = ({ reload, setReload }) => {
 		setSections(filteredSections);
 	};
 
-	// TODO   show the submit button only when all fields are fill to the specific  requairments
+	// TODO   show the submit button only when all fields are fill to the specific  requirements
 
 	// TODO 	add the validations
 
 	// Component rendering
 	return (
-		<div className="children_content">
-			<h1>Agregar Cliente</h1>
-			<form onSubmit={submit} className="createOneClientForm">
-				<div className="creteOneFullSection">
+		<div className="children-content">
+			<h1>Nuevo Cliente</h1>
+			<form onSubmit={submit} className="form-create">
+				<div className="form-section">
 					<div>
 						<input
 							type="text"
@@ -201,7 +201,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 							}}
 							// value={info.clientName}
 							placeholder="Nombre"
-							className="createOneClientInput"
+							className="form-input"
 						/>
 						{info?.clientName?.length > 0 &&
 						info?.clientName?.length < 2 ? (
@@ -224,7 +224,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 							}}
 							// value={info.clientLastName}
 							placeholder="Apellido"
-							className="createOneClientInput"
+							className="form-input"
 						/>
 						{info?.clientLastName?.length > 0 &&
 						info?.clientLastName?.length < 2 ? (
@@ -239,57 +239,71 @@ const CreateOneClient = ({ reload, setReload }) => {
 					</div>
 
 					{sections.map((section, index) => (
-						<div key={index} className="newSection">
-							<input
-								type="text"
-								name="number"
-								onChange={(e) => {
-									handleInputChange(e, index);
-									setValidations(false);
-								}}
-								placeholder="Teléfono"
-								className="createOneClientInput space"
-								value={sections[index].number}
-							/>
-							{/* {info?.cellPhones[index]?.number?.length > 0 &&
-							info?.cellPhones[index]?.number?.length > 0 ? (
-								<p>hello</p>
-							) : null} */}
+						<div key={index} className="form-new-input-container">
+							<div className="form-new-input">
+								<input
+									type="text"
+									name="number"
+									onChange={(e) => {
+										handleInputChange(e, index);
+										setValidations(false);
+									}}
+									placeholder="Teléfono"
+									className="form-input"
+									value={sections[index].number}
+								/>
 
-							{info?.cellPhones?.[index]?.number?.length > 0 &&
-							info?.cellPhones?.[index]?.number?.length < 11 ? (
-								<p className="input-validation">
-									Numero Telefónico Debe Ser Valido
-								</p>
-							) : validations?.cellPhones ? (
-								<p className="input-validation">
-									El Primer Numero Telefónico Es Requerido
-								</p>
-							) : null}
-							{sections.length > 1 && (
-								<div>
-									<button
-										type="button"
-										onClick={() => deleteSection(index)}
-										className="deleteSection"
-									>
-										<p>&#8722;</p>
-									</button>
+								{sections.length > 1 && (
+									<div>
+										<button
+											type="button"
+											onClick={() => deleteSection(index)}
+											className="form-delete-input-section"
+										>
+											<p>&#8722;</p>
+										</button>
+									</div>
+								)}
+							</div>
+
+							{sections[index].number?.length > 0 &&
+							sections[index].number?.length < 13 ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Numero Telefónico Debe Ser Valido
+									</p>
 								</div>
-							)}
+							) : validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										El Primer Numero Telefónico Es Requerido
+									</p>
+								</div>
+							) : null}
 						</div>
 					))}
-					<div className="btnNewSection">
+
+					<div className="form-new-section-btn-container">
 						<button
 							type="button"
 							onClick={addSection}
-							className="addSection"
+							className="form-add-input-section"
 						>
 							<p>&#43;</p>
 						</button>
 					</div>
 				</div>
-				<button type="submit" className="submit_btn">
+
+				<button
+					type="submit"
+					className={`form-submit-btn ${
+						info?.clientName?.length >= 2 &&
+						info?.clientLastName?.length >= 2 &&
+						info?.cellPhones?.[0]?.length >= 13
+							? "show"
+							: "hide"
+					}`}
+				>
 					Agregar Cliente
 				</button>
 			</form>

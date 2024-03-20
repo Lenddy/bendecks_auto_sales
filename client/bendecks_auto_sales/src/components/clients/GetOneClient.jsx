@@ -236,231 +236,229 @@ function GetOneClient() {
 
 	// now figure out how to delete the last deleted items from the database  maybe add a new field that says delete and update so that in the back end you can make the change to delete and or updated
 
-	// TODO   show the submit button only when all fields are fill to the specific  requairments
-
-	// TODO 	add the validations
-
 	return (
-		<div className="getOne">
-			{notFound ? (
-				<div>
-					<h1 className="notFound">
-						cliente con ID:<span>{id}</span> no se pudo encontrara
-						asegúrese de que seal el id correcto
-					</h1>
+		<div className="children-content">
+			<h1>Cliente</h1>
+			<div>
+				{notFound ? (
+					<div>
+						<h1 className="link-connection">
+							cliente con ID:<span>{id}</span> no se pudo
+							encontrara asegúrese de que seal el id correcto
+						</h1>
 
-					<button>regresar</button>
-				</div>
-			) : (
-				<div className="oneInfo">
-					<h1 className="notFound">{id}</h1>
-					<form onSubmit={submit} className="getOneForm">
-						<div className="section_union">
-							<div>
-								<h1
-									contentEditable
-									suppressContentEditableWarning
-									name="clientName"
-									onInput={infoToBeSubmitted}
-									className="editableField "
-									onFocus={() => setFocus(true)}
-									// onBlur={() => setFocus(false)}
-								>
-									{client?.clientName}
-								</h1>
-							</div>
-
-							<div>
-								<h1
-									contentEditable
-									suppressContentEditableWarning
-									name="clientLastName"
-									onInput={infoToBeSubmitted}
-									className="editableField"
-									onFocus={() => setFocus(true)}
-									// onBlur={() => setFocus(false)}
-								>
-									{client?.clientLastName}
-								</h1>
-							</div>
-						</div>
-						{sections?.length > 0 ? (
-							sections.map((phone, index) => (
-								<div
-									key={phone?.numberId}
-									className="editablePhoneSection"
-								>
-									{index === sections.length - 1 ? (
-										<h1
-											contentEditable
-											suppressContentEditableWarning
-											name={`cellPhone-${index}`}
-											onInput={(e) => {
-												changeSectionVal(e, index);
-											}}
-											onFocus={() => setFocus(true)}
-											// onBlur={() => setFocus(false)}
-											className="editableField"
-											ref={
-												index === sections.length - 1
-													? newSectionRef
-													: null
-											}
-											key={index}
-										>
-											{phone?.number}
-										</h1>
-									) : (
-										<h1
-											contentEditable
-											suppressContentEditableWarning
-											className="editableField"
-											name={`cellPhone-${index}`}
-											onInput={(e) => {
-												changeSectionVal(e, index);
-											}}
-											onFocus={() => setFocus(true)}
-											// onBlur={() => setFocus(false)}
-										>
-											{phone?.number}
-										</h1>
-									)}
-
-									{sections.length > 1 && (
-										<div>
-											{!confirmDelete[index] ? (
-												<button
-													type="button"
-													className="deleteSection -update"
-													onClick={() =>
-														toggleConfirmDelete(
-															index
-														)
-													}
-													key={index}
-												>
-													<p>&#8722;</p>
-												</button>
-											) : (
-												<div className="confirmDeletionsSection -update">
-													<div className="btnNewSection">
-														<button
-															type="button"
-															onClick={() =>
-																deleteSection(
-																	index
-																)
-															}
-															className="deleteSection"
-															key={index}
-														>
-															<p> &#10003;</p>
-														</button>
-													</div>
-
-													<div className="btnNewSection">
-														<button
-															type="button"
-															onClick={() =>
-																toggleConfirmDelete(
-																	index
-																)
-															}
-															className="deleteSection"
-															key={index}
-														>
-															<p> &#10005;</p>
-														</button>
-													</div>
-												</div>
-											)}
-										</div>
-									)}
+						<button>regresar</button>
+					</div>
+				) : (
+					<div className="form-update-container">
+						<h1 className="link-connection">{id}</h1>
+						<form onSubmit={submit} className="form-update">
+							<div className="form-section-union-container">
+								<div className="form-section-union">
+									<h1
+										contentEditable
+										suppressContentEditableWarning
+										name="clientName"
+										onInput={infoToBeSubmitted}
+										className="form-editable-field"
+										onFocus={() => setFocus(true)}
+										// onBlur={() => setFocus(false)}
+									>
+										{client?.clientName}
+									</h1>
 								</div>
-							))
-						) : (
-							<div className="editablePhoneSection">
-								<h1
-									contentEditable
-									suppressContentEditableWarning
-									name="cellPhone-0"
-									onInput={(e) => {
-										changeSectionVal(e, 0);
-									}}
-									// onChange={infoToBeSubmitted}
-									className="editableField"
-								>
-									{client?.cellPhones[0]?.number}
-								</h1>
+
+								<div className="form-section-union">
+									<h1
+										contentEditable
+										suppressContentEditableWarning
+										name="clientLastName"
+										onInput={infoToBeSubmitted}
+										className="form-editable-field"
+										onFocus={() => setFocus(true)}
+										// onBlur={() => setFocus(false)}
+									>
+										{client?.clientLastName}
+									</h1>
+								</div>
 							</div>
-						)}
-						{/* it goes here */}
-						<div className="btnNewSection">
-							<button
-								type="button"
-								onClick={async () => {
-									await addSection(), focusNewInput();
-									// setTimeout(
-									// 	() =>
-									// 		,
-									// 	50
-									// );
-								}}
-								className="addSection"
-							>
-								<p>&#43;</p>
-							</button>
-						</div>
+							{sections?.length > 0 ? (
+								sections.map((phone, index) => (
+									<div
+										key={phone?.numberId}
+										className="form-editable-phone-section"
+									>
+										{index === sections.length - 1 ? (
+											<h1
+												contentEditable
+												suppressContentEditableWarning
+												name={`cellPhone-${index}`}
+												onInput={(e) => {
+													changeSectionVal(e, index);
+												}}
+												onFocus={() => setFocus(true)}
+												// onBlur={() => setFocus(false)}
+												className="form-editable-field"
+												ref={
+													index ===
+													sections.length - 1
+														? newSectionRef
+														: null
+												}
+												key={index}
+											>
+												{phone?.number}
+											</h1>
+										) : (
+											<h1
+												contentEditable
+												suppressContentEditableWarning
+												className="form-editable-field"
+												name={`cellPhone-${index}`}
+												onInput={(e) => {
+													changeSectionVal(e, index);
+												}}
+												onFocus={() => setFocus(true)}
+												// onBlur={() => setFocus(false)}
+											>
+												{phone?.number}
+											</h1>
+										)}
 
-						<div className="submitSection">
-							<button
-								type="submit"
-								className={`submit_btn ${
-									focus ? "show" : "hide"
-								}`}
-								//
-								//
-							>
-								Actualizar Cliente
-							</button>
+										{sections.length > 1 && (
+											<div>
+												{!confirmDelete[index] ? (
+													<button
+														type="button"
+														className="form-delete-input-section space"
+														onClick={() =>
+															toggleConfirmDelete(
+																index
+															)
+														}
+														key={index}
+													>
+														<p>&#8722;</p>
+													</button>
+												) : (
+													<div className="form-confirm-deletion-section space">
+														<div className="">
+															<button
+																type="button"
+																onClick={() =>
+																	deleteSection(
+																		index
+																	)
+																}
+																className="form-delete-input-section"
+																key={index}
+															>
+																<p> &#10003;</p>
+															</button>
+														</div>
 
-							{clientDelete === false ? (
-								<button
-									type="button"
-									className={`submit_btn`}
-									onClick={() => setClientDelete(true)}
-								>
-									Borrar Cliente
-								</button>
+														<div className="btnNewSection">
+															<button
+																type="button"
+																onClick={() =>
+																	toggleConfirmDelete(
+																		index
+																	)
+																}
+																className="form-delete-input-section"
+																key={index}
+															>
+																<p> &#10005;</p>
+															</button>
+														</div>
+													</div>
+												)}
+											</div>
+										)}
+									</div>
+								))
 							) : (
-								<div className="confirmDeleteCLient">
-									<div className="btnNewSection">
-										<button
-											type="button"
-											onClick={() => deleteClient()}
-											className="deleteSection"
-										>
-											<p> &#10003;</p>
-										</button>
-									</div>
-
-									<div className="btnNewSection">
-										<button
-											type="button"
-											onClick={() =>
-												setClientDelete(false)
-											}
-											className="deleteSection"
-										>
-											<p> &#10005;</p>
-										</button>
-									</div>
+								<div className="form-editable-phone-section">
+									<h1
+										contentEditable
+										suppressContentEditableWarning
+										name="cellPhone-0"
+										onInput={(e) => {
+											changeSectionVal(e, 0);
+										}}
+										// onChange={infoToBeSubmitted}
+										className="form-editable-field"
+									>
+										{client?.cellPhones[0]?.number}
+									</h1>
 								</div>
 							)}
-						</div>
-					</form>
-				</div>
-			)}
+							{/* it goes here */}
+							<div className="form-new-section-btn-container">
+								<button
+									type="button"
+									onClick={async () => {
+										await addSection(), focusNewInput();
+										// setTimeout(
+										// 	() =>
+										// 		,
+										// 	50
+										// );
+									}}
+									className="form-add-input-section"
+								>
+									<p>&#43;</p>
+								</button>
+							</div>
+
+							<div className="form-submit-container">
+								<button
+									type="submit"
+									className={`form-submit-btn ${
+										focus ? "show" : "hide"
+									}`}
+								>
+									Actualizar Cliente
+								</button>
+
+								{clientDelete === false ? (
+									<button
+										type="button"
+										className={`submit_btn`}
+										onClick={() => setClientDelete(true)}
+									>
+										Borrar Cliente
+									</button>
+								) : (
+									<div className="confirmDeleteCLient">
+										<div className="btnNewSection">
+											<button
+												type="button"
+												onClick={() => deleteClient()}
+												className="deleteSection"
+											>
+												<p> &#10003;</p>
+											</button>
+										</div>
+
+										<div className="btnNewSection">
+											<button
+												type="button"
+												onClick={() =>
+													setClientDelete(false)
+												}
+												className="deleteSection"
+											>
+												<p> &#10005;</p>
+											</button>
+										</div>
+									</div>
+								)}
+							</div>
+						</form>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

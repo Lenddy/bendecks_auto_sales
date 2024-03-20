@@ -20,10 +20,34 @@ const ClientSchema = new Schema(
 		},
 
 		cellPhones: {
-			type: [Object],
+			type: [
+				{
+					number: {
+						type: String,
+						required: true,
+						validate: {
+							validator: function (v) {
+								// Example regex for validating US phone numbers
+								return /\(\d{3}\)\d{3}-\d{4}/.test(v);
+							},
+							message: (props) =>
+								`${props.value} is not a valid phone number!`,
+						},
+					},
+					numberId: {
+						type: String,
+						// You can add any additional validation for numberId if needed
+					},
+				},
+			],
 			required: true,
-			// min: [1, "Model Of The Vehicle Must Be At Least 1 Character Long"],
 		},
+
+		// cellPhones: {
+		// 	type: [Object],
+		// 	required: true,
+		// 	// min: [1, "Model Of The Vehicle Must Be At Least 1 Character Long"],
+		// }
 	},
 	{ timestamps: true }
 );

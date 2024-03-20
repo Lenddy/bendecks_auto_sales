@@ -49,7 +49,7 @@ function Navbar() {
 				{items.map((item, index) => (
 					<li
 						key={index}
-						className="dropdown-menu-button"
+						className="dropdown-menu-button pointer"
 						onClick={() => navigateTo(item.path, id)}
 					>
 						<h2>{item.label}</h2>
@@ -85,12 +85,12 @@ function Navbar() {
 				src={burgerMenu}
 				onClick={() => setIsOpen(!isOpen)}
 				alt=""
-				className="nav-bar-icon"
+				className="nav-bar-icon pointer"
 			/>
 
-			<div className={`side-bar ${isOpen ? "open" : ""}`}>
+			<div className={`side-bar ${isOpen ? "open" : ""} `}>
 				<div
-					className="side-bar-close"
+					className="side-bar-close pointer"
 					onClick={() => setIsOpen(!isOpen)}
 				>
 					<img src={close} alt="" className="nav-bar-icon" />
@@ -102,7 +102,7 @@ function Navbar() {
 							onClick={() => {
 								toggleDropdown("clients");
 							}}
-							className="dropdown-title"
+							className="dropdown-title pointer"
 						>
 							<h1>Clientes</h1>
 							<img
@@ -127,7 +127,7 @@ function Navbar() {
 							onClick={() => {
 								toggleDropdown("deals");
 							}}
-							className="dropdown-title"
+							className="dropdown-title pointer"
 						>
 							<h1>Ventas</h1>
 							<img
@@ -149,7 +149,7 @@ function Navbar() {
 							onClick={() => {
 								toggleDropdown("vehicles");
 							}}
-							className="dropdown-title"
+							className="dropdown-title pointer"
 						>
 							<h1>Vehículos</h1>
 							<img
