@@ -28,7 +28,8 @@ function App() {
 		<div className="app">
 			<Container>
 				<Routes>
-					<Route exact path="/" element={<Log_reg />} />
+					{/* <Route exact path="/" element={<Log_reg />} /> */}
+					<Route exact path="/" element={<GetAllDeals />} />
 					<Route
 						exact
 						path="/dashboard"

@@ -44,9 +44,15 @@ const CreateOneClient = ({ reload, setReload }) => {
 		// 	},
 		// }
 	);
+	const [sections, setSections] = useState([{ number: "" }]);
+
+	const [validations, setValidations] = useState(false);
 
 	// Function to handle input changes and update state accordingly
 	const infoToBeSubmitted = (e) => {
+		// if (e.target.name === "clientName") {
+		// 	setValidations({ ...validations, [e.target.name]: null });
+		// }
 		setInfo({
 			...info,
 			[e.target.name]: e.target.value,
@@ -59,9 +65,9 @@ const CreateOneClient = ({ reload, setReload }) => {
 
 		await createOneClient({
 			variables: {
-				clientName: info.clientName,
-				clientLastName: info.clientLastName,
-				cellPhones: info.cellPhones,
+				clientName: info?.clientName,
+				clientLastName: info?.clientLastName,
+				cellPhones: sections,
 			},
 			// this is re fetching the data
 			refetchQueries: [{ query: get_all_clients }],
@@ -77,11 +83,12 @@ const CreateOneClient = ({ reload, setReload }) => {
 				// setReload(!reload);
 			})
 			.catch((error) => {
-				console.log(error);
+				// console.log("fail");
+				setValidations(true);
+
+				// console.log(error);
 			});
 	};
-
-	const [sections, setSections] = useState([{ number: "" }]);
 
 	const addSection = () => {
 		setSections([...sections, { number: "" }]);
@@ -90,18 +97,41 @@ const CreateOneClient = ({ reload, setReload }) => {
 	// const handleInputChange = (e, index) => {
 	// 	const updatedSections = sections.map((section, secIndex) => {
 	// 		if (index === secIndex) {
-	// 			return { ...section, [e.target.name]: e.target.value };
+	// 			let value = e.target.value;
+	// 			if (!value) return { ...section, [e.target.name]: value };
+
+	// 			const phoneNumber = value.replace(/[^\d]/g, "");
+	// 			const phoneNumberLength = phoneNumber.length;
+
+	// 			if (phoneNumberLength < 4)
+	// 				return { ...section, [e.target.name]: phoneNumber };
+	// 			if (phoneNumberLength < 7) {
+	// 				return {
+	// 					...section,
+	// 					[e.target.name]: `(${phoneNumber.slice(
+	// 						0,
+	// 						3
+	// 					)} ${phoneNumber.slice(3)}`,
+	// 				};
+	// 			}
+	// 			return {
+	// 				...section,
+	// 				[e.target.name]: `(${phoneNumber.slice(
+	// 					0,
+	// 					3
+	// 				)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
+	// 			};
 	// 		}
 	// 		return section;
 	// 	});
 
 	// 	setSections(updatedSections);
-	// 	setInfo({ ...info, cellPhones: updatedSections });
-	// 	// Update the info.cellPhone with the cell phone numbers from all sections
-	// 	// const updatedCellPhones = updatedSections.map(
-	// 	// 	(section) => section.number
-	// 	// );
-	// 	// setInfo({ ...info, cellPhones: updatedCellPhones });
+
+	// 	// Assuming you want to update the info object after formatting the phone number
+	// 	const updatedCellPhones = updatedSections.map(
+	// 		(section) => section.number
+	// 	);
+	// 	setInfo({ ...info, cellPhones: updatedCellPhones });
 	// };
 
 	const handleInputChange = (e, index) => {
@@ -113,15 +143,15 @@ const CreateOneClient = ({ reload, setReload }) => {
 				const phoneNumber = value.replace(/[^\d]/g, "");
 				const phoneNumberLength = phoneNumber.length;
 
-				if (phoneNumberLength < 4)
+				if (phoneNumberLength <= 3)
 					return { ...section, [e.target.name]: phoneNumber };
-				if (phoneNumberLength < 7) {
+				if (phoneNumberLength <= 6) {
 					return {
 						...section,
 						[e.target.name]: `(${phoneNumber.slice(
 							0,
 							3
-						)} ${phoneNumber.slice(3)}`,
+						)}) ${phoneNumber.slice(3)}`,
 					};
 				}
 				return {
@@ -158,13 +188,17 @@ const CreateOneClient = ({ reload, setReload }) => {
 	// Component rendering
 	return (
 		<div className="children_content">
+			<h1>Agregar Cliente</h1>
 			<form onSubmit={submit} className="createOneClientForm">
 				<div className="creteOneFullSection">
 					<div>
 						<input
 							type="text"
 							name="clientName"
-							onChange={(e) => infoToBeSubmitted(e)}
+							onChange={(e) => {
+								infoToBeSubmitted(e);
+								setValidations(false);
+							}}
 							// value={info.clientName}
 							placeholder="Nombre"
 							className="createOneClientInput"
@@ -174,13 +208,20 @@ const CreateOneClient = ({ reload, setReload }) => {
 							<p className="input-validation">
 								Nombre Debe De Tener Por Lo Menos 2 Caracteres
 							</p>
+						) : validations ? (
+							<p className="input-validation">
+								El Nombre Es Requerido
+							</p>
 						) : null}
 					</div>
 
 					<div>
 						<input
 							name="clientLastName"
-							onChange={(e) => infoToBeSubmitted(e)}
+							onChange={(e) => {
+								infoToBeSubmitted(e);
+								setValidations(false);
+							}}
 							// value={info.clientLastName}
 							placeholder="Apellido"
 							className="createOneClientInput"
@@ -189,6 +230,10 @@ const CreateOneClient = ({ reload, setReload }) => {
 						info?.clientLastName?.length < 2 ? (
 							<p className="input-validation">
 								Apellido Debe De Tener Por Lo Menos 2 Caracteres
+							</p>
+						) : validations ? (
+							<p className="input-validation">
+								El Apellido Es Requerido
 							</p>
 						) : null}
 					</div>
@@ -200,17 +245,26 @@ const CreateOneClient = ({ reload, setReload }) => {
 								name="number"
 								onChange={(e) => {
 									handleInputChange(e, index);
+									setValidations(false);
 								}}
 								placeholder="Teléfono"
 								className="createOneClientInput space"
+								value={sections[index].number}
 							/>
 							{/* {info?.cellPhones[index]?.number?.length > 0 &&
 							info?.cellPhones[index]?.number?.length > 0 ? (
 								<p>hello</p>
 							) : null} */}
 
-							{info?.cellPhones?.[index]?.number?.length > 0 ? (
-								<p>hello</p>
+							{info?.cellPhones?.[index]?.number?.length > 0 &&
+							info?.cellPhones?.[index]?.number?.length < 11 ? (
+								<p className="input-validation">
+									Numero Telefónico Debe Ser Valido
+								</p>
+							) : validations?.cellPhones ? (
+								<p className="input-validation">
+									El Primer Numero Telefónico Es Requerido
+								</p>
 							) : null}
 							{sections.length > 1 && (
 								<div>
