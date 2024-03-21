@@ -45,55 +45,64 @@ function GetAllDeals() {
 	const [search, setSearch] = useState("");
 
 	return (
-		<div className="children_content">
+		<div className="children-content">
+			<h1>Ventas</h1>
 			<input
 				type="text"
-				className="filterInput"
+				className="filter"
 				placeholder="filtrar Por Nombre"
 				onChange={(e) => setSearch(e.target.value)}
-			></input>
+			/>
 
 			<table>
-				<tr className="tableHeader">
-					<th>Nombre</th>
-					<th>Dia de Pago</th>
-				</tr>
+				<thead>
+					<tr className="table-header">
+						<th>
+							<h2>Nombre</h2>
+						</th>
+						<th>
+							<h2>Dia de Pago</h2>
+						</th>
+					</tr>
+				</thead>
 
-				{deals
-					?.filter(
-						(d, idx) =>
-							d?.client_id?.clientName
-								.toLowerCase()
-								.includes(search.toLowerCase()) ||
-							d?.client_id?.clientLastName
-								.toLowerCase()
-								.includes(search.toLowerCase())
-					)
-					.map((d) => {
-						return (
-							<tr key={d?.id} className="data">
-								<td>
-									<Link to={`/deals/${d.id}`}>
-										<p className="idInfo getAllName">
-											{d?.client_id?.clientName}{" "}
-											{d?.client_id?.clientLastName}
-										</p>
-									</Link>
-								</td>
-								<td>
-									<Link to={`/deals/${d.id}`}>
-										<p className="idInfo getAllName">
-											{
-												d?.paymentDates.find(
-													(p) => !p.monthFullyPay
-												)?.dateOfPayment
-											}
-										</p>
-									</Link>
-								</td>
-							</tr>
-						);
-					})}
+				<tbody>
+					{deals
+						?.filter(
+							(d, idx) =>
+								d?.client_id?.clientName
+									.toLowerCase()
+									.includes(search.toLowerCase()) ||
+								d?.client_id?.clientLastName
+									.toLowerCase()
+									.includes(search.toLowerCase())
+						)
+						.map((d) => {
+							return (
+								<tr key={d?.id} className="table-data">
+									<td>
+										<Link to={`/deals/${d.id}`}>
+											<p className="link-connection">
+												{d?.client_id?.clientName}{" "}
+												{d?.client_id?.clientLastName}
+											</p>
+										</Link>
+									</td>
+									<td className="table-multi-data">
+										<Link to={`/deals/${d.id}`}>
+											<p className="link-connection">
+												{
+													d?.paymentDates.find(
+														(p) => !p.monthFullyPay
+													)?.dateOfPayment
+												}
+											</p>
+										</Link>
+									</td>
+								</tr>
+							);
+						})}
+				</tbody>
 			</table>
 		</div>
 	);

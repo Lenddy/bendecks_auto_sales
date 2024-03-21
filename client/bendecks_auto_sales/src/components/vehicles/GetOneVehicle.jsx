@@ -170,7 +170,7 @@ const GetOneVehicle = () => {
 		setVehicleModelUpdate(itemUpdate);
 	};
 
-	const deleteSection = (index) => {
+	const deletedSection = (index) => {
 		const filteredSections = sections.filter(
 			(_, secIndex) => secIndex !== index
 		);
@@ -449,10 +449,11 @@ const GetOneVehicle = () => {
 	};
 
 	return (
-		<div className="getOne">
+		<div className="children-content">
+			<h1>vehículo</h1>
 			{notFound ? (
 				<div>
-					<h1 className="notFound">
+					<h1 className="link-connection">
 						cliente con ID:<span>{id}</span> no se pudo encontrara
 						asegúrese de que seal el id correcto
 					</h1>
@@ -462,17 +463,17 @@ const GetOneVehicle = () => {
 					</button>
 				</div>
 			) : (
-				<div className="oneInfo">
-					<h1 className="notFound">{id}</h1>
-					<form onSubmit={submit} className="getOneForm">
-						<div className="section_union">
-							<div>
+				<div className="form-update-container">
+					<h1 className="link-connection">{id}</h1>
+					<form onSubmit={submit} className="form-update">
+						<div className="form-section-union-container">
+							<div className="form-section-union">
 								<h1
 									contentEditable
 									suppressContentEditableWarning
 									name="vehicleName"
 									onInput={infoToBeSubmitted}
-									className="editableField "
+									className="form-editable-field"
 									onFocus={() => setFocus(true)}
 									// onBlur={() => setFocus(false)}
 								>
@@ -485,7 +486,7 @@ const GetOneVehicle = () => {
 							sections.map((model, index) => (
 								<div
 									key={model?.modelId}
-									className="editablePhoneSection"
+									className="form-editable-phone-section"
 								>
 									{index === sections.length - 1 ? (
 										<h1
@@ -497,7 +498,7 @@ const GetOneVehicle = () => {
 											}}
 											onFocus={() => setFocus(true)}
 											// onBlur={() => setFocus(false)}
-											className="editableField"
+											className="form-editable-field"
 											ref={
 												index === sections.length - 1
 													? newSectionRef
@@ -511,7 +512,7 @@ const GetOneVehicle = () => {
 										<h1
 											contentEditable
 											suppressContentEditableWarning
-											className="editableField"
+											className="form-editable-field"
 											name={`model-${index}`}
 											onInput={(e) => {
 												changeSectionVal(e, index);
@@ -528,7 +529,7 @@ const GetOneVehicle = () => {
 											{!confirmDelete[index] ? (
 												<button
 													type="button"
-													className="deleteSection -update"
+													className="form-delete-input-section space"
 													onClick={() =>
 														toggleConfirmDelete(
 															index
@@ -539,23 +540,23 @@ const GetOneVehicle = () => {
 													<p>&#8722;</p>
 												</button>
 											) : (
-												<div className="confirmDeletionsSection -update">
-													<div className="btnNewSection">
+												<div className="form-confirm-deletion-container">
+													<div className="">
 														<button
 															type="button"
 															onClick={() =>
-																deleteSection(
+																deletedSection(
 																	index
 																)
 															}
-															className="deleteSection"
+															className="form-delete-input-section"
 															key={index}
 														>
 															<p> &#10003;</p>
 														</button>
 													</div>
-
-													<div className="btnNewSection">
+													{/* form-new-section-btn-container */}
+													<div className="">
 														<button
 															type="button"
 															onClick={() =>
@@ -563,7 +564,7 @@ const GetOneVehicle = () => {
 																	index
 																)
 															}
-															className="deleteSection"
+															className="form-delete-input-section"
 															key={index}
 														>
 															<p> &#10005;</p>
@@ -576,7 +577,7 @@ const GetOneVehicle = () => {
 								</div>
 							))
 						) : (
-							<div className="editablePhoneSection">
+							<div className="form-editable-phone-section">
 								<h1
 									contentEditable
 									suppressContentEditableWarning
@@ -585,7 +586,7 @@ const GetOneVehicle = () => {
 										changeSectionVal(e, 0);
 									}}
 									// onChange={infoToBeSubmitted}
-									className="editableField"
+									className="form-editable-field"
 								>
 									{vehicle?.vehicleModels[0]?.model}
 								</h1>
@@ -593,13 +594,13 @@ const GetOneVehicle = () => {
 						)}
 
 						{/* it goes here */}
-						<div className="btnNewSection">
+						<div className="form-new-section-btn-container">
 							<button
 								type="button"
 								onClick={async () => {
 									await addSection(), focusNewInput();
 								}}
-								className="addSection"
+								className="form-add-input-section"
 							>
 								<p>&#43;</p>
 							</button>
@@ -611,7 +612,7 @@ const GetOneVehicle = () => {
 							yearSections.map((year, index) => (
 								<div
 									key={year?.yearId}
-									className="editablePhoneSection"
+									className="form-editable-phone-section"
 								>
 									{index === yearSections.length - 1 ? (
 										<h1
@@ -623,7 +624,7 @@ const GetOneVehicle = () => {
 											}}
 											onFocus={() => setFocus(true)}
 											// onBlur={() => setFocus(false)}
-											className="editableField"
+											className="form-editable-field"
 											ref={
 												index ===
 												yearSections.length - 1
@@ -638,7 +639,7 @@ const GetOneVehicle = () => {
 										<h1
 											contentEditable
 											suppressContentEditableWarning
-											className="editableField"
+											className="form-editable-field"
 											name={`year-${index}`}
 											onInput={(e) => {
 												changeYearSectionVal(e, index);
@@ -655,7 +656,7 @@ const GetOneVehicle = () => {
 											{!confirmYearDelete[index] ? (
 												<button
 													type="button"
-													className="deleteSection -update"
+													className="form-delete-input-section space"
 													onClick={() =>
 														toggleConfirmYearDelete(
 															index
@@ -666,8 +667,8 @@ const GetOneVehicle = () => {
 													<p>&#8722;</p>
 												</button>
 											) : (
-												<div className="confirmDeletionsSection -update">
-													<div className="btnNewSection">
+												<div className="form-confirm-deletion-container">
+													<div className="form-new-section-btn-container">
 														<button
 															type="button"
 															onClick={() =>
@@ -675,14 +676,14 @@ const GetOneVehicle = () => {
 																	index
 																)
 															}
-															className="deleteSection"
+															className="form-delete-input-section"
 															key={index}
 														>
 															<p> &#10003;</p>
 														</button>
 													</div>
 
-													<div className="btnNewSection">
+													<div className="form-new-section-btn-container">
 														<button
 															type="button"
 															onClick={() =>
@@ -690,7 +691,7 @@ const GetOneVehicle = () => {
 																	index
 																)
 															}
-															className="deleteSection"
+															className="form-delete-input-section"
 															key={index}
 														>
 															<p> &#10005;</p>
@@ -703,7 +704,7 @@ const GetOneVehicle = () => {
 								</div>
 							))
 						) : (
-							<div className="editablePhoneSection">
+							<div className="form-editable-phone-section">
 								<h1
 									contentEditable
 									suppressContentEditableWarning
@@ -712,20 +713,20 @@ const GetOneVehicle = () => {
 										changeYearSectionVal(e, 0);
 									}}
 									// onChange={infoToBeSubmitted}
-									className="editableField"
+									className="form-editable-field"
 								>
 									{vehicle?.years[0]?.year}
 								</h1>
 							</div>
 						)}
 
-						<div className="btnNewSection">
+						<div className="form-new-section-btn-container">
 							<button
 								type="button"
 								onClick={async () => {
 									await addYearSection(), focusYearNewInput();
 								}}
-								className="addSection"
+								className="form-add-input-section"
 							>
 								<p>&#43;</p>
 							</button>
@@ -736,7 +737,7 @@ const GetOneVehicle = () => {
 							colorSections.map((color, index) => (
 								<div
 									key={color?.colorId}
-									className="editablePhoneSection"
+									className="form-editable-phone-section"
 								>
 									{index === colorSections.length - 1 ? (
 										<h1
@@ -748,7 +749,7 @@ const GetOneVehicle = () => {
 											}}
 											onFocus={() => setFocus(true)}
 											// onBlur={() => setFocus(false)}
-											className="editableField"
+											className="form-editable-field"
 											ref={
 												index ===
 												colorSections.length - 1
@@ -763,7 +764,7 @@ const GetOneVehicle = () => {
 										<h1
 											contentEditable
 											suppressContentEditableWarning
-											className="editableField"
+											className="form-editable-field"
 											name={`color-${index}`}
 											onInput={(e) => {
 												changeColorSectionVal(e, index);
@@ -780,7 +781,7 @@ const GetOneVehicle = () => {
 											{!confirmColorDelete[index] ? (
 												<button
 													type="button"
-													className="deleteSection -update"
+													className="form-delete-input-section space"
 													onClick={() =>
 														toggleConfirmColorDelete(
 															index
@@ -791,8 +792,8 @@ const GetOneVehicle = () => {
 													<p>&#8722;</p>
 												</button>
 											) : (
-												<div className="confirmDeletionsSection -update">
-													<div className="btnNewSection">
+												<div className="form-confirm-deletion-container">
+													<div className="form-new-section-btn-container">
 														<button
 															type="button"
 															onClick={() =>
@@ -800,14 +801,14 @@ const GetOneVehicle = () => {
 																	index
 																)
 															}
-															className="deleteSection"
+															className="form-delete-input-section"
 															key={index}
 														>
 															<p> &#10003;</p>
 														</button>
 													</div>
 
-													<div className="btnNewSection">
+													<div className="form-new-section-btn-container">
 														<button
 															type="button"
 															onClick={() =>
@@ -815,7 +816,7 @@ const GetOneVehicle = () => {
 																	index
 																)
 															}
-															className="deleteSection"
+															className="form-delete-input-section"
 															key={index}
 														>
 															<p> &#10005;</p>
@@ -828,7 +829,7 @@ const GetOneVehicle = () => {
 								</div>
 							))
 						) : (
-							<div className="editablePhoneSection">
+							<div className="form-editable-phone-section">
 								<h1
 									contentEditable
 									suppressContentEditableWarning
@@ -837,30 +838,30 @@ const GetOneVehicle = () => {
 										changeColorSectionVal(e, 0);
 									}}
 									// onChange={infoToBeSubmitted}
-									className="editableField"
+									className="form-editable-field"
 								>
 									{vehicle?.years[0]?.year}
 								</h1>
 							</div>
 						)}
 
-						<div className="btnNewSection">
+						<div className="form-new-section-btn-container">
 							<button
 								type="button"
 								onClick={async () => {
 									await addColorSection(),
 										focusColorNewInput();
 								}}
-								className="addSection"
+								className="form-add-input-section"
 							>
 								<p>&#43;</p>
 							</button>
 						</div>
 
-						<div className="submitSection">
+						<div className="form-submit-container">
 							<button
 								type="submit"
-								className={`submit_btn ${
+								className={`form-submit-btn ${
 									focus ? "show" : "hide"
 								}`}
 							>
@@ -870,30 +871,30 @@ const GetOneVehicle = () => {
 							{vehicleDelete === false ? (
 								<button
 									type="button"
-									className={`submit_btn`}
+									className={`form-submit-btn`}
 									onClick={() => setVehicleDelete(true)}
 								>
 									Borrar Vehículo
 								</button>
 							) : (
-								<div className="confirmDeleteCLient">
-									<div className="btnNewSection">
+								<div className="confirm-delete-item">
+									<div className="form-new-section-btn-container">
 										<button
 											type="button"
 											onClick={() => deleteVehicle()}
-											className="deleteSection"
+											className="form-delete-input-section"
 										>
 											<p> &#10003;</p>
 										</button>
 									</div>
 
-									<div className="btnNewSection">
+									<div className="form-new-section-btn-container">
 										<button
 											type="button"
 											onClick={() =>
 												setVehicleDelete(false)
 											}
-											className="deleteSection"
+											className="form-delete-input-section"
 										>
 											<p> &#10005;</p>
 										</button>

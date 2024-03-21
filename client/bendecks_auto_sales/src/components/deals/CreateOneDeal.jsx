@@ -180,9 +180,10 @@ const CreateOneDeal = ({ reload, setReload }) => {
 
 	// Component rendering
 	return (
-		<div className="children_content">
-			<form onSubmit={submit} className="createOneClientForm">
-				<div className="creteOneFullSection">
+		<div className="children-content">
+			<h1>Nueva Venta</h1>
+			<form onSubmit={submit} className="form-create">
+				<div className="form-section">
 					<div>
 						<select
 							name="client_id"

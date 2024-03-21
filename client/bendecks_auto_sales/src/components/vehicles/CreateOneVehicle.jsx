@@ -10,6 +10,7 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 	const [info, setInfo] = useState({
 		// cellPhone: [{ number: "" }],
 	});
+	const [validations, setValidations] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -51,7 +52,7 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 				// setReload(!reload);
 			})
 			.catch((error) => {
-				console.log(error);
+				setValidations(true);
 			});
 	};
 
@@ -151,128 +152,221 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 	// 	});
 	// };
 
+	// {info?.vehicleName?.length > 0 &&
+	// 	info?.vehicleName?.length < 2 ? (
+	// 		<p className="input-validation">
+	// 			Nombre Debe De Tener Por Lo Menos 2 Caracteres
+	// 		</p>
+	// 	) : validations ? (
+	// 		<p className="input-validation">
+	// 			El Nombre Es Requerido
+	// 		</p>
+	// 	) : null}
+
 	// Component rendering
 	return (
-		<div className="children_content">
-			<form onSubmit={submit} className="createOneClientForm">
-				<div className="creteOneFullSection">
+		<div className="children-content">
+			<h1>Nuevo Cliente</h1>
+			<form onSubmit={submit} className="form-create">
+				<div className="form-section">
 					<div>
 						<input
 							type="text"
 							name="vehicleName"
-							onChange={(e) => infoToBeSubmitted(e)}
+							onChange={(e) => {
+								infoToBeSubmitted(e);
+								setValidations(false);
+							}}
 							placeholder="Nombre Del Vehículo"
-							className="createOneClientInput"
+							className="form-input"
 						/>
+						{info?.vehicleName?.length > 0 &&
+						info?.vehicleName?.length < 2 ? (
+							<p className="input-validation">
+								Nombre Del Vehículo Debe De Tener Por Lo Menos 2
+								Caracteres
+							</p>
+						) : validations ? (
+							<p className="input-validation">
+								El Nombre Del Vehículo Es Requerido
+							</p>
+						) : null}
 					</div>
 
 					{sections.map((section, index) => (
-						<div key={index} className="newSection">
-							<input
-								type="text"
-								name="model"
-								onChange={(e) => {
-									handleInputChange(e, index);
-								}}
-								placeholder="Modelo Del Vehículo"
-								className="createOneClientInput space"
-							/>
-							{sections.length > 1 && (
-								<div>
-									<button
-										type="button"
-										onClick={() => deleteSection(index)}
-										className="deleteSection"
-									>
-										<p>&#8722;</p>
-									</button>
+						<div key={index} className="form-new-input-container">
+							<div className="form-new-input">
+								<input
+									type="text"
+									name="model"
+									onChange={(e) => {
+										handleInputChange(e, index);
+										setValidations(false);
+									}}
+									placeholder="Modelo Del Vehículo"
+									className="form-input space"
+								/>
+
+								{sections.length > 1 && (
+									<div>
+										<button
+											type="button"
+											onClick={() => deleteSection(index)}
+											className="form-delete-input-section"
+										>
+											<p>&#8722;</p>
+										</button>
+									</div>
+								)}
+							</div>
+
+							{sections[index].model?.length > 0 &&
+							sections[index].model?.length < 2 ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										El Modelo Del Vehículo Debe De Tener Por
+										Lo Menos 2 Caracteres
+									</p>
 								</div>
-							)}
+							) : validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										El Modelo Es Requerido
+									</p>
+								</div>
+							) : null}
 						</div>
 					))}
 
-					<div className="btnNewSection">
+					<div className="form-new-section-btn-container">
 						<button
 							type="button"
 							onClick={() => addSection()}
-							className="addSection"
+							className="form-add-input-section"
 						>
 							<p>&#43;</p>
 						</button>
 					</div>
 
 					{sections2.map((section2, index) => (
-						<div key={index} className="newSection">
-							<input
-								type="text"
-								name="year"
-								onChange={(e) => {
-									handleInputChange2(e, index);
-								}}
-								placeholder="Año"
-								className="createOneClientInput space"
-							/>
-							{sections2.length > 1 && (
-								<div>
-									<button
-										type="button"
-										onClick={() => deleteSection2(index)}
-										className="deleteSection"
-									>
-										<p>&#8722;</p>
-									</button>
+						<div key={index} className="form-new-input-container">
+							<div className="form-new-input">
+								<input
+									type="number"
+									name="year"
+									onChange={(e) => {
+										handleInputChange2(e, index);
+										setValidations(false);
+									}}
+									placeholder="Año"
+									className="form-input space"
+								/>
+
+								{sections2.length > 1 && (
+									<div>
+										<button
+											type="button"
+											onClick={() =>
+												deleteSection2(index)
+											}
+											className="form-delete-input-section"
+										>
+											<p>&#8722;</p>
+										</button>
+									</div>
+								)}
+							</div>
+
+							{sections2?.[index].year?.length > 0 &&
+							sections2?.[index].year?.length < 2 ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Año Debe De Tener Por Lo Menos 2
+										Caracteres
+									</p>
 								</div>
-							)}
+							) : validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										El Año Es Requerido
+									</p>
+								</div>
+							) : null}
 						</div>
 					))}
 
-					<div className="btnNewSection">
+					<div className="form-new-section-btn-container">
 						<button
 							type="button"
 							onClick={() => addSection2()}
-							className="addSection"
+							className="form-add-input-section"
 						>
 							<p>&#43;</p>
 						</button>
 					</div>
 
 					{sections3.map((section3, index) => (
-						<div key={index} className="newSection">
-							<input
-								type="text"
-								name="color"
-								onChange={(e) => {
-									handleInputChange3(e, index);
-								}}
-								placeholder="Color"
-								className="createOneClientInput space"
-							/>
-							{sections3.length > 1 && (
-								<div>
-									<button
-										type="button"
-										onClick={() => deleteSection3(index)}
-										className="deleteSection"
-									>
-										<p>&#8722;</p>
-									</button>
+						<div key={index} className="form-new-input-container">
+							<div className="form-new-input">
+								<input
+									type="text"
+									name="color"
+									onChange={(e) => {
+										handleInputChange3(e, index);
+										setValidations(false);
+									}}
+									placeholder="Color"
+									className="form-input space"
+								/>
+
+								{sections3.length > 1 && (
+									<div>
+										<button
+											type="button"
+											onClick={() =>
+												deleteSection3(index)
+											}
+											className="form-delete-input-section"
+										>
+											<p>&#8722;</p>
+										</button>
+									</div>
+								)}
+							</div>
+
+							{sections3?.[index].color?.length > 0 &&
+							sections3?.[index].color?.length < 2 ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										El Color Debe De Tener Por Lo Menos 2
+										Caracteres
+									</p>
 								</div>
-							)}
+							) : null}
 						</div>
 					))}
 
-					<div className="btnNewSection">
+					<div className="form-new-section-btn-container">
 						<button
 							type="button"
 							onClick={() => addSection3()}
-							className="addSection"
+							className="form-add-input-section"
 						>
 							<p>&#43;</p>
 						</button>
 					</div>
 				</div>
 
-				<button type="submit" className="submit_btn">
+				<button
+					type="submit"
+					className={`form-submit-btn ${
+						info?.vehicleName?.length >= 2 &&
+						info?.vehicleModels?.[0]?.model?.length >= 2 &&
+						info?.years?.[0]?.year.length >= 2
+							? "show"
+							: "hide"
+					}`}
+				>
 					Agregar Vehículo
 				</button>
 			</form>

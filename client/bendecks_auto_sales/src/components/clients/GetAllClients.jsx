@@ -138,9 +138,7 @@ function GetAllClients() {
 								<th>
 									<h2>ID</h2>
 								</th>
-							) : (
-								<th></th>
-							)}
+							) : null}
 							<th>
 								<h2>Nombre </h2>
 							</th>
@@ -171,9 +169,7 @@ function GetAllClients() {
 													</p>
 												</Link>
 											</td>
-										) : (
-											<td></td>
-										)}
+										) : null}
 
 										<td>
 											<Link to={`/${c?.id}`}>

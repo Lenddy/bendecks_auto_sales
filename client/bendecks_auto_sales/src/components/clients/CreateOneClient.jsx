@@ -181,10 +181,6 @@ const CreateOneClient = ({ reload, setReload }) => {
 		setSections(filteredSections);
 	};
 
-	// TODO   show the submit button only when all fields are fill to the specific  requirements
-
-	// TODO 	add the validations
-
 	// Component rendering
 	return (
 		<div className="children-content">

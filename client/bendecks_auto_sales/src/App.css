@@ -241,14 +241,13 @@ background-color: var(--clr-primary);
 
   /* filter input */
 
-    .filterInput {
+.filterInput {
     min-width:250px;
-    
-    }
+}
 
-    .filterInput::placeholder{
+.filterInput::placeholder{
     font-size: 15px;
-    }
+}
 
 
 /** create one  */
@@ -378,6 +377,18 @@ background-color: var(--clr-primary);
 }
 
 
+.form-confirm-deletion-container{
+    /* background-color: red; */
+    width: 80px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.form-delete-input-section{
+    /* background-color: blue; */
+    /* width: 100px; */
+}
+
 .form-editable-phone-section ,.form-confirm-deletion-section{
     display: flex;
     justify-content: center;
@@ -400,12 +411,15 @@ background-color: var(--clr-primary);
     align-items: center;
 }
 
-.confirmDeleteCLient{
+.confirm-delete-item{
     display: flex;
     width: 150px;
     height: 40px;
     justify-content: space-around;
+    align-items: center;
 }
+
+
 
 
 @media screen and (max-width: 500px) {

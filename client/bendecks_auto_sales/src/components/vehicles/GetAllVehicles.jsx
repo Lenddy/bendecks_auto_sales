@@ -13,6 +13,7 @@ function GetAllVehicles() {
 	const navigateTO = (url) => {
 		navigate(url);
 	};
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 	// Fetch data using the useQuery hook by executing the getAllVehicles query
 	const { error, loading, data } = useQuery(get_all_vehicles);
@@ -72,58 +73,88 @@ function GetAllVehicles() {
 		}
 	}, [error, loading, data]); // Dependencies for the useEffect hook
 
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+
+		// Cleanup
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []); // Empty dependency array ensures that this effect runs only once on mount
+
 	// Render the retrieved clients
 	const [search, setSearch] = useState("");
 
 	return (
-		<div className="children_content">
+		<div className="children-content">
+			<h1>Vehículos</h1>
 			<input
 				type="text"
-				className="filterInput"
+				className="filter"
 				placeholder="filtrar Por Nombre"
 				onChange={(e) => setSearch(e.target.value)}
-			></input>
+			/>
 
 			<table>
-				<tr className="tableHeader">
-					<th>
-						<h2>Id</h2>
-					</th>
-					<th>
-						<h2>Nombre</h2>
-					</th>
-				</tr>
-				{vehicles
-					.filter(
-						(v, idx) =>
-							v?.vehicleName
+				<thead>
+					<tr className="table-header">
+						{windowWidth > 500 ? (
+							<th>
+								<h2>ID</h2>
+							</th>
+						) : // <th></th>
+						null}
+						<th>
+							<h2>Nombre</h2>
+						</th>
+						<th>
+							<h2>Numero De Modelos</h2>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{vehicles
+						.filter(
+							(v, idx) =>
+								v?.vehicleName
 
-								.toLowerCase()
-								.includes(search.toLowerCase()) ||
-							v?.vehicleModel
-								.toLowerCase()
-								.includes(search.toLowerCase())
-					)
-					.map((v) => {
-						return (
-							<tr key={v?.id} className="data">
-								<td>
-									<Link to={`/vehicles/${v?.id}`}>
-										<p className="idInfo getAllName">
-											{v?.id}
-										</p>
-									</Link>
-								</td>
-								<td>
-									<Link to={`/vehicles/${v?.id}`}>
-										<p className="getAllName">
-											{v?.vehicleName}
-										</p>
-									</Link>
-								</td>
-							</tr>
-						);
-					})}
+									.toLowerCase()
+									.includes(search.toLowerCase()) ||
+								v?.vehicleModel
+									.toLowerCase()
+									.includes(search.toLowerCase())
+						)
+						.map((v) => {
+							return (
+								<tr key={v?.id} className="table-data">
+									{windowWidth > 500 ? (
+										<td>
+											<Link to={`/vehicles/${v?.id}`}>
+												<p className="link-connection">
+													{v?.id}
+												</p>
+											</Link>
+										</td>
+									) : // <th></th>
+									null}
+									<td>
+										<Link to={`/vehicles/${v?.id}`}>
+											<p className="link-connection">
+												{v?.vehicleName}
+											</p>
+										</Link>
+									</td>
+									<td>
+										<p>{v?.vehicleModels?.length}</p>
+									</td>
+								</tr>
+							);
+						})}
+				</tbody>
 			</table>
 		</div>
 	);

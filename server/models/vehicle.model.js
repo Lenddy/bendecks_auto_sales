@@ -11,15 +11,46 @@ const VehicleSchema = new Schema(
 		},
 
 		vehicleModels: {
-			type: [Object],
+			type: [
+				{
+					modelId: {
+						type: String,
+					},
+					model: {
+						type: String,
+						min: 2,
+					},
+				},
+			],
 		},
 
 		years: {
-			type: [Object],
+			type: [
+				{
+					yearId: {
+						type: String,
+					},
+					year: {
+						type: String,
+						min: 2,
+						max: 4,
+					},
+				},
+			],
 		},
 
 		colors: {
-			type: [Object],
+			type: [
+				{
+					colorId: {
+						type: String,
+					},
+					color: {
+						type: String,
+						min: 2,
+					},
+				},
+			],
 		},
 
 		boughtPrice: {

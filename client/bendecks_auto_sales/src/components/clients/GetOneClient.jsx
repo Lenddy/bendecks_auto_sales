@@ -247,7 +247,7 @@ function GetOneClient() {
 							encontrara asegúrese de que seal el id correcto
 						</h1>
 
-						<button>regresar</button>
+						<button onClick={() => navigate("/")}>regresar</button>
 					</div>
 				) : (
 					<div className="form-update-container">
@@ -326,7 +326,8 @@ function GetOneClient() {
 										)}
 
 										{sections.length > 1 && (
-											<div>
+											// form-confirm-deletion-container
+											<div className="">
 												{!confirmDelete[index] ? (
 													<button
 														type="button"
@@ -341,7 +342,7 @@ function GetOneClient() {
 														<p>&#8722;</p>
 													</button>
 												) : (
-													<div className="form-confirm-deletion-section space">
+													<div className="form-confirm-deletion-container">
 														<div className="">
 															<button
 																type="button"
@@ -393,17 +394,13 @@ function GetOneClient() {
 									</h1>
 								</div>
 							)}
+
 							{/* it goes here */}
 							<div className="form-new-section-btn-container">
 								<button
 									type="button"
 									onClick={async () => {
 										await addSection(), focusNewInput();
-										// setTimeout(
-										// 	() =>
-										// 		,
-										// 	50
-										// );
 									}}
 									className="form-add-input-section"
 								>
@@ -424,30 +421,30 @@ function GetOneClient() {
 								{clientDelete === false ? (
 									<button
 										type="button"
-										className={`submit_btn`}
+										className={`form-submit-btn`}
 										onClick={() => setClientDelete(true)}
 									>
 										Borrar Cliente
 									</button>
 								) : (
-									<div className="confirmDeleteCLient">
-										<div className="btnNewSection">
+									<div className="confirm-delete-item">
+										<div>
 											<button
 												type="button"
 												onClick={() => deleteClient()}
-												className="deleteSection"
+												className="form-delete-input-section"
 											>
 												<p> &#10003;</p>
 											</button>
 										</div>
 
-										<div className="btnNewSection">
+										<div>
 											<button
 												type="button"
 												onClick={() =>
 													setClientDelete(false)
 												}
-												className="deleteSection"
+												className="form-delete-input-section"
 											>
 												<p> &#10005;</p>
 											</button>
