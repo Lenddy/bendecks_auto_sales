@@ -189,9 +189,9 @@ const CreateOneDeal = ({ reload, setReload }) => {
 							name="client_id"
 							id=""
 							onChange={infoToBeSubmitted}
-							// className="createOneClientInput"
+							className="form-dropdown-input"
 						>
-							<option value="">clients</option>
+							<option value="">Seleccionar Cliente</option>
 							{clients?.map((c) => {
 								return (
 									<option key={c?.id} value={`${c?.id}`}>
@@ -206,7 +206,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						<select
 							name="carName"
 							onChange={infoToBeSubmitted}
-							// className="createOneClientInput"
+							className="form-dropdown-input"
 						>
 							<option value="">vehicles</option>
 							{vehicles?.map((v) => {
@@ -229,7 +229,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						<select
 							name="carModel"
 							onChange={infoToBeSubmitted}
-							// className="createOneClientInput"
+							className="form-dropdown-input"
 						>
 							<option disabled selected value="">
 								Modelos
@@ -260,7 +260,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						<select
 							name="carYear"
 							onChange={infoToBeSubmitted}
-							// className="createOneClientInput"
+							className="form-dropdown-input"
 						>
 							<option disabled selected value="">
 								Año
@@ -285,7 +285,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 						<select
 							name="carColor"
 							onChange={infoToBeSubmitted}
-							// className="createOneClientInput"
+							className="form-dropdown-input"
 						>
 							<option disabled selected value="">
 								color
@@ -316,7 +316,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 							}}
 							// value={info.cellPhone}
 							placeholder="sellingPrice:"
-							className="createOneClientInput"
+							className="form-input"
 						/>
 					</div>
 
@@ -330,7 +330,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 							maxLength={20}
 							// minLength={1}
 							placeholder="downPayment:"
-							className="createOneClientInput"
+							className="form-input"
 						/>
 					</div>
 
@@ -342,7 +342,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 							onChange={(e) => infoToBeSubmitted(e)}
 							// value={info.clientLastName}
 							placeholder="Payment"
-							className="createOneClientInput"
+							className="form-input"
 						></input>
 					</div>
 					<div>
@@ -353,7 +353,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 							onChange={(e) => infoToBeSubmitted(e)}
 							// value={info.cellPhone}
 							placeholder="Date of the deal"
-							className="createOneClientInput"
+							className="form-input"
 						/>
 					</div>
 
@@ -368,12 +368,12 @@ const CreateOneDeal = ({ reload, setReload }) => {
 								parseFloat(info?.remainingBalance) ||
 								parseFloat(0.0)
 							}`}
-							className="createOneClientInput"
+							className="form-input"
 						/>
 					</div>
 				</div>
 
-				<button type="submit" className="submit_btn">
+				<button type="submit" className="form-submit-btn">
 					Agregar Venta
 				</button>
 			</form>

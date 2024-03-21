@@ -422,6 +422,24 @@ background-color: var(--clr-primary);
 
 
 
+.form-dropdown-input{
+    width: 250px ;
+    height: 50px;
+    /* font-size:25px; */
+    margin: auto;
+    border:var(--clr-secondary) solid 8px;
+    border-radius:10px;
+    background-color: var(--clr-background);
+}
+
+
+
+
+
+
+
+
+
 @media screen and (max-width: 500px) {
 
 
