@@ -112,7 +112,7 @@ function GetAllVehicles() {
 							<h2>Nombre</h2>
 						</th>
 						<th>
-							<h2>Numero De Modelos</h2>
+							<h2>Modelos Disponibles</h2>
 						</th>
 					</tr>
 				</thead>

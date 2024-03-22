@@ -331,85 +331,173 @@ const dealResolvers = {
 		},
 
 		// !!!!! fix the function so that i can handle multiple days  late you can make use of a if that checks if the isLate field is set to true so you can add a multiplier base on how many days the payment is late you might want to the nested else if //todo   and you might want to add a new field on the paymentDates  to lattestUpdate and the update is going to be the latest date that it was updated  so you so you have to make use of the  deals updated at
+		// isDealPaymentPayed: async (parent, args, context, info) => {
+		// 	// Retrieve all deals using a query function 'getAllDeals'.
+		// 	const allDeals = await dealResolvers?.Query?.getAllDeals();
+
+		// 	// Get the current date using moment.js.
+		// 	const today = moment();
+
+		// 	// Iterate over each deal in the list of all deals.
+		// 	for (const deal of allDeals) {
+		// 		let dealUpdated = false; // Flag to track if the deal has been updated.
+		// 		const lastUpdate = moment(deal.updatedAt); // Get the last update time of the deal.
+		// 		const daysSinceLastUpdate = today.diff(lastUpdate, "days"); // Calculate days since the last update.
+
+		// 		// Check if at least one day has passed since the last update.
+		// 		if (daysSinceLastUpdate >= 1) {
+		// 			// Iterate over each payment information in the deal.
+		// 			for (const paymentInfo of deal.paymentDates) {
+		// 				const paymentDueDate = moment(
+		// 					paymentInfo.dateOfPayment
+		// 				); // Get the due date for the payment.
+		// 				const daysLate = today.diff(paymentDueDate, "days"); // Calculate how many days late the payment is.
+
+		// 				let firstCheck = false; // Flag to indicate if it's the first check for lateness.
+
+		// 				// Check if the payment is late.
+		// 				if (daysLate > 0) {
+		// 					// If the payment is not already marked as late, add a late fee of $80 and set the flag to true.
+		// 					if (!paymentInfo.isLate) {
+		// 						paymentInfo.latenessFee = 80;
+		// 						paymentInfo.isLate = true;
+		// 						firstCheck = true;
+		// 					}
+		// 					// If it's the first time marking as late and within 45 days, add $10 fee for each day late except the first day.
+		// 					if (daysLate <= 45 && firstCheck) {
+		// 						paymentInfo.latenessFee += 10 * (daysLate - 1);
+		// 					}
+
+		// 					// If it's not the first check and the payment is within 45 days late, add $10 fee for each day late.
+		// 					if (daysLate <= 45 && firstCheck === false) {
+		// 						paymentInfo.latenessFee += 10 * daysLate;
+		// 					}
+		// 					// Cap the lateness fee at a maximum value.
+		// 					paymentInfo.latenessFee = Math.min(
+		// 						paymentInfo.latenessFee,
+		// 						80 + 10 * 44
+		// 					);
+		// 					paymentInfo.daysLate = daysLate; // Update the number of days late.
+		// 					dealUpdated = true; // Mark the deal as updated.
+		// 				}
+
+		// 				// If the deal was updated, save the changes to the database.
+		// 				if (dealUpdated) {
+		// 					console.log("doing the update");
+		// 					await Deal.updateOne(
+		// 						{
+		// 							id: deal.id,
+		// 							"paymentDates.payment_id":
+		// 								paymentInfo.payment_id,
+		// 						},
+		// 						{
+		// 							"paymentDates.$.isLate": paymentInfo.isLate,
+		// 							"paymentDates.$.latenessFee":
+		// 								paymentInfo.latenessFee,
+		// 							"paymentDates.$.daysLate":
+		// 								paymentInfo.daysLate,
+		// 							$set: {},
+		// 						}
+		// 					).catch((error) => {
+		// 						console.log(
+		// 							"there was an error on is deal payment late",
+		// 							error
+		// 						);
+		// 					});
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+
+		// 	// Return the list of all deals, possibly with their updated statuses.
+		// 	return allDeals;
+		// },
+
+		// ! fiixxxx thisssss
 		isDealPaymentPayed: async (parent, args, context, info) => {
-			// Retrieve all deals using a query function 'getAllDeals'.
 			const allDeals = await dealResolvers?.Query?.getAllDeals();
-
-			// Get the current date using moment.js.
 			const today = moment();
+			const bulkOps = []; // Array to store bulk operations
 
-			// Iterate over each deal in the list of all deals.
 			for (const deal of allDeals) {
-				let dealUpdated = false; // Flag to track if the deal has been updated.
-				const lastUpdate = moment(deal.updatedAt); // Get the last update time of the deal.
-				const daysSinceLastUpdate = today.diff(lastUpdate, "days"); // Calculate days since the last update.
+				let dealUpdated = false;
+				const lastUpdate = moment(deal.updatedAt);
+				const daysSinceLastUpdate = today.diff(lastUpdate, "days");
 
-				// Check if at least one day has passed since the last update.
 				if (daysSinceLastUpdate >= 1) {
-					// Iterate over each payment information in the deal.
 					for (const paymentInfo of deal.paymentDates) {
 						const paymentDueDate = moment(
 							paymentInfo.dateOfPayment
-						); // Get the due date for the payment.
-						const daysLate = today.diff(paymentDueDate, "days"); // Calculate how many days late the payment is.
+						);
+						const daysLate = today.diff(paymentDueDate, "days");
 
-						let firstCheck = false; // Flag to indicate if it's the first check for lateness.
-
-						// Check if the payment is late.
 						if (daysLate > 0) {
-							// If the payment is not already marked as late, add a late fee of $80 and set the flag to true.
 							if (!paymentInfo.isLate) {
-								paymentInfo.latenessFee = 80;
 								paymentInfo.isLate = true;
-								firstCheck = true;
+								// Add initial late fee of $80
+								let latenessFee = 80;
+								bulkOps.push({
+									updateOne: {
+										filter: {
+											id: deal.id,
+											"paymentDates.payment_id":
+												paymentInfo.payment_id,
+										},
+										update: {
+											$set: {
+												"paymentDates.$.isLate": true,
+												"paymentDates.$.latenessFee":
+													latenessFee,
+												"paymentDates.$.daysLate":
+													daysLate,
+											},
+										},
+									},
+								});
+								dealUpdated = true;
 							}
-							// If it's the first time marking as late and within 45 days, add $10 fee for each day late except the first day.
-							if (daysLate <= 45 && firstCheck) {
-								paymentInfo.latenessFee += 10 * (daysLate - 1);
+							if (daysLate <= 45) {
+								// Calculate late fee for subsequent days
+								let latenessFee = 80 + 10 * (daysLate - 1);
+								latenessFee = Math.min(
+									latenessFee,
+									80 + 10 * 44
+								); // Cap at $440
+								bulkOps.push({
+									updateOne: {
+										filter: {
+											id: deal.id,
+											"paymentDates.payment_id":
+												paymentInfo.payment_id,
+										},
+										update: {
+											$set: {
+												"paymentDates.$.latenessFee":
+													latenessFee,
+												"paymentDates.$.daysLate":
+													daysLate,
+											},
+										},
+									},
+								});
+								dealUpdated = true;
 							}
-
-							// If it's not the first check and the payment is within 45 days late, add $10 fee for each day late.
-							if (daysLate <= 45 && firstCheck === false) {
-								paymentInfo.latenessFee += 10 * daysLate;
-							}
-							// Cap the lateness fee at a maximum value.
-							paymentInfo.latenessFee = Math.min(
-								paymentInfo.latenessFee,
-								80 + 10 * 44
-							);
-							paymentInfo.daysLate = daysLate; // Update the number of days late.
-							dealUpdated = true; // Mark the deal as updated.
-						}
-
-						// If the deal was updated, save the changes to the database.
-						if (dealUpdated) {
-							console.log("doing the update");
-							await Deal.updateOne(
-								{
-									id: deal.id,
-									"paymentDates.payment_id":
-										paymentInfo.payment_id,
-								},
-								{
-									"paymentDates.$.isLate": paymentInfo.isLate,
-									"paymentDates.$.latenessFee":
-										paymentInfo.latenessFee,
-									"paymentDates.$.daysLate":
-										paymentInfo.daysLate,
-									$set: {},
-								}
-							).catch((error) => {
-								console.log(
-									"there was an error on is deal payment late",
-									error
-								);
-							});
 						}
 					}
 				}
 			}
 
-			// Return the list of all deals, possibly with their updated statuses.
+			if (bulkOps.length > 0) {
+				await Deal.bulkWrite(bulkOps)
+					.then((updatedDeals) => {
+						console.log(updatedDeals);
+						return updatedDeals;
+					})
+					.catch((err) => {
+						console.log("Error performing bulk write", err);
+					});
+			}
+
 			return allDeals;
 		},
 	},

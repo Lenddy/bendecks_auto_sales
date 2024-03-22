@@ -18,7 +18,8 @@ const CreateOneDeal = ({ reload, setReload }) => {
 	const [clients, setClients] = useState([]);
 	// Dependencies for the useEffect hook
 	const [info, setInfo] = useState({
-		paymentDates: [{}], // Array to hold payment dates,
+		// paymentDates: [{}],
+		// Array to hold payment dates,
 		// dayOFDeal:
 	});
 
@@ -100,6 +101,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			})
 			.catch((error) => {
 				console.log(error);
+				setValidations(true);
 			});
 	};
 
@@ -178,20 +180,23 @@ const CreateOneDeal = ({ reload, setReload }) => {
 
 	// const [selectedVehicle, setSelectedVehicle] = useState();
 
+	const [validations, setValidations] = useState(false);
 	// Component rendering
 	return (
 		<div className="children-content">
 			<h1>Nueva Venta</h1>
 			<form onSubmit={submit} className="form-create">
 				<div className="form-section">
-					<div>
+					<div className="form-dropdown-input-container ">
 						<select
 							name="client_id"
 							id=""
 							onChange={infoToBeSubmitted}
 							className="form-dropdown-input"
 						>
-							<option value="">Seleccionar Cliente</option>
+							<option value="" selected disabled>
+								Seleccionar Cliente
+							</option>
 							{clients?.map((c) => {
 								return (
 									<option key={c?.id} value={`${c?.id}`}>
@@ -200,162 +205,300 @@ const CreateOneDeal = ({ reload, setReload }) => {
 								);
 							})}
 						</select>
+						{info?.client_id == false ? (
+							<div className="form-validation-container">
+								<p className="input-validation">
+									Cliente Es Requerido
+								</p>
+							</div>
+						) : null}
+						{validations ? (
+							<div className="form-validation-container">
+								<p className="input-validation">
+									Cliente Es Requerido
+								</p>
+							</div>
+						) : null}
 					</div>
 
-					<div>
-						<select
-							name="carName"
-							onChange={infoToBeSubmitted}
-							className="form-dropdown-input"
-						>
-							<option value="">vehicles</option>
-							{vehicles?.map((v) => {
-								return (
-									<option
-										key={v?.id}
-										value={JSON.stringify({
-											id: v?.id,
-											vehicle: v.vehicleName,
-										})}
-									>
-										{v?.vehicleName}
-									</option>
-								);
-							})}
-						</select>
-					</div>
+					{info?.client_id ? (
+						<div className="form-dropdown-input-container ">
+							<select
+								name="carName"
+								onChange={infoToBeSubmitted}
+								className="form-dropdown-input"
+							>
+								<option value="" selected disabled>
+									Seleccionar Vehicles
+								</option>
+								{vehicles?.map((v) => {
+									return (
+										<option
+											key={v?.id}
+											value={JSON.stringify({
+												id: v?.id,
+												vehicle: v.vehicleName,
+											})}
+										>
+											{v?.vehicleName}
+										</option>
+									);
+								})}
+							</select>
 
-					<div>
-						<select
-							name="carModel"
-							onChange={infoToBeSubmitted}
-							className="form-dropdown-input"
-						>
-							<option disabled selected value="">
-								Modelos
-							</option>
-							{(
-								(
-									vehicles.find(
-										(v) => info?.carName?.id === v?.id
-									) || {}
-								).vehicleModels || []
-							).map((m) => {
-								return (
-									<option
-										key={m?.modelId}
-										value={JSON.stringify({
-											id: m?.modelId,
-											model: m?.model,
-										})}
-									>
-										{m?.model}
-									</option>
-								);
-							})}
-						</select>
-					</div>
+							{info?.carName ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										vehículo Es Requerido
+									</p>
+								</div>
+							)}
 
-					<div>
-						<select
-							name="carYear"
-							onChange={infoToBeSubmitted}
-							className="form-dropdown-input"
-						>
-							<option disabled selected value="">
-								Año
-							</option>
-							{(
-								(
-									vehicles.find(
-										(v) => info?.carName?.id === v?.id
-									) || {}
-								).years || []
-							).map((y) => {
-								return (
-									<option key={y?.yearId} value={y?.year}>
-										{y?.year}
-									</option>
-								);
-							})}
-						</select>
-					</div>
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										vehículo Es Requerido
+									</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
 
-					<div>
-						<select
-							name="carColor"
-							onChange={infoToBeSubmitted}
-							className="form-dropdown-input"
-						>
-							<option disabled selected value="">
-								color
-							</option>
-							{(
-								(
-									vehicles.find(
-										(v) => info?.carName?.id === v?.id
-									) || {}
-								).colors || []
-							).map((c) => {
-								return (
-									<option key={c?.colorId} value={c?.color}>
-										{c?.color}
-									</option>
-								);
-							})}
-						</select>
-					</div>
+					{info?.carName ? (
+						<div className="form-dropdown-input-container">
+							<select
+								name="carModel"
+								onChange={infoToBeSubmitted}
+								className="form-dropdown-input"
+							>
+								<option disabled selected value="">
+									seleccionar Modelos
+								</option>
+								{(
+									(
+										vehicles.find(
+											(v) => info?.carName?.id === v?.id
+										) || {}
+									).vehicleModels || []
+								).map((m) => {
+									return (
+										<option
+											key={m?.modelId}
+											value={JSON.stringify({
+												id: m?.modelId,
+												model: m?.model,
+											})}
+										>
+											{m?.model}
+										</option>
+									);
+								})}
+							</select>
+							{info?.carModel ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Modelo Es Requerido
+									</p>
+								</div>
+							)}
 
-					<div>
-						<input
-							type="number"
-							step="0.01"
-							name="sellingPrice"
-							onChange={(e) => {
-								infoToBeSubmitted(e);
-							}}
-							// value={info.cellPhone}
-							placeholder="sellingPrice:"
-							className="form-input"
-						/>
-					</div>
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Modelo Es Requerido
+									</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
 
-					<div>
-						<input
-							type="number"
-							name="downPayment"
-							onChange={(e) => infoToBeSubmitted(e)}
-							// value={info.clientName}
-							step="0.01"
-							maxLength={20}
-							// minLength={1}
-							placeholder="downPayment:"
-							className="form-input"
-						/>
-					</div>
+					{info?.carModel ? (
+						<div className="form-dropdown-input-container">
+							<select
+								name="carYear"
+								onChange={infoToBeSubmitted}
+								className="form-dropdown-input"
+							>
+								<option disabled selected value="">
+									Seleccionar Año
+								</option>
+								{(
+									(
+										vehicles.find(
+											(v) => info?.carName?.id === v?.id
+										) || {}
+									).years || []
+								).map((y) => {
+									return (
+										<option key={y?.yearId} value={y?.year}>
+											{y?.year}
+										</option>
+									);
+								})}
+							</select>
+							{info?.carYear ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Año Es Requerido
+									</p>
+								</div>
+							)}
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Año Es Requerido
+									</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
 
-					<div>
-						<input
-							step="0.01"
-							type="number"
-							name="payment"
-							onChange={(e) => infoToBeSubmitted(e)}
-							// value={info.clientLastName}
-							placeholder="Payment"
-							className="form-input"
-						></input>
-					</div>
-					<div>
-						<input
-							type="date"
-							name="dayOfDeal"
-							// onClick={infoToBeSubmitted}
-							onChange={(e) => infoToBeSubmitted(e)}
-							// value={info.cellPhone}
-							placeholder="Date of the deal"
-							className="form-input"
-						/>
-					</div>
+					{info?.carYear ? (
+						<div className="form-dropdown-input-container">
+							<select
+								name="carColor"
+								onChange={infoToBeSubmitted}
+								className="form-dropdown-input"
+							>
+								<option disabled selected value="">
+									Seleccionar Color
+								</option>
+								{(
+									(
+										vehicles.find(
+											(v) => info?.carName?.id === v?.id
+										) || {}
+									).colors || []
+								).map((c) => {
+									return (
+										<option
+											key={c?.colorId}
+											value={c?.color}
+										>
+											{c?.color}
+										</option>
+									);
+								})}
+							</select>
+						</div>
+					) : null}
+
+					{info?.carYear ? (
+						<div>
+							<input
+								type="number"
+								step="0.01"
+								name="sellingPrice"
+								onChange={(e) => {
+									infoToBeSubmitted(e);
+								}}
+								// value={info.cellPhone}
+								placeholder="Precio"
+								className="form-input"
+							/>
+							{info?.sellingPrice ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Precio Es Requerido
+									</p>
+								</div>
+							)}
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Precio Es Requerido
+									</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.sellingPrice ? (
+						<div>
+							<input
+								type="number"
+								name="downPayment"
+								onChange={(e) => infoToBeSubmitted(e)}
+								// value={info.clientName}
+								step="0.01"
+								maxLength={20}
+								// minLength={1}
+								placeholder="Inicial"
+								className="form-input"
+							/>
+							{info?.downPayment ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Inicial Es Requerido
+									</p>
+								</div>
+							)}
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Inicial Es Requerido
+									</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.downPayment ? (
+						<div>
+							<input
+								step="0.01"
+								type="number"
+								name="payment"
+								onChange={(e) => infoToBeSubmitted(e)}
+								// value={info.clientLastName}
+								placeholder="Pago"
+								className="form-input"
+							/>
+							{info?.payment ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Pago Es Requerido
+									</p>
+								</div>
+							)}
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Pago Es Requerido
+									</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.payment ? (
+						<div>
+							<input
+								type="date"
+								name="dayOfDeal"
+								// onClick={infoToBeSubmitted}
+								onChange={(e) => infoToBeSubmitted(e)}
+								// value={info.cellPhone}
+								placeholder="Dia De Venta"
+								className="form-input"
+							/>
+							{info?.dayOfDeal ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Dia DE Venta Es Requerido
+									</p>
+								</div>
+							)}
+
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">
+										Dia DE Venta Es Requerido
+									</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
 
 					<div>
 						<input
@@ -373,7 +516,20 @@ const CreateOneDeal = ({ reload, setReload }) => {
 					</div>
 				</div>
 
-				<button type="submit" className="form-submit-btn">
+				<button
+					type="submit"
+					className={`form-submit-btn ${
+						info?.client_id &&
+						info?.carName &&
+						info?.carModel &&
+						info?.carYear &&
+						info?.downPayment &&
+						info?.payment &&
+						info?.dayOfDeal
+							? "show"
+							: "hide"
+					}`}
+				>
 					Agregar Venta
 				</button>
 			</form>

@@ -1,4 +1,6 @@
+find out if the update lateness fee works ad intended
 
-when the + btn is click add a new section for the user to add a phone number
+make a better filter system 
 
-all the section should be add to an array that will be set as the phone numbers 
+fix the subscription
+

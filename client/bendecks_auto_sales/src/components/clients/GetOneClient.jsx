@@ -238,19 +238,20 @@ function GetOneClient() {
 
 	return (
 		<div className="children-content">
-			<h1>Cliente</h1>
 			<div>
 				{notFound ? (
 					<div>
-						<h1 className="link-connection">
-							cliente con ID:<span>{id}</span> no se pudo
-							encontrara asegúrese de que seal el id correcto
+						<h1>
+							Cliente con ID:
+							<span className="link-connection">{id}</span> no se
+							pudo encontrara asegúrese de que seal el id correcto
 						</h1>
 
 						<button onClick={() => navigate("/")}>regresar</button>
 					</div>
 				) : (
 					<div className="form-update-container">
+						<h1>Cliente</h1>
 						<h1 className="link-connection">{id}</h1>
 						<form onSubmit={submit} className="form-update">
 							<div className="form-section-union-container">

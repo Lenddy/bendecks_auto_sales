@@ -5,6 +5,7 @@ import { get_one_deal } from "../../GraphQL/queries/dealQueries";
 import { update_One_deal_payment } from "../../GraphQL/mutations/dealMutations";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
+import moment from "moment";
 
 function GetOneDeal() {
 	const { id } = useParams();
@@ -34,6 +35,12 @@ function GetOneDeal() {
 			setNotFound(true);
 			console.log("error", error);
 		}
+
+		// console.log(
+		// 	"remaining payments :",
+		// 	deal?.paymentDates?.filter((pd) => pd?.monthFullyPay === false)
+		// 		.length
+		// );
 	}, [loading, data, error]);
 
 	const submit = (e) => {
@@ -48,7 +55,6 @@ function GetOneDeal() {
 			},
 		})
 			.then((res) => {
-				console.log(res.data);
 				navigate(`/deals/${id}`);
 			})
 			.catch((error) => {
@@ -94,63 +100,179 @@ function GetOneDeal() {
 		});
 	};
 
+	const [paymentMethod, setPaymentMethod] = useState(false);
+	const [latenessDays, setLatenessDays] = useState();
+
+	const secondaryPaymentMethod = () => {
+		setPaymentMethod((prev) => !prev);
+	};
+
+	const pendingPayment = () => {
+		return deal?.paymentDates?.filter((pd) => pd?.monthFullyPay === false)
+			.length;
+	};
+
+	const calculateLateClass = (paymentDate) => {
+		const daysLate = moment().diff(moment(paymentDate), "days");
+
+		if (daysLate >= 45) {
+			return "late-danger";
+		} else if (daysLate >= 15) {
+			return "late-alert";
+		} else if (daysLate >= 1) {
+			return "late-warning";
+		} else {
+			return "not-late";
+		}
+	};
+
 	// !show more information of the deals   like the remaining balance and the  name of the deal owner and even the  info of the car
 
 	//! make the second for or payment not be there until a btn is click like another form of payment
 
+	// ! update the last of the ui here and in the get one of the  deals  make the going into red or green depending on if the payment is made or not and make the subscription work
 	return (
-		<div className="getOne">
+		<div className="children-content">
 			{notFound ? (
 				<div>
-					<h1 className="notFound">
-						Venta con ID:<span>{id}</span> no se pudo encontrara
-						asegúrese de que sea el id correcto
+					<h1>
+						Venta con ID:
+						<span className="link-connection">{id}</span> no se pudo
+						encontrara asegúrese de que sea el id correcto
 					</h1>
 
 					<button onClick={() => navigate("/deals")}>regresar</button>
 				</div>
 			) : (
-				<div>
-					<h1 className="notFound">{id}</h1>
+				<div className="form-update-container">
+					<h1>Pagos De Venta</h1>
+					<h1 className="link-connection">{id}</h1>
 
-					<form onSubmit={submit}>
-						<div className="oneInfo">
-							<label htmlFor="payment_id">payments:</label>
-							<select
-								name="payment_id"
-								id=""
-								onChange={(e) => {
-									// infoToBeSubmitted(e);
-									paymentSelected(e.target.value);
+					<div className="">
+						<div className="general-info-container">
+							<h2 className="general-info">
+								{" "}
+								<Link
+									to={`/${deal?.client_id?.id}`}
+									className="link-connection"
+								>
+									{`${deal?.client_id?.clientName} ${deal?.client_id?.clientLastName}`}
+								</Link>
+							</h2>
+
+							<h2 className="general-info">
+								<Link
+									to={`/${deal?.carName?.id}`}
+									className="link-connection"
+								>
+									{deal?.carName?.vehicle}
+								</Link>
+								/{deal?.carModel?.model}
+							</h2>
+							<h2 className="general-info">
+								Pagos Pendientes/
+								{pendingPayment()}
+							</h2>
+							<h2 className={`general-info `}>
+								Dias de Atraso/
+								<span
+									className={`o ${calculateLateClass(
+										deal?.paymentDates.find(
+											(p) => !p.monthFullyPay
+										)?.dateOfPayment
+									)}`}
+								>
+									{Math.max(
+										moment().diff(
+											moment(
+												deal?.paymentDates.find(
+													(p) => !p.monthFullyPay
+												)?.dateOfPayment
+											),
+											"days"
+										),
+										0
+									)}
+								</span>
+							</h2>
+						</div>
+					</div>
+
+					<form onSubmit={submit} className="form-update">
+						<div className="form-dropdown-input-container">
+							{paymentMethod ? (
+								<div>
+									<input
+										placeholder="cantidad"
+										type="number"
+										name="amountPayed"
+										// step={0.01}
+										maxLength={20}
+										onChange={infoToBeSubmitted}
+										className="form-input"
+									/>
+								</div>
+							) : (
+								<select
+									name="payment_id"
+									id=""
+									className="form-dropdown-input"
+									onChange={(e) => {
+										// infoToBeSubmitted(e);
+										paymentSelected(e.target.value);
+									}}
+								>
+									<option selected disabled>
+										Seleccionar Pagos
+									</option>
+									{deal?.paymentDates?.map((pd, idx) => {
+										if (pd?.monthFullyPay === false) {
+											return (
+												<option
+													key={pd?.payment_id}
+													value={pd?.payment_id}
+												>
+													Pago {idx + 1}:{" "}
+													{pd?.hasToPay}
+												</option>
+											);
+										}
+									})}
+								</select>
+							)}
+						</div>
+
+						<div className="form-submit-container">
+							<div>
+								<button
+									type="submit"
+									className={`form-submit-btn  ${
+										(selectedPayment !== undefined &&
+											selectedPayment?.length > 0) ||
+										info?.amount ||
+										info?.amount?.amountPayed > 0 ||
+										isNaN(info?.amount?.amountPayed) ===
+											false
+											? "show"
+											: "hide"
+									} `}
+								>
+									Hacer pago
+								</button>
+							</div>
+
+							<button
+								type="button"
+								className="form-swap-btn"
+								onClick={() => {
+									setPaymentMethod((prev) => !prev);
+									setSelectedPayment(undefined);
+									setInfo({});
 								}}
 							>
-								<option value="">payments</option>
-								{deal?.paymentDates?.map((pd, idx) => {
-									if (pd?.monthFullyPay === false) {
-										return (
-											<option
-												key={pd?.payment_id}
-												value={pd?.payment_id}
-											>
-												payment number {idx + 1}:{" "}
-												{pd?.hasToPay}
-											</option>
-										);
-									}
-								})}
-							</select>
-							<div>
-								<input
-									placeholder="cantidad"
-									type="number"
-									name="amountPayed"
-									step={0.01}
-									maxLength={20}
-									onChange={infoToBeSubmitted}
-								/>
-							</div>
+								Cambiar Método De Pago
+							</button>
 						</div>
-						<button type="submit">update a deal</button>
 					</form>
 				</div>
 			)}
