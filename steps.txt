@@ -62,3 +62,73 @@ deals info:\
 
 
 that there is a limit of 45 days or the car will need to be return
+
+
+
+
+
+
+what i want to do 
+
+
+
+go over every deal(red done)
+
+get every payment  (red done)
+
+
+check if a payment is late (red done)
+
+
+if a payment is late add a 80 dallar fee on the first day per   individual payment  (red done)
+
+
+
+
+
+fix the has to pay 
+
+
+
+
+make sure that there is also functionality   that works when there is only one day late but the is late   field is == true
+
+
+
+make sure that the fee is being updated accurately
+
+
+
+make sure that the update happens    go to the if where the bulk is send to the data base 
+
+
+
+
+
+then every day after that 10 dollar should be add to the fee until 45 day if there is no payment for every individual payment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

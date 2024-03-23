@@ -33,6 +33,12 @@ const DealSchema = new Schema(
 
 		remainingBalance: {
 			type: Number,
+			required: true,
+		},
+
+		totalLatenessFee: {
+			type: Number,
+			required: true,
 		},
 
 		carName: {

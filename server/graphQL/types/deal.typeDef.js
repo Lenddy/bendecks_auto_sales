@@ -16,6 +16,7 @@ const dealTypeDef = gql`
 		payment: Float!
 		paymentDates: [PaymentDate]!
 		remainingBalance: Float!
+		totalLatenessFee: Float!
 		sellingPrice: Float!
 		carName: Car!
 		carModel: Model!

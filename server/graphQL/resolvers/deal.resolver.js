@@ -74,6 +74,7 @@ const dealResolvers = {
 				downPayment,
 				payment,
 				remainingBalance,
+				totalLatenessFee: parseFloat(0),
 				sellingPrice,
 				carName,
 				carModel,
@@ -330,162 +331,270 @@ const dealResolvers = {
 				});
 		},
 
-		// !!!!! fix the function so that i can handle multiple days  late you can make use of a if that checks if the isLate field is set to true so you can add a multiplier base on how many days the payment is late you might want to the nested else if //todo   and you might want to add a new field on the paymentDates  to lattestUpdate and the update is going to be the latest date that it was updated  so you so you have to make use of the  deals updated at
-		// isDealPaymentPayed: async (parent, args, context, info) => {
-		// 	// Retrieve all deals using a query function 'getAllDeals'.
-		// 	const allDeals = await dealResolvers?.Query?.getAllDeals();
-
-		// 	// Get the current date using moment.js.
-		// 	const today = moment();
-
-		// 	// Iterate over each deal in the list of all deals.
-		// 	for (const deal of allDeals) {
-		// 		let dealUpdated = false; // Flag to track if the deal has been updated.
-		// 		const lastUpdate = moment(deal.updatedAt); // Get the last update time of the deal.
-		// 		const daysSinceLastUpdate = today.diff(lastUpdate, "days"); // Calculate days since the last update.
-
-		// 		// Check if at least one day has passed since the last update.
-		// 		if (daysSinceLastUpdate >= 1) {
-		// 			// Iterate over each payment information in the deal.
-		// 			for (const paymentInfo of deal.paymentDates) {
-		// 				const paymentDueDate = moment(
-		// 					paymentInfo.dateOfPayment
-		// 				); // Get the due date for the payment.
-		// 				const daysLate = today.diff(paymentDueDate, "days"); // Calculate how many days late the payment is.
-
-		// 				let firstCheck = false; // Flag to indicate if it's the first check for lateness.
-
-		// 				// Check if the payment is late.
-		// 				if (daysLate > 0) {
-		// 					// If the payment is not already marked as late, add a late fee of $80 and set the flag to true.
-		// 					if (!paymentInfo.isLate) {
-		// 						paymentInfo.latenessFee = 80;
-		// 						paymentInfo.isLate = true;
-		// 						firstCheck = true;
-		// 					}
-		// 					// If it's the first time marking as late and within 45 days, add $10 fee for each day late except the first day.
-		// 					if (daysLate <= 45 && firstCheck) {
-		// 						paymentInfo.latenessFee += 10 * (daysLate - 1);
-		// 					}
-
-		// 					// If it's not the first check and the payment is within 45 days late, add $10 fee for each day late.
-		// 					if (daysLate <= 45 && firstCheck === false) {
-		// 						paymentInfo.latenessFee += 10 * daysLate;
-		// 					}
-		// 					// Cap the lateness fee at a maximum value.
-		// 					paymentInfo.latenessFee = Math.min(
-		// 						paymentInfo.latenessFee,
-		// 						80 + 10 * 44
-		// 					);
-		// 					paymentInfo.daysLate = daysLate; // Update the number of days late.
-		// 					dealUpdated = true; // Mark the deal as updated.
-		// 				}
-
-		// 				// If the deal was updated, save the changes to the database.
-		// 				if (dealUpdated) {
-		// 					console.log("doing the update");
-		// 					await Deal.updateOne(
-		// 						{
-		// 							id: deal.id,
-		// 							"paymentDates.payment_id":
-		// 								paymentInfo.payment_id,
-		// 						},
-		// 						{
-		// 							"paymentDates.$.isLate": paymentInfo.isLate,
-		// 							"paymentDates.$.latenessFee":
-		// 								paymentInfo.latenessFee,
-		// 							"paymentDates.$.daysLate":
-		// 								paymentInfo.daysLate,
-		// 							$set: {},
-		// 						}
-		// 					).catch((error) => {
-		// 						console.log(
-		// 							"there was an error on is deal payment late",
-		// 							error
-		// 						);
-		// 					});
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-
-		// 	// Return the list of all deals, possibly with their updated statuses.
-		// 	return allDeals;
-		// },
-
-		// ! fiixxxx thisssss
 		isDealPaymentPayed: async (parent, args, context, info) => {
-			const allDeals = await dealResolvers?.Query?.getAllDeals();
-			const today = moment();
+			const allDeals = await dealResolvers?.Query?.getAllDeals(); //getting all the deals
+			const today = moment("2024-3-12", "YYYY-M-D"); //getting todays date
 			const bulkOps = []; // Array to store bulk operations
+			let latenessFee; // gets the fee amount for every late day
+			let updateDays;
+			let updatedHasToPay;
+			let updatedLatenessFee;
 
 			for (const deal of allDeals) {
-				let dealUpdated = false;
-				const lastUpdate = moment(deal.updatedAt);
-				const daysSinceLastUpdate = today.diff(lastUpdate, "days");
+				//looping over all the deals to get every individual one
+				// deal.updatedAt
+				const lastUpdate = moment("2024-3-10", "YYYY-M-D"); //gets the last date that it was updated (update this to be the updated at )
+				const daysSinceLastUpdate = Math.max(
+					today.diff(lastUpdate, "days"),
+					0
+				); //compare todays against the last updated to get the days difference
 
 				if (daysSinceLastUpdate >= 1) {
+					//condition to to run if days since last update is bigger or == to 1
 					for (const paymentInfo of deal.paymentDates) {
-						const paymentDueDate = moment(
-							paymentInfo.dateOfPayment
-						);
-						const daysLate = today.diff(paymentDueDate, "days");
+						//loops over all the payment dates for each deal
+						const dueDate = moment(
+							paymentInfo.dateOfPayment,
+							"YYYY-M-D"
+						); //getting due date for every due dates for every payment
 
-						if (daysLate > 0) {
-							if (!paymentInfo.isLate) {
-								paymentInfo.isLate = true;
-								// Add initial late fee of $80
-								let latenessFee = 80;
-								bulkOps.push({
-									updateOne: {
-										filter: {
-											id: deal.id,
-											"paymentDates.payment_id":
-												paymentInfo.payment_id,
-										},
-										update: {
-											$set: {
-												"paymentDates.$.isLate": true,
-												"paymentDates.$.latenessFee":
-													latenessFee,
-												"paymentDates.$.daysLate":
-													daysLate,
+						const daysLate = Math.max(
+							today.diff(dueDate, "days"),
+							0
+						); //getting the days late  if a payment has not ben made
+
+						if (daysLate == 1) {
+							//if days late is bigger that 0 runs a condition
+							console.log(
+								"is late == false?  ",
+								paymentInfo.isLate === false
+							);
+							if (paymentInfo.isLate === false && daysLate == 1) {
+								//runs a condition if the is late field is false in a individual payment
+								console.log(
+									"one the is late == false _________________________"
+								);
+
+								bulkOps.push(
+									{
+										//pushes to the bulk array to make a multi update  depending on how many update are added
+
+										updateOne: {
+											//updates one deal
+
+											filter: {
+												_id: deal.id, //gets the deal with a given id
+												"paymentDates.payment_id":
+													paymentInfo.payment_id, //get the paymentDates of that deals that has a given payment_id
+											},
+											update: {
+												//new info that is updated
+
+												$set: {
+													"paymentDates.$.isLate": true, //set is late to be true
+													"paymentDates.$.hasToPay":
+														(paymentInfo.hasToPay += 80), //set has to pay a new value
+													"paymentDates.$.latenessFee": 80, //sets late ness fee to 80 dollars
+													"paymentDates.$.daysLate": 1, //set days late to be the given amount of late days
+												},
 											},
 										},
 									},
-								});
-								dealUpdated = true;
-							}
-							if (daysLate <= 45) {
-								// Calculate late fee for subsequent days
-								let latenessFee = 80 + 10 * (daysLate - 1);
-								latenessFee = Math.min(
-									latenessFee,
-									80 + 10 * 44
-								); // Cap at $440
-								bulkOps.push({
-									updateOne: {
-										filter: {
-											id: deal.id,
-											"paymentDates.payment_id":
-												paymentInfo.payment_id,
+
+									{
+										updateOne: {
+											//updates one deal
+
+											filter: {
+												_id: deal.id, //gets the deal with a given id
+											},
+											update: {
+												//new info that is updated
+												$set: {
+													remainingBalance:
+														(deal.remainingBalance += 80), //sets late ness fee to 80 dollars
+													totalLatenessFee:
+														(deal.totalLatenessFee += 80), //sets totalLatenessFee a a new given amount
+												},
+											},
 										},
-										update: {
-											$set: {
-												"paymentDates.$.latenessFee":
-													latenessFee,
-												"paymentDates.$.daysLate":
-													daysLate,
+									}
+								);
+							}
+
+							console.log(
+								"is late == true?  ",
+								paymentInfo.isLate === true
+							);
+							if (paymentInfo.isLate === true && daysLate == 1) {
+								latenessFee = paymentInfo.latenessFee + 10;
+								updateDays = daysLate + paymentInfo.daysLate;
+								latenessFee = Math.min(latenessFee, 520); // Cap at $520
+								updateDays = Math.min(updateDays, 45); // Cap at 45 days
+								updatedHasToPay = paymentInfo.hasToPay += 10;
+								updatedLatenessFee = latenessFee;
+
+								bulkOps.push(
+									{
+										//pushes to the bulk array to make a multi update  depending on how many update are added
+										updateOne: {
+											//updates one deal
+											filter: {
+												_id: deal.id, //gets the deal with a given id
+												"paymentDates.payment_id":
+													paymentInfo.payment_id, //get the paymentDates of that deals that has a given payment_id
+											},
+											update: {
+												//new info that is updated
+												$set: {
+													"paymentDates.$.isLate": true, //set is late to be true
+													"paymentDates.$.hasToPay":
+														updatedHasToPay, //set has to pay a new value
+													"paymentDates.$.latenessFee":
+														updatedLatenessFee, //sets late ness fee to the calculated amount
+													"paymentDates.$.daysLate":
+														updateDays, //set days late to be the given amount of late days
+												},
 											},
 										},
 									},
-								});
-								dealUpdated = true;
+
+									//pushes to the bulk array to make a multi update  depending on how many update are added
+
+									{
+										updateOne: {
+											//updates one deal
+
+											filter: {
+												_id: deal.id, //gets the deal with a given id
+											},
+											update: {
+												//new info that is updated
+												$set: {
+													remainingBalance:
+														(deal.remainingBalance += 10), //sets late ness fee to 80 dollars
+													totalLatenessFee:
+														(deal.totalLatenessFee += 10), //sets totalLatenessFee a a new given amount
+												},
+											},
+										},
+									}
+								);
 							}
+						}
+
+						if (daysLate > 1 && daysLate <= 45) {
+							//if days late is less than or === to 45 it runs a this condition
+							console.log(
+								"one on the days late >0 <= 45 _________________________"
+							);
+
+							//calculates the fee  one way if there are late day and another is there i 1 or more late days
+							if (
+								paymentInfo.daysLate === 0 &&
+								paymentInfo.isLate === false
+							) {
+								console.log(
+									"on the paymentInfo.daysLate === 0"
+								);
+								latenessFee = 80 + 10 * (daysLate - 1);
+								console.log(
+									"late fee before math",
+									latenessFee
+								);
+								latenessFee = Math.min(latenessFee, 520); // Cap at $520
+								updatedHasToPay = paymentInfo.hasToPay +=
+									latenessFee;
+								updateDays = daysLate;
+							} else if (
+								// ? i think there is still an issue with the else if so fix it latter
+								paymentInfo.daysLate >= 1 &&
+								paymentInfo.isLate === true
+							) {
+								console.log("on (paymentInfo.daysLate >= 1");
+
+								latenessFee = Math.min(latenessFee, 520); // Cap at $520
+								updatedHasToPay =
+									paymentInfo.hasToPay + latenessFee;
+								updateDays = daysLate + paymentInfo.daysLate;
+							}
+
+							updateDays = Math.min(updateDays, 45); // Cap at 45 days
+
+							console.log(
+								"updatedLatenessFee",
+								updatedLatenessFee
+							);
+							console.log("updateDays", updateDays);
+
+							bulkOps.push(
+								{
+									//pushes to the bulk array to make a multi update  depending on how many update are added
+									updateOne: {
+										//updates one deal
+										filter: {
+											_id: deal.id, //gets the deal with a given id
+											"paymentDates.payment_id":
+												paymentInfo.payment_id, //get the paymentDates of that deals that has a given payment_id
+										},
+										update: {
+											//new info that is updated
+											$set: {
+												"paymentDates.$.isLate": true, //set is late to be true
+												"paymentDates.$.hasToPay":
+													updatedHasToPay, //set has to pay a new value
+												"paymentDates.$.latenessFee":
+													latenessFee, //sets late ness fee to the calculated amount
+												"paymentDates.$.daysLate":
+													updateDays, //set days late to be the given amount of late days
+											},
+										},
+									},
+								},
+
+								{
+									updateOne: {
+										//updates one deal
+
+										filter: {
+											_id: deal.id, //gets the deal with a given id
+										},
+										update: {
+											//new info that is updated
+											$set: {
+												remainingBalance:
+													(deal.remainingBalance +=
+														latenessFee), //sets late ness fee to 80 dollars
+												totalLatenessFee:
+													(deal.totalLatenessFee +=
+														latenessFee), //sets totalLatenessFee a a new given amount
+											},
+										},
+									},
+								}
+							);
 						}
 					}
 				}
 			}
+			console.log(
+				"bulk \n",
+				// bulkOps
+
+				"filters",
+				bulkOps?.[0]?.updateOne?.filter,
+				"update",
+				bulkOps?.[0]?.updateOne?.update
+			);
+			console.log(
+				"bulk \n",
+				// bulkOps
+
+				"filters",
+				bulkOps?.[1]?.updateOne?.filter,
+				"update",
+				bulkOps?.[1]?.updateOne?.update
+			);
 
 			if (bulkOps.length > 0) {
 				await Deal.bulkWrite(bulkOps)
@@ -498,7 +607,7 @@ const dealResolvers = {
 					});
 			}
 
-			return allDeals;
+			return await dealResolvers?.Query?.getAllDeals();
 		},
 	},
 

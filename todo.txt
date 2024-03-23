@@ -1,6 +1,20 @@
-find out if the update lateness fee works ad intended
+
+fix the create one deal on the front end 
+
+update payment dates to name 
+and add a new field to all the deals  total late ness 
 
 make a better filter system 
 
+
+
+make the dropdow for clients beter and able to have the search filter
+
 fix the subscription
+
+
+
+add more things later    like a calculator for the lateness 
+
+a payment history for the clients 
 
