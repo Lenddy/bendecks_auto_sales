@@ -116,13 +116,11 @@ function GetOneDeal() {
 	};
 
 	const calculateLateClass = paymentDate => {
-		const daysLate = moment().diff(moment(paymentDate), "days");
-
-		if (daysLate >= 45) {
+		if (paymentDate >= 45) {
 			return "late-danger";
-		} else if (daysLate >= 15) {
+		} else if (paymentDate >= 15) {
 			return "late-alert";
-		} else if (daysLate >= 1) {
+		} else if (paymentDate >= 1) {
 			return "late-warning";
 		} else {
 			return "not-late";
@@ -170,7 +168,7 @@ function GetOneDeal() {
 							</h2>
 							<h2 className={`general-info `}>
 								Dias de Atraso/
-								<span className={`o ${calculateLateClass(deal?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>{Math.max(moment().diff(moment(deal?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment), "days"), 0)}</span>
+								<span className={`o ${calculateLateClass(deal?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate)}`}>{deal?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate}</span>
 							</h2>
 						</div>
 					</div>

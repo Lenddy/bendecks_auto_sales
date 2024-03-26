@@ -65,81 +65,16 @@ function GetAllDeals() {
 	};
 
 	const calculateLateClass = paymentDate => {
-		// // console.log("this is the payment ", paymentDate);
-		const daysLate = moment().diff(moment(paymentDate), "days");
-		// setLatenessDays(daysLate);
-
-		if (daysLate >= 45) {
+		if (paymentDate >= 45) {
 			return "late-danger";
-		} else if (daysLate >= 15) {
+		} else if (paymentDate >= 15) {
 			return "late-alert";
-		} else if (daysLate >= 1) {
+		} else if (paymentDate >= 1) {
 			return "late-warning";
 		} else {
 			return "not-late";
 		}
 	};
-
-	<table>
-		<thead>
-			<tr className="table-header">
-				{windowWidth > 710 ? (
-					<th>
-						<h2>ID</h2>
-					</th>
-				) : null}
-
-				<th>
-					<h2>Nombre</h2>
-				</th>
-				<th>
-					<h2>Dia de Pago</h2>
-				</th>
-
-				{windowWidth > 400 ? (
-					<th>
-						<h2>Pagos Pendientes</h2>
-					</th>
-				) : null}
-			</tr>
-		</thead>
-
-		<tbody>
-			{deals
-				?.filter((d, idx) => d?.client_id?.clientName.toLowerCase().includes(search.toLowerCase()) || d?.client_id?.clientLastName.toLowerCase().includes(search.toLowerCase()))
-				.map((d, idx) => {
-					return (
-						<tr key={d?.id} className="table-data">
-							{windowWidth > 710 ? (
-								<td>
-									<Link to={`/deals/${d.id}`}>
-										<p className="link-connection">{d.id}</p>
-									</Link>
-								</td>
-							) : null}
-
-							<td>
-								<Link to={`/deals/${d.id}`}>
-									<p className="link-connection">
-										{d?.client_id?.clientName} {d?.client_id?.clientLastName}
-									</p>
-								</Link>
-							</td>
-							<td className={`table-multi-data ${calculateLateClass(d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>
-								<Link to={`/deals/${d.id}`}>
-									<p className="link-connection">{d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
-								</Link>
-							</td>
-							{windowWidth > 400 ? (
-								<td className="table-multi-data">
-									<p className="">{pendingPayment(idx)}</p>
-								</td>
-							) : null}
-						</tr>
-					);
-				})}
-		</tbody>
-	</table>;
 
 	return (
 		<div className="children-content">
@@ -198,7 +133,7 @@ function GetAllDeals() {
 									</td>
 									<td className={`table-multi-data `}>
 										<Link to={`/deal/${d.id}`}>
-											<p className={`link-connection ${calculateLateClass(d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>{d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
+											<p className={`link-connection ${calculateLateClass(d?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate)}`}>{d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
 										</Link>
 									</td>
 									{windowWidth > 400 ? (
@@ -207,8 +142,8 @@ function GetAllDeals() {
 										</td>
 									) : null}
 									{windowWidth > 400 ? (
-										<td className={`table-multi-data ${calculateLateClass(d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>
-											<p className="">{Math.max(moment().diff(moment(d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment), "days"), 0)}</p>
+										<td className={`table-multi-data ${calculateLateClass(d?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate)}`}>
+											<p className="">{d?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate}</p>
 										</td>
 									) : null}
 								</tr>
