@@ -21,43 +21,43 @@ const DealSchema = new Schema(
 		},
 
 		dealPayments: {
-			type: Array,
-			// type: [
-			// 	{
-			// 		payment_id: {
-			// 			type: String,
-			// 			required: true,
-			// 		},
-			// 		dateOfPayment: {
-			// 			type: String,
-			// 			required: true,
-			// 		},
-			// 		daysLate: {
-			// 			type: Number,
-			// 			required: true,
-			// 		},
-			// 		hasToPay: {
-			// 			type: Number,
-			// 			required: true,
-			// 		},
-			// 		amountPayedThisMonth: {
-			// 			type: Number,
-			// 			required: true,
-			// 		},
-			// 		latenessFee: {
-			// 			type: Number,
-			// 			required: true,
-			// 		},
-			// 		isLate: {
-			// 			type: Boolean,
-			// 			required: true,
-			// 		},
-			// 		monthFullyPay: {
-			// 			type: Boolean,
-			// 			required: true,
-			// 		},
-			// 	},
-			// ],
+			type: [
+				{
+					_id: false,
+					payment_id: {
+						type: String,
+						required: true,
+					},
+					dateOfPayment: {
+						type: String,
+						required: true,
+					},
+					daysLate: {
+						type: Number,
+						required: true,
+					},
+					hasToPay: {
+						type: Number,
+						required: true,
+					},
+					amountPayedThisMonth: {
+						type: Number,
+						required: true,
+					},
+					latenessFee: {
+						type: Number,
+						required: true,
+					},
+					isLate: {
+						type: Boolean,
+						required: true,
+					},
+					monthFullyPay: {
+						type: Boolean,
+						required: true,
+					},
+				},
+			],
 			required: true,
 		},
 
@@ -78,6 +78,7 @@ const DealSchema = new Schema(
 
 		carName: {
 			type: {
+				_id: false,
 				id: {
 					type: String,
 					required: true,
@@ -92,6 +93,7 @@ const DealSchema = new Schema(
 
 		carModel: {
 			type: {
+				_id: false,
 				id: {
 					type: String,
 					required: true,

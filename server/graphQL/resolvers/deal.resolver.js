@@ -41,6 +41,7 @@ const dealResolvers = {
 	},
 
 	Mutation: {
+		// FIXME: YOU CAN GE THE NAME OF THE PAYMANTDATES TO DEALPAYMENTS FIELS AND THE CREATE ONE IS NOT WORKING ANY MORE FINE OUT WHY
 		createOneDeal: async (_, { dayOfDeal, downPayment, payment, dealPayments, remainingBalance, sellingPrice, carName, carModel, carColor, carYear, client_id }) => {
 			const create = {
 				dayOfDeal,
@@ -60,12 +61,13 @@ const dealResolvers = {
 					...dealPayments,
 				};
 			});
+			console.log("this is the deal", dealPayments);
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			//Date;
 			create.createdAt = createdAt;
 			create.updatedAt = updatedAt;
-			create.dealPayment = dealPayments;
+			create.dealPayments = dealPayments;
 
 			if (carColor !== undefined) {
 				create.carColor = carColor;
@@ -275,7 +277,6 @@ const dealResolvers = {
 						const dueDate = moment(paymentInfo.dateOfPayment, "YYYY-M-D"); //getting due date for every due dates for every payment
 
 						const daysLate = Math.max(today.diff(dueDate, "days"), 0); //getting the days late  if a payment has not ben made
-
 						if (daysLate == 1) {
 							//if days late is bigger that 0 runs a condition
 							if (paymentInfo.isLate === false && daysLate == 1) {
@@ -389,6 +390,7 @@ const dealResolvers = {
 								latenessFee = 80 + 10 * (daysLate - 1);
 								latenessFee = Math.min(latenessFee, 520); // Cap at $520
 								updatedHasToPay = prevHasToPay + latenessFee;
+								updatedLatenessFee = prevLateness + latenessFee;
 								updateDays = daysLate;
 							} else if (prevDaysLate >= 1 && paymentInfo.isLate === true) {
 								latenessFee = 10 * daysLate;

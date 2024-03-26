@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 // import(gql);
 
 export const create_one_deal = gql`
-	mutation createOneDeal($dayOfDeal: String!, $downPayment: Float!, $payment: Float!, $dealPayments: [dealPaymentsInput]!, $remainingBalance: Float!, $sellingPrice: Float!, $carName: CarInput!, $carModel: ModelInput!, $carColor: String, $carYear: String, $client_id: ID!) {
+	mutation createOneDeal($dayOfDeal: String!, $downPayment: Float!, $payment: Float!, $dealPayments: [DealPaymentsInput!]!, $remainingBalance: Float!, $sellingPrice: Float!, $carName: CarInput!, $carModel: ModelInput!, $carColor: String, $carYear: String, $client_id: ID!) {
 		createOneDeal(dayOfDeal: $dayOfDeal, downPayment: $downPayment, payment: $payment, dealPayments: $dealPayments, remainingBalance: $remainingBalance, sellingPrice: $sellingPrice, carName: $carName, carModel: $carModel, carColor: $carColor, carYear: $carYear, client_id: $client_id) {
 			id
 			downPayment

@@ -14,7 +14,7 @@ const dealTypeDef = gql`
 		dayOfDeal: String!
 		downPayment: Float!
 		payment: Float!
-		paymentDates: [PaymentDate]!
+		dealPayments: [DealPayments]!
 		remainingBalance: Float!
 		totalLatenessFee: Float!
 		sellingPrice: Float!
@@ -38,16 +38,15 @@ const dealTypeDef = gql`
 		model: String!
 	}
 
-	type PaymentDate {
+	type DealPayments {
 		payment_id: ID!
-		monthFullyPay: Boolean!
-		isLate: Boolean!
 		dateOfPayment: DateTime!
+		daysLate: Int!
 		hasToPay: Float!
 		amountPayedThisMonth: Float!
-		remainingBalance: Float!
 		latenessFee: Float!
-		daysLate: Int!
+		isLate: Boolean!
+		monthFullyPay: Boolean!
 	}
 
 	type DealChange {
@@ -62,17 +61,15 @@ const dealTypeDef = gql`
 		getOneDeal(id: ID!): Deal!
 	}
 
-	input PaymentDateInput {
+	input DealPaymentsInput {
 		payment_id: ID
-		monthFullyPay: Boolean!
-		isLate: Boolean!
 		dateOfPayment: DateTime!
+		daysLate: Int!
 		hasToPay: Float!
 		amountPayedThisMonth: Float!
-		remainingBalance: Float!
 		latenessFee: Float!
-		daysLate: Int!
-		# latestLatenessFeeUpdate
+		isLate: Boolean!
+		monthFullyPay: Boolean!
 	}
 
 	input CarInput {
@@ -87,43 +84,16 @@ const dealTypeDef = gql`
 
 	input AmountPayedInput {
 		amount: Float
-		paymentDates: [PaymentDateInput]
+		dealPayments: [DealPaymentsInput!]
 	}
 
 	#mutations
 	type Mutation {
-		createOneDeal(
-			dayOfDeal: String!
-			downPayment: Float!
-			payment: Float!
-			paymentDates: [PaymentDateInput]!
-			remainingBalance: Float!
-			sellingPrice: Float!
-			carName: CarInput!
-			carModel: ModelInput!
-			carColor: String
-			carYear: String
-			client_id: ID!
-		): Deal!
+		createOneDeal(dayOfDeal: String!, downPayment: Float!, payment: Float!, dealPayments: [DealPaymentsInput!]!, remainingBalance: Float!, sellingPrice: Float!, carName: CarInput!, carModel: ModelInput!, carColor: String, carYear: String, client_id: ID!): Deal!
 
-		updateOneDeal(
-			id: ID!
-			downPayment: Float
-			payment: Float
-			paymentDates: [PaymentDateInput]
-			remainingBalance: Float
-			sellingPrice: Float
-			carName: ModelInput
-			carModel: ModelInput
-			carColor: String
-			carYear: String
-		): Deal!
+		updateOneDeal(id: ID!, downPayment: Float, payment: Float, dealPayments: [DealPaymentsInput], remainingBalance: Float, sellingPrice: Float, carName: ModelInput, carModel: ModelInput, carColor: String, carYear: String): Deal!
 
-		updateOneDealPayment(
-			id: ID!
-			selectedPayments: [PaymentDateInput!]
-			amountPayed: AmountPayedInput
-		): Deal!
+		updateOneDealPayment(id: ID!, selectedPayments: [DealPaymentsInput!], amountPayed: AmountPayedInput): Deal!
 
 		isDealPaymentPayed: [Deal!]!
 

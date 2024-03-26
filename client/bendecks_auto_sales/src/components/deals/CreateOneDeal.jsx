@@ -52,6 +52,11 @@ const CreateOneDeal = ({ reload, setReload }) => {
 	const submit = e => {
 		e.preventDefault(); // Prevent default form submission behavior
 
+		// console.log("this are the payments ", info?.dealPayments);
+		// const nonNullDealPayments = info?.dealPayments.filter(deal => deal !== null);
+
+		// console.log("filter this are the payments ", nonNullDealPayments);
+
 		createOneDeal({
 			variables: {
 				dayOfDeal: info?.dayOfDeal,
@@ -75,7 +80,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				setReload(!reload);
 			})
 			.catch(error => {
-				console.log(error);
+				console.error("Mutation error:", error);
 				setValidations(true);
 			});
 	};
