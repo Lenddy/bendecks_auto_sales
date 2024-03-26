@@ -38,7 +38,7 @@ function GetOneDeal() {
 
 		// console.log(
 		// 	"remaining payments :",
-		// 	deal?.paymentDates?.filter((pd) => pd?.monthFullyPay === false)
+		// 	deal?.dealPayments?.filter((pd) => pd?.monthFullyPay === false)
 		// 		.length
 		// );
 	}, [loading, data, error]);
@@ -55,7 +55,11 @@ function GetOneDeal() {
 			},
 		})
 			.then(res => {
-				navigate(`/deals/${id}`);
+				// navigate(`/deal/${id}`);
+				setPaymentMethod(prev => !prev);
+				setSelectedPayment(undefined);
+				setInfo({});
+				console.log(res.data.updateOneDealPayment);
 			})
 			.catch(error => {
 				console.log("there was an error", error);
@@ -65,7 +69,7 @@ function GetOneDeal() {
 	const paymentSelected = payment_id => {
 		const AllPayments = [];
 
-		for (const payment of deal.paymentDates) {
+		for (const payment of deal.dealPayments) {
 			if (!payment.monthFullyPay) {
 				// Remove __typename field
 				const { __typename, ...paymentWithoutTypename } = payment;
@@ -84,7 +88,7 @@ function GetOneDeal() {
 
 		const AllPayments = [];
 
-		for (const payment of deal.paymentDates) {
+		for (const payment of deal.dealPayments) {
 			if (!payment.monthFullyPay) {
 				// Remove __typename field
 				const { __typename, ...paymentWithoutTypename } = payment;
@@ -95,7 +99,7 @@ function GetOneDeal() {
 			// ...prevInfo,
 			[name]: {
 				amount: parseFloat(value),
-				paymentDates: AllPayments,
+				dealPayments: AllPayments,
 			},
 		});
 	};
@@ -108,7 +112,7 @@ function GetOneDeal() {
 	};
 
 	const pendingPayment = () => {
-		return deal?.paymentDates?.filter(pd => pd?.monthFullyPay === false).length;
+		return deal?.dealPayments?.filter(pd => pd?.monthFullyPay === false).length;
 	};
 
 	const calculateLateClass = paymentDate => {
@@ -166,7 +170,7 @@ function GetOneDeal() {
 							</h2>
 							<h2 className={`general-info `}>
 								Dias de Atraso/
-								<span className={`o ${calculateLateClass(deal?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>{Math.max(moment().diff(moment(deal?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment), "days"), 0)}</span>
+								<span className={`o ${calculateLateClass(deal?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>{Math.max(moment().diff(moment(deal?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment), "days"), 0)}</span>
 							</h2>
 						</div>
 					</div>
@@ -197,7 +201,7 @@ function GetOneDeal() {
 									<option selected disabled>
 										Seleccionar Pagos
 									</option>
-									{deal?.paymentDates?.map((pd, idx) => {
+									{deal?.dealPayments?.map((pd, idx) => {
 										if (pd?.monthFullyPay === false) {
 											return (
 												<option key={pd?.payment_id} value={pd?.payment_id}>

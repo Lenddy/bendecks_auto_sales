@@ -7,15 +7,15 @@ export const get_all_deals = gql`
 			id
 			downPayment
 			payment
-			paymentDates {
+			dealPayments {
 				payment_id
-				monthFullyPay
-				isLate
 				dateOfPayment
-				hasToPay
-				amountPayedThisMonth
-				latenessFee
 				daysLate
+				hasToPay
+				monthFullyPay
+				latenessFee
+				isLate
+				amountPayedThisMonth
 			}
 			remainingBalance
 			sellingPrice
@@ -50,15 +50,15 @@ export const get_one_deal = gql`
 			id
 			downPayment
 			payment
-			paymentDates {
+			dealPayments {
 				payment_id
-				monthFullyPay
-				isLate
 				dateOfPayment
-				hasToPay
-				amountPayedThisMonth
-				latenessFee
 				daysLate
+				hasToPay
+				monthFullyPay
+				latenessFee
+				isLate
+				amountPayedThisMonth
 			}
 			remainingBalance
 			sellingPrice

@@ -30,66 +30,29 @@ function App() {
 				<Routes>
 					{/* <Route exact path="/" element={<Log_reg />} /> */}
 					<Route exact path="/" element={<GetAllDeals />} />
-					<Route
-						exact
-						path="/dashboard"
-						element={<GetAllClients reload={reload} />}
-					/>
+					<Route exact path="/dashboard" element={<GetAllClients reload={reload} />} />
 					<Route exact path="/:id" element={<GetOneClient />} />
 
-					<Route
-						exact
-						path="/createOneClient"
-						element={
-							<CreateOneClient
-								reload={reload}
-								setReload={setReload}
-							/>
-						}
-					/>
+					<Route exact path="/createOneClient" element={<CreateOneClient reload={reload} setReload={setReload} />} />
 
 					{/* vehicles */}
 
-					<Route
-						exact
-						path="/vehicles"
-						element={<GetAllVehicles />}
-					/>
+					<Route exact path="/vehicles" element={<GetAllVehicles />} />
 
-					<Route
-						exact
-						path="/vehicles/:id"
-						element={<GetOneVehicle />}
-					/>
+					<Route exact path="/vehicles/:id" element={<GetOneVehicle />} />
 
-					<Route
-						exact
-						path="/vehicles/add"
-						element={<CreateOneVehicle />}
-					/>
+					<Route exact path="/vehicles/add" element={<CreateOneVehicle />} />
 
-					<Route
-						exact
-						path="/vehicles/delete/:id"
-						element={<DeleteOneVehicle />}
-					/>
+					<Route exact path="/vehicles/delete/:id" element={<DeleteOneVehicle />} />
 					{/* deals routes */}
 
 					<Route exact path="/deals" element={<GetAllDeals />} />
 
-					<Route exact path="/deals/:id" element={<GetOneDeal />} />
+					<Route exact path="/deal/:id" element={<GetOneDeal />} />
 
-					<Route
-						exact
-						path="/deals/add"
-						element={<CreateOneDeal />}
-					/>
+					<Route exact path="/deals/add" element={<CreateOneDeal />} />
 
-					<Route
-						exact
-						path="/deals/delete/:id"
-						element={<DeleteOneDeal />}
-					/>
+					<Route exact path="/deals/delete/:id" element={<DeleteOneDeal />} />
 				</Routes>
 			</Container>
 		</div>

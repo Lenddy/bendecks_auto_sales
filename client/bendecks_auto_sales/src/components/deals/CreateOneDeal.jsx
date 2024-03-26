@@ -74,7 +74,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 			refetchQueries: [{ query: get_one_deal }],
 		})
 			.then(res => {
-				navigate("/deals");
+				navigate(`/deal/${res?.data?.createOneDeal?.id}`);
 				console.log("here is the response", res.data.createOneDeal);
 				// socket.emit("new_client_added", res.data.createOneDeal);
 				setReload(!reload);

@@ -31,7 +31,7 @@ function GetAllDeals() {
 		if (data) {
 			console.log(data); // Log the fetched data
 			setDeals(data.getAllDeals); // Set the Clients retrieved from the query to the state
-			// console.log("thissssssss =>>>", data?.getAllDeals[1]?.paymentDates);
+			// console.log("thissssssss =>>>", data?.getAllDeals[1]?.dealPayments);
 		}
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
@@ -61,7 +61,7 @@ function GetAllDeals() {
 	// Render the retrieved clients
 
 	const pendingPayment = idx => {
-		return deals?.[idx]?.paymentDates?.filter(pd => pd?.monthFullyPay === false)?.length;
+		return deals?.[idx]?.dealPayments?.filter(pd => pd?.monthFullyPay === false)?.length;
 	};
 
 	const calculateLateClass = paymentDate => {
@@ -125,9 +125,9 @@ function GetAllDeals() {
 									</p>
 								</Link>
 							</td>
-							<td className={`table-multi-data ${calculateLateClass(d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>
+							<td className={`table-multi-data ${calculateLateClass(d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>
 								<Link to={`/deals/${d.id}`}>
-									<p className="link-connection">{d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
+									<p className="link-connection">{d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
 								</Link>
 							</td>
 							{windowWidth > 400 ? (
@@ -169,7 +169,7 @@ function GetAllDeals() {
 						) : null}
 						{windowWidth > 400 ? (
 							<th>
-								<h2>dias atrasados</h2>
+								<h2>Dias atrasados</h2>
 							</th>
 						) : null}
 					</tr>
@@ -183,7 +183,7 @@ function GetAllDeals() {
 								<tr key={d?.id} className="table-data">
 									{windowWidth > 710 ? (
 										<td>
-											<Link to={`/deals/${d.id}`}>
+											<Link to={`/deal/${d.id}`}>
 												<p className="link-connection">{d.id}</p>
 											</Link>
 										</td>
@@ -197,8 +197,8 @@ function GetAllDeals() {
 										</Link>
 									</td>
 									<td className={`table-multi-data `}>
-										<Link to={`/deals/${d.id}`}>
-											<p className={`link-connection ${calculateLateClass(d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>{d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
+										<Link to={`/deal/${d.id}`}>
+											<p className={`link-connection ${calculateLateClass(d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>{d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
 										</Link>
 									</td>
 									{windowWidth > 400 ? (
@@ -207,8 +207,8 @@ function GetAllDeals() {
 										</td>
 									) : null}
 									{windowWidth > 400 ? (
-										<td className={`table-multi-data ${calculateLateClass(d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>
-											<p className="">{Math.max(moment().diff(moment(d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment), "days"), 0)}</p>
+										<td className={`table-multi-data ${calculateLateClass(d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>
+											<p className="">{Math.max(moment().diff(moment(d?.dealPayments.find(p => !p.monthFullyPay)?.dateOfPayment), "days"), 0)}</p>
 										</td>
 									) : null}
 								</tr>
