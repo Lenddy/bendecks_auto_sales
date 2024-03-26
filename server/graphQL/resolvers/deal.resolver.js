@@ -16,20 +16,12 @@ const dealResolvers = {
 		getAllDeals: async () => {
 			return await Deal.find()
 				.populate("client_id")
-				.then((deals) => {
-					console.log(
-						"all the deals",
-						deals,
-						"\n____________________"
-					);
+				.then(deals => {
+					console.log("all the deals", deals, "\n____________________");
 					return deals;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error fetching all the deals",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error fetching all the deals", err, "\n____________________");
 					throw err;
 				}); //gets all the vehicles(items) in the data base
 		},
@@ -37,38 +29,19 @@ const dealResolvers = {
 		getOneDeal: async (_, { id }) => {
 			return await Deal.findById(id)
 				.populate("client_id")
-				.then((deal) => {
+				.then(deal => {
 					console.log("one deal ", deal, "\n____________________");
 					return deal;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error fetching one deal",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error fetching one deal", err, "\n____________________");
 					throw err;
 				}); //gets one the vehicle(item) from the data base
 		},
 	},
 
 	Mutation: {
-		createOneDeal: async (
-			_,
-			{
-				dayOfDeal,
-				downPayment,
-				payment,
-				paymentDates,
-				remainingBalance,
-				sellingPrice,
-				carName,
-				carModel,
-				carColor,
-				carYear,
-				client_id,
-			}
-		) => {
+		createOneDeal: async (_, { dayOfDeal, downPayment, payment, dealPayments, remainingBalance, sellingPrice, carName, carModel, carColor, carYear, client_id }) => {
 			const create = {
 				dayOfDeal,
 				downPayment,
@@ -81,10 +54,10 @@ const dealResolvers = {
 				client_id,
 			};
 
-			paymentDates = paymentDates.map((paymentDate) => {
+			dealPayments = dealPayments.map(dealPayments => {
 				return {
-					...paymentDate,
 					payment_id: uuidv4(), // Generates a unique UUID
+					...dealPayments,
 				};
 			});
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
@@ -92,7 +65,7 @@ const dealResolvers = {
 			//Date;
 			create.createdAt = createdAt;
 			create.updatedAt = updatedAt;
-			create.paymentDates = paymentDates;
+			create.dealPayment = dealPayments;
 
 			if (carColor !== undefined) {
 				create.carColor = carColor;
@@ -101,14 +74,10 @@ const dealResolvers = {
 			if (carYear !== undefined) {
 				create.carYear = carYear;
 			}
-
+			console.log("this is the create ", create);
 			return await Deal.create(create)
-				.then(async (newDeal) => {
-					console.log(
-						"new deal created",
-						newDeal,
-						"\n____________________"
-					);
+				.then(async newDeal => {
+					console.log("new deal created", newDeal, "\n____________________");
 					pubsub.publish("DEAL_ADDED", {
 						onDealChange: {
 							eventType: "DEAL_ADDED",
@@ -120,28 +89,14 @@ const dealResolvers = {
 						id: newDeal.id,
 					});
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error creating a new Deal",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error creating a new Deal", err, "\n____________________");
 					throw err;
 				});
 		},
 
 		updateOneDeal: async (parent, args, context, info) => {
-			const {
-				id,
-				downPayment,
-				payment,
-				remainingBalance,
-				sellingPrice,
-				carName,
-				carModel,
-				carColor,
-				carYear,
-			} = args;
+			const { id, downPayment, payment, remainingBalance, sellingPrice, carName, carModel, carColor, carYear } = args;
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
 			if (downPayment !== undefined) {
@@ -172,32 +127,19 @@ const dealResolvers = {
 			return await Deal.findByIdAndUpdate(id, update, {
 				new: true,
 			})
-				.then(async (updatedDeal) => {
-					console.log(
-						"deal updated",
-						updatedDeal,
-						"\n____________________"
-					);
+				.then(async updatedDeal => {
+					console.log("deal updated", updatedDeal, "\n____________________");
 					return await dealResolvers.Query.getOneDeal(null, {
 						id: updatedDeal.id,
 					});
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error updating a deal",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error updating a deal", err, "\n____________________");
 					throw err;
 				});
 		},
 
-		updateOneDealPayment: async (
-			parent,
-			{ id, selectedPayments, amountPayed },
-			context,
-			info
-		) => {
+		updateOneDealPayment: async (parent, { id, selectedPayments, amountPayed }, context, info) => {
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
 			if (selectedPayments !== undefined && selectedPayments.length > 0) {
@@ -208,16 +150,14 @@ const dealResolvers = {
 						updateOne: {
 							filter: {
 								_id: id,
-								"paymentDates.payment_id": payment.payment_id,
+								"dealPayments.payment_id": payment.payment_id,
 							},
 							update: {
 								$set: {
-									"paymentDates.$.monthFullyPay": true,
-									"paymentDates.$.amountPayedThisMonth":
-										payment.hasToPay,
-									// "paymentDates.$.remainingBalance":payment.remainingBalance -payment.hasToPay,
-									"paymentDates.$.hasToPay":
-										payment.hasToPay - payment.hasToPay,
+									"dealPayments.$.monthFullyPay": true,
+									"dealPayments.$.amountPayedThisMonth": payment.hasToPay,
+									// "dealPayments.$.remainingBalance":payment.remainingBalance -payment.hasToPay,
+									"dealPayments.$.hasToPay": payment.hasToPay - payment.hasToPay,
 								},
 							},
 						},
@@ -234,31 +174,25 @@ const dealResolvers = {
 				const bulkOps = [];
 				let remainingAmount = amountPayed.amount;
 
-				for (const payment of amountPayed.paymentDates) {
+				for (const payment of amountPayed.dealPayments) {
 					if (remainingAmount <= 0) {
 						console.log("breaking the loop");
 						break;
 					}
 					// Calculate the amount to be paid for this payment
-					const paymentAmount = Math.min(
-						remainingAmount,
-						payment.hasToPay
-					);
+					const paymentAmount = Math.min(remainingAmount, payment.hasToPay);
 
 					bulkOps.push({
 						updateOne: {
 							filter: {
 								_id: id,
-								"paymentDates.payment_id": payment.payment_id,
+								"dealPayments.payment_id": payment.payment_id,
 							},
 							update: {
 								$set: {
-									"paymentDates.$.monthFullyPay":
-										paymentAmount >= payment.hasToPay, // Check if the payment is fully paid
-									"paymentDates.$.amountPayedThisMonth":
-										paymentAmount,
-									"paymentDates.$.hasToPay":
-										payment.hasToPay - paymentAmount,
+									"dealPayments.$.monthFullyPay": paymentAmount >= payment.hasToPay, // Check if the payment is fully paid
+									"dealPayments.$.amountPayedThisMonth": paymentAmount,
+									"dealPayments.$.hasToPay": payment.hasToPay - paymentAmount,
 								},
 							},
 						},
@@ -277,7 +211,7 @@ const dealResolvers = {
 				update,
 				{ new: true } // Return the updated document
 			)
-				.then(async (updatedDeal) => {
+				.then(async updatedDeal => {
 					pubsub.publish("DEAL_UPDATED", {
 						onDealChange: {
 							eventType: "DEAL_UPDATED",
@@ -294,19 +228,15 @@ const dealResolvers = {
 						id: updatedDeal.id,
 					});
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error updating a deal payment",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error updating a deal payment", err, "\n____________________");
 					throw err;
 				});
 		},
 
 		deleteOneDeal: async (_, { id }) => {
 			return await Deal.findByIdAndDelete(id)
-				.then(async (deletedDeal) => {
+				.then(async deletedDeal => {
 					pubsub.publish("DEAL_DELETED", {
 						onDealChange: {
 							eventType: "DEAL_DELETED",
@@ -314,26 +244,18 @@ const dealResolvers = {
 						},
 					});
 
-					console.log(
-						" a deal was deleted",
-						deletedDeal,
-						"\n____________________"
-					);
+					console.log(" a deal was deleted", deletedDeal, "\n____________________");
 					return true;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error deleting a deal",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error deleting a deal", err, "\n____________________");
 					throw err;
 				});
 		},
 
 		isDealPaymentPayed: async (parent, args, context, info) => {
 			const allDeals = await dealResolvers?.Query?.getAllDeals(); //getting all the deals
-			const today = moment("2024-3-12", "YYYY-M-D"); //getting todays date
+			const today = moment(); //getting todays date
 			const bulkOps = []; // Array to store bulk operations
 			let latenessFee; // gets the fee amount for every late day
 			let updateDays;
@@ -343,37 +265,22 @@ const dealResolvers = {
 			for (const deal of allDeals) {
 				//looping over all the deals to get every individual one
 				// deal.updatedAt
-				const lastUpdate = moment("2024-3-10", "YYYY-M-D"); //gets the last date that it was updated (update this to be the updated at )
-				const daysSinceLastUpdate = Math.max(
-					today.diff(lastUpdate, "days"),
-					0
-				); //compare todays against the last updated to get the days difference
+				const lastUpdate = moment(deal.updatedAt, "YYYY-M-D"); //gets the last date that it was updated (update this to be the updated at )
+				const daysSinceLastUpdate = Math.max(today.diff(lastUpdate, "days"), 0); //compare todays against the last updated to get the days difference
 
 				if (daysSinceLastUpdate >= 1) {
 					//condition to to run if days since last update is bigger or == to 1
-					for (const paymentInfo of deal.paymentDates) {
+					for (const paymentInfo of deal.dealPayments) {
 						//loops over all the payment dates for each deal
-						const dueDate = moment(
-							paymentInfo.dateOfPayment,
-							"YYYY-M-D"
-						); //getting due date for every due dates for every payment
+						const dueDate = moment(paymentInfo.dateOfPayment, "YYYY-M-D"); //getting due date for every due dates for every payment
 
-						const daysLate = Math.max(
-							today.diff(dueDate, "days"),
-							0
-						); //getting the days late  if a payment has not ben made
+						const daysLate = Math.max(today.diff(dueDate, "days"), 0); //getting the days late  if a payment has not ben made
 
 						if (daysLate == 1) {
 							//if days late is bigger that 0 runs a condition
-							console.log(
-								"is late == false?  ",
-								paymentInfo.isLate === false
-							);
 							if (paymentInfo.isLate === false && daysLate == 1) {
 								//runs a condition if the is late field is false in a individual payment
-								console.log(
-									"one the is late == false _________________________"
-								);
+								console.log("one the is late == false _________________________");
 
 								bulkOps.push(
 									{
@@ -384,18 +291,16 @@ const dealResolvers = {
 
 											filter: {
 												_id: deal.id, //gets the deal with a given id
-												"paymentDates.payment_id":
-													paymentInfo.payment_id, //get the paymentDates of that deals that has a given payment_id
+												"dealPayments.payment_id": paymentInfo.payment_id, //get the dealPayments of that deals that has a given payment_id
 											},
 											update: {
 												//new info that is updated
 
 												$set: {
-													"paymentDates.$.isLate": true, //set is late to be true
-													"paymentDates.$.hasToPay":
-														(paymentInfo.hasToPay += 80), //set has to pay a new value
-													"paymentDates.$.latenessFee": 80, //sets late ness fee to 80 dollars
-													"paymentDates.$.daysLate": 1, //set days late to be the given amount of late days
+													"dealPayments.$.isLate": true, //set is late to be true
+													"dealPayments.$.hasToPay": (paymentInfo.hasToPay += 80), //set has to pay a new value
+													"dealPayments.$.latenessFee": 80, //sets late ness fee to 80 dollars
+													"dealPayments.$.daysLate": 1, //set days late to be the given amount of late days
 												},
 											},
 										},
@@ -411,10 +316,8 @@ const dealResolvers = {
 											update: {
 												//new info that is updated
 												$set: {
-													remainingBalance:
-														(deal.remainingBalance += 80), //sets late ness fee to 80 dollars
-													totalLatenessFee:
-														(deal.totalLatenessFee += 80), //sets totalLatenessFee a a new given amount
+													remainingBalance: (deal.remainingBalance += 80), //sets late ness fee to 80 dollars
+													totalLatenessFee: (deal.totalLatenessFee += 80), //sets totalLatenessFee a a new given amount
 												},
 											},
 										},
@@ -422,10 +325,6 @@ const dealResolvers = {
 								);
 							}
 
-							console.log(
-								"is late == true?  ",
-								paymentInfo.isLate === true
-							);
 							if (paymentInfo.isLate === true && daysLate == 1) {
 								latenessFee = paymentInfo.latenessFee + 10;
 								updateDays = daysLate + paymentInfo.daysLate;
@@ -441,19 +340,15 @@ const dealResolvers = {
 											//updates one deal
 											filter: {
 												_id: deal.id, //gets the deal with a given id
-												"paymentDates.payment_id":
-													paymentInfo.payment_id, //get the paymentDates of that deals that has a given payment_id
+												"dealPayments.payment_id": paymentInfo.payment_id, //get the dealPayments of that deals that has a given payment_id
 											},
 											update: {
 												//new info that is updated
 												$set: {
-													"paymentDates.$.isLate": true, //set is late to be true
-													"paymentDates.$.hasToPay":
-														updatedHasToPay, //set has to pay a new value
-													"paymentDates.$.latenessFee":
-														updatedLatenessFee, //sets late ness fee to the calculated amount
-													"paymentDates.$.daysLate":
-														updateDays, //set days late to be the given amount of late days
+													"dealPayments.$.isLate": true, //set is late to be true
+													"dealPayments.$.hasToPay": updatedHasToPay, //set has to pay a new value
+													"dealPayments.$.latenessFee": updatedLatenessFee, //sets late ness fee to the calculated amount
+													"dealPayments.$.daysLate": updateDays, //set days late to be the given amount of late days
 												},
 											},
 										},
@@ -471,10 +366,8 @@ const dealResolvers = {
 											update: {
 												//new info that is updated
 												$set: {
-													remainingBalance:
-														(deal.remainingBalance += 10), //sets late ness fee to 80 dollars
-													totalLatenessFee:
-														(deal.totalLatenessFee += 10), //sets totalLatenessFee a a new given amount
+													remainingBalance: (deal.remainingBalance += 10), //sets late ness fee to 80 dollars
+													totalLatenessFee: (deal.totalLatenessFee += 10), //sets totalLatenessFee a a new given amount
 												},
 											},
 										},
@@ -485,47 +378,40 @@ const dealResolvers = {
 
 						if (daysLate > 1 && daysLate <= 45) {
 							//if days late is less than or === to 45 it runs a this condition
-							console.log(
-								"one on the days late >0 <= 45 _________________________"
-							);
 
-							//calculates the fee  one way if there are late day and another is there i 1 or more late days
-							if (
-								paymentInfo.daysLate === 0 &&
-								paymentInfo.isLate === false
-							) {
-								console.log(
-									"on the paymentInfo.daysLate === 0"
-								);
+							let prevHasToPay = paymentInfo.hasToPay;
+							let prevLateness = paymentInfo.latenessFee;
+							let prevDaysLate = paymentInfo.daysLate;
+							let prevRemainingBalance = deal.remainingBalance;
+							let prevTotalLatenessFee = deal.totalLatenessFee;
+
+							if (prevDaysLate === 0 && paymentInfo.isLate === false) {
 								latenessFee = 80 + 10 * (daysLate - 1);
-								console.log(
-									"late fee before math",
-									latenessFee
-								);
 								latenessFee = Math.min(latenessFee, 520); // Cap at $520
-								updatedHasToPay = paymentInfo.hasToPay +=
-									latenessFee;
+								updatedHasToPay = prevHasToPay + latenessFee;
 								updateDays = daysLate;
-							} else if (
-								// ? i think there is still an issue with the else if so fix it latter
-								paymentInfo.daysLate >= 1 &&
-								paymentInfo.isLate === true
-							) {
-								console.log("on (paymentInfo.daysLate >= 1");
-
+							} else if (prevDaysLate >= 1 && paymentInfo.isLate === true) {
+								latenessFee = 10 * daysLate;
 								latenessFee = Math.min(latenessFee, 520); // Cap at $520
-								updatedHasToPay =
-									paymentInfo.hasToPay + latenessFee;
-								updateDays = daysLate + paymentInfo.daysLate;
+								updatedHasToPay = latenessFee + prevHasToPay;
+								updatedLatenessFee = prevLateness + latenessFee;
+								updateDays = daysLate + prevDaysLate;
 							}
 
 							updateDays = Math.min(updateDays, 45); // Cap at 45 days
 
-							console.log(
-								"updatedLatenessFee",
-								updatedLatenessFee
-							);
-							console.log("updateDays", updateDays);
+							// console.log({
+							// 	"prev-Has-To-Pay": prevHasToPay,
+							// 	"updated-Has-To-Pay": updatedHasToPay,
+							// 	"prev-LateNess": prevLateness,
+							// 	"updated-LateNess": updatedLatenessFee,
+							// 	"prev-Days-Late": prevDaysLate,
+							// 	"updated-Days-Late": updateDays,
+							// 	"prev-Remaining-Balance": prevRemainingBalance,
+							// 	"updated-Remaining-Balance": prevRemainingBalance + latenessFee,
+							// 	"prev-total-Lateness": prevTotalLatenessFee,
+							// 	"updated-total-Lateness": prevTotalLatenessFee + latenessFee,
+							// });
 
 							bulkOps.push(
 								{
@@ -534,19 +420,15 @@ const dealResolvers = {
 										//updates one deal
 										filter: {
 											_id: deal.id, //gets the deal with a given id
-											"paymentDates.payment_id":
-												paymentInfo.payment_id, //get the paymentDates of that deals that has a given payment_id
+											"dealPayments.payment_id": paymentInfo.payment_id, //get the dealPayments of that deals that has a given payment_id
 										},
 										update: {
 											//new info that is updated
 											$set: {
-												"paymentDates.$.isLate": true, //set is late to be true
-												"paymentDates.$.hasToPay":
-													updatedHasToPay, //set has to pay a new value
-												"paymentDates.$.latenessFee":
-													latenessFee, //sets late ness fee to the calculated amount
-												"paymentDates.$.daysLate":
-													updateDays, //set days late to be the given amount of late days
+												"dealPayments.$.isLate": true, //set is late to be true
+												"dealPayments.$.hasToPay": updatedHasToPay, //set has to pay a new value
+												"dealPayments.$.latenessFee": updatedLatenessFee, //sets late ness fee to the calculated amount
+												"dealPayments.$.daysLate": updateDays, //set days late to be the given amount of late days
 											},
 										},
 									},
@@ -562,12 +444,8 @@ const dealResolvers = {
 										update: {
 											//new info that is updated
 											$set: {
-												remainingBalance:
-													(deal.remainingBalance +=
-														latenessFee), //sets late ness fee to 80 dollars
-												totalLatenessFee:
-													(deal.totalLatenessFee +=
-														latenessFee), //sets totalLatenessFee a a new given amount
+												remainingBalance: prevRemainingBalance + latenessFee, //sets late ness fee to 80 dollars
+												totalLatenessFee: prevTotalLatenessFee + latenessFee, //sets totalLatenessFee a a new given amount
 											},
 										},
 									},
@@ -577,32 +455,13 @@ const dealResolvers = {
 					}
 				}
 			}
-			console.log(
-				"bulk \n",
-				// bulkOps
-
-				"filters",
-				bulkOps?.[0]?.updateOne?.filter,
-				"update",
-				bulkOps?.[0]?.updateOne?.update
-			);
-			console.log(
-				"bulk \n",
-				// bulkOps
-
-				"filters",
-				bulkOps?.[1]?.updateOne?.filter,
-				"update",
-				bulkOps?.[1]?.updateOne?.update
-			);
 
 			if (bulkOps.length > 0) {
 				await Deal.bulkWrite(bulkOps)
-					.then((updatedDeals) => {
-						console.log(updatedDeals);
+					.then(updatedDeals => {
 						return updatedDeals;
 					})
-					.catch((err) => {
+					.catch(err => {
 						console.log("Error performing bulk write", err);
 					});
 			}
@@ -613,19 +472,14 @@ const dealResolvers = {
 
 	Subscription: {
 		onDealChange: {
-			subscribe: () =>
-				pubsub.asyncIterator([
-					"DEAL_ADDED",
-					"DEAL_UPDATED",
-					"DEAL_DELETED",
-				]),
+			subscribe: () => pubsub.asyncIterator(["DEAL_ADDED", "DEAL_UPDATED", "DEAL_DELETED"]),
 		},
 	},
 
 	Deal: {
 		// Use toISOString() for custom DateTime scalar
-		createdAt: (deal) => deal.createdAt.toISOString(),
-		updatedAt: (deal) => deal.updatedAt.toISOString(),
+		createdAt: deal => deal.createdAt.toISOString(),
+		updatedAt: deal => deal.updatedAt.toISOString(),
 	},
 };
 

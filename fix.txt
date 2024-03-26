@@ -1,0 +1,1462 @@
+dela model
+!!!!!!!
+!!!!!!!
+!!!!!!!
+//importing Schema and model to create the schema and saving it to the data base
+const { Schema, model, mongoose } = require("mongoose");
+
+const DealSchema = new Schema(
+	{
+		//attributes for the data base
+		downPayment: {
+			type: Number,
+			required: true,
+		},
+
+		payment: {
+			type: Number,
+			required: true,
+			// min: [1, "Model Of The Vehicle Must Be At Least 1 Character Long"],
+		},
+
+		dayOfDeal: {
+			type: String,
+			require: true,
+		},
+
+		dealPayments: {
+			type: Array,
+			// type: [
+			// 	{
+			// 		payment_id: {
+			// 			type: String,
+			// 			required: true,
+			// 		},
+			// 		dateOfPayment: {
+			// 			type: String,
+			// 			required: true,
+			// 		},
+			// 		daysLate: {
+			// 			type: Number,
+			// 			required: true,
+			// 		},
+			// 		hasToPay: {
+			// 			type: Number,
+			// 			required: true,
+			// 		},
+			// 		amountPayedThisMonth: {
+			// 			type: Number,
+			// 			required: true,
+			// 		},
+			// 		latenessFee: {
+			// 			type: Number,
+			// 			required: true,
+			// 		},
+			// 		isLate: {
+			// 			type: Boolean,
+			// 			required: true,
+			// 		},
+			// 		monthFullyPay: {
+			// 			type: Boolean,
+			// 			required: true,
+			// 		},
+			// 	},
+			// ],
+			required: true,
+		},
+
+		sellingPrice: {
+			type: Number,
+			required: true,
+		},
+
+		remainingBalance: {
+			type: Number,
+			required: true,
+		},
+
+		totalLatenessFee: {
+			type: Number,
+			required: true,
+		},
+
+		carName: {
+			type: {
+				id: {
+					type: String,
+					required: true,
+				},
+				vehicle: {
+					type: String,
+					required: true,
+				},
+			},
+			required: true,
+		},
+
+		carModel: {
+			type: {
+				id: {
+					type: String,
+					required: true,
+				},
+				model: {
+					type: String,
+					required: true,
+				},
+			},
+			required: true,
+		},
+
+		carColor: {
+			type: String,
+		},
+
+		carYear: {
+			type: String,
+			required: true,
+		},
+
+		boughtPrice: {
+			type: Number,
+		},
+
+		client_id: {
+			type: mongoose.SchemaTypes.ObjectId,
+			ref: "Clients",
+			required: true,
+		},
+		// vehicle_id: {
+		// 	type: mongoose.SchemaTypes.ObjectId,
+		// 	ref: "vehicles",
+		// 	required: true,
+		// },
+	},
+	{ timestamps: true }
+);
+
+const Deal = model("deals", DealSchema); //naming the table(document) in the data base
+
+module.exports = Deal; //exporting the schema
+
+
+
+!!!!!!!
+!!!!!!!
+!!!!!!!
+
+
+
+
+
+
+
+!!!!!!!
+!!!!!!!
+!!!!!!!
+deal type 
+
+const { gql } = require("apollo-server-express");
+
+require("./dateTime");
+const { clientTypeDef } = require("./client.typeDef");
+const { vehicleTypeDef } = require("./vehicle.typeDef");
+
+const dealTypeDef = gql`
+	${clientTypeDef}
+	${vehicleTypeDef}
+
+	#Object
+	type Deal {
+		id: ID!
+		dayOfDeal: String!
+		downPayment: Float!
+		payment: Float!
+		dealsPayments: [DealPayments]!
+		remainingBalance: Float!
+		totalLatenessFee: Float!
+		sellingPrice: Float!
+		carName: Car!
+		carModel: Model!
+		carColor: String
+		carYear: String
+		boughtPrice: Float
+		client_id: Client!
+		createdAt: DateTime!
+		updatedAt: DateTime!
+	}
+
+	type Car {
+		id: ID!
+		vehicle: String!
+	}
+
+	type Model {
+		id: ID!
+		model: String!
+	}
+
+	type DealPayments {
+		payment_id: ID!
+		dateOfPayment: DateTime!
+		daysLate: Int!
+		hasToPay: Float!
+		amountPayedThisMonth: Float!
+		latenessFee: Float!
+		isLate: Boolean!
+		monthFullyPay: Boolean!
+	}
+
+	type DealChange {
+		eventType: String
+		dealChanges: Deal
+	}
+
+	#Queries
+	type Query {
+		hello: String
+		getAllDeals: [Deal!]!
+		getOneDeal(id: ID!): Deal!
+	}
+
+	input dealPaymentsInput {
+		# payment_id: ID
+		dateOfPayment: DateTime!
+		daysLate: Int!
+		hasToPay: Float!
+		amountPayedThisMonth: Float!
+		latenessFee: Float!
+		isLate: Boolean!
+		monthFullyPay: Boolean!
+	}
+
+	input CarInput {
+		id: ID!
+		vehicle: String!
+	}
+
+	input ModelInput {
+		id: ID!
+		model: String!
+	}
+
+	input AmountPayedInput {
+		amount: Float
+		dealPayments: [dealPaymentsInput]
+	}
+
+	#mutations
+	type Mutation {
+		createOneDeal(dayOfDeal: String!, downPayment: Float!, payment: Float!, dealPayments: [dealPaymentsInput]!, remainingBalance: Float!, sellingPrice: Float!, carName: CarInput!, carModel: ModelInput!, carColor: String, carYear: String, client_id: ID!): Deal!
+
+		updateOneDeal(id: ID!, downPayment: Float, payment: Float, dealPayments: [dealPaymentsInput], remainingBalance: Float, sellingPrice: Float, carName: ModelInput, carModel: ModelInput, carColor: String, carYear: String): Deal!
+
+		updateOneDealPayment(id: ID!, selectedPayments: [dealPaymentsInput!], amountPayed: AmountPayedInput): Deal!
+
+		isDealPaymentPayed: [Deal!]!
+
+		deleteOneDeal(id: ID!): Boolean!
+	}
+
+	#re renders data on data update
+	type Subscription {
+		onDealChange: DealChange
+	}
+`;
+
+module.exports = { dealTypeDef };
+
+//!!!!!! check if the reason why the subs for vehicle are not working is becaus of del  because deal is using the vehicle subscrtiption tell chat gpt to check all the files fo tevery types and resolver  later
+
+!!!!!!!
+!!!!!!!
+
+
+
+
+
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+deal resolver
+
+const Deal = require("../../models/deal.model");
+const { v4: uuidv4 } = require("uuid");
+const moment = require("moment");
+const cron = require("node-cron");
+const pubsub = require("../pubsub");
+
+// const { PubSub } = require("graphql-subscriptions");
+// const pubsub = new PubSub();
+
+const dealResolvers = {
+	Query: {
+		hello: async () => {
+			return "hello world";
+		},
+
+		getAllDeals: async () => {
+			return await Deal.find()
+				.populate("client_id")
+				.then(deals => {
+					console.log("all the deals", deals, "\n____________________");
+					return deals;
+				})
+				.catch(err => {
+					console.log("there was an error fetching all the deals", err, "\n____________________");
+					throw err;
+				}); //gets all the vehicles(items) in the data base
+		},
+
+		getOneDeal: async (_, { id }) => {
+			return await Deal.findById(id)
+				.populate("client_id")
+				.then(deal => {
+					console.log("one deal ", deal, "\n____________________");
+					return deal;
+				})
+				.catch(err => {
+					console.log("there was an error fetching one deal", err, "\n____________________");
+					throw err;
+				}); //gets one the vehicle(item) from the data base
+		},
+	},
+
+	Mutation: {
+		createOneDeal: async (_, { dayOfDeal, downPayment, payment, dealPayments, remainingBalance, sellingPrice, carName, carModel, carColor, carYear, client_id }) => {
+			const create = {
+				dayOfDeal,
+				downPayment,
+				payment,
+				remainingBalance,
+				totalLatenessFee: parseFloat(0),
+				sellingPrice,
+				carName,
+				carModel,
+				client_id,
+			};
+
+			dealPayments = dealPayments.map(dealPayments => {
+				return {
+					payment_id: uuidv4(), // Generates a unique UUID
+					...dealPayments,
+				};
+			});
+			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
+			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
+			//Date;
+			create.createdAt = createdAt;
+			create.updatedAt = updatedAt;
+			create.dealPayment = dealPayments;
+
+			if (carColor !== undefined) {
+				create.carColor = carColor;
+			}
+
+			if (carYear !== undefined) {
+				create.carYear = carYear;
+			}
+			console.log("this is the create ", create);
+			return await Deal.create(create)
+				.then(async newDeal => {
+					console.log("new deal created", newDeal, "\n____________________");
+					pubsub.publish("DEAL_ADDED", {
+						onDealChange: {
+							eventType: "DEAL_ADDED",
+							dealChanges: newDeal,
+						},
+					});
+					// Use the getOneDeal method to fetch and populate the new deal
+					return await dealResolvers.Query.getOneDeal(null, {
+						id: newDeal.id,
+					});
+				})
+				.catch(err => {
+					console.log("there was an error creating a new Deal", err, "\n____________________");
+					throw err;
+				});
+		},
+
+		updateOneDeal: async (parent, args, context, info) => {
+			const { id, downPayment, payment, remainingBalance, sellingPrice, carName, carModel, carColor, carYear } = args;
+			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
+
+			if (downPayment !== undefined) {
+				update.downPayment = downPayment;
+			}
+			if (payment !== undefined) {
+				update.payment = payment;
+			}
+			if (remainingBalance !== undefined) {
+				update.remainingBalance = remainingBalance;
+			}
+			if (sellingPrice !== undefined) {
+				update.sellingPrice = sellingPrice;
+			}
+			if (carName !== undefined) {
+				update.carName = carName;
+			}
+			if (carModel !== undefined) {
+				update.carModel = carModel;
+			}
+			if (carColor !== undefined) {
+				update.carColor = carColor;
+			}
+			if (carYear !== undefined) {
+				update.carYear = carYear;
+			}
+
+			return await Deal.findByIdAndUpdate(id, update, {
+				new: true,
+			})
+				.then(async updatedDeal => {
+					console.log("deal updated", updatedDeal, "\n____________________");
+					return await dealResolvers.Query.getOneDeal(null, {
+						id: updatedDeal.id,
+					});
+				})
+				.catch(err => {
+					console.log("there was an error updating a deal", err, "\n____________________");
+					throw err;
+				});
+		},
+
+		updateOneDealPayment: async (parent, { id, selectedPayments, amountPayed }, context, info) => {
+			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
+
+			if (selectedPayments !== undefined && selectedPayments.length > 0) {
+				console.log("the selectedPayments hit");
+				const bulkOps = [];
+				for (payment of selectedPayments) {
+					bulkOps.push({
+						updateOne: {
+							filter: {
+								_id: id,
+								"dealPayments.payment_id": payment.payment_id,
+							},
+							update: {
+								$set: {
+									"dealPayments.$.monthFullyPay": true,
+									"dealPayments.$.amountPayedThisMonth": payment.hasToPay,
+									// "dealPayments.$.remainingBalance":payment.remainingBalance -payment.hasToPay,
+									"dealPayments.$.hasToPay": payment.hasToPay - payment.hasToPay,
+								},
+							},
+						},
+					});
+				}
+				console.log("after the loop");
+
+				if (bulkOps.length > 0) {
+					await Deal.bulkWrite(bulkOps);
+				}
+			}
+
+			if (amountPayed !== undefined) {
+				const bulkOps = [];
+				let remainingAmount = amountPayed.amount;
+
+				for (const payment of amountPayed.dealPayments) {
+					if (remainingAmount <= 0) {
+						console.log("breaking the loop");
+						break;
+					}
+					// Calculate the amount to be paid for this payment
+					const paymentAmount = Math.min(remainingAmount, payment.hasToPay);
+
+					bulkOps.push({
+						updateOne: {
+							filter: {
+								_id: id,
+								"dealPayments.payment_id": payment.payment_id,
+							},
+							update: {
+								$set: {
+									"dealPayments.$.monthFullyPay": paymentAmount >= payment.hasToPay, // Check if the payment is fully paid
+									"dealPayments.$.amountPayedThisMonth": paymentAmount,
+									"dealPayments.$.hasToPay": payment.hasToPay - paymentAmount,
+								},
+							},
+						},
+					});
+					remainingAmount -= paymentAmount;
+				}
+				console.log("after the loop");
+
+				if (bulkOps.length > 0) {
+					await Deal.bulkWrite(bulkOps);
+				}
+			}
+
+			return await Deal.findOneAndUpdate(
+				{ _id: id },
+				update,
+				{ new: true } // Return the updated document
+			)
+				.then(async updatedDeal => {
+					pubsub.publish("DEAL_UPDATED", {
+						onDealChange: {
+							eventType: "DEAL_UPDATED",
+							dealChanges: updatedDeal,
+						},
+					});
+
+					// console.log(
+					// 	"deal updated",
+					// 	updatedDeal,
+					// 	"\n____________________"
+					// );
+					return await dealResolvers.Query.getOneDeal(null, {
+						id: updatedDeal.id,
+					});
+				})
+				.catch(err => {
+					console.log("there was an error updating a deal payment", err, "\n____________________");
+					throw err;
+				});
+		},
+
+		deleteOneDeal: async (_, { id }) => {
+			return await Deal.findByIdAndDelete(id)
+				.then(async deletedDeal => {
+					pubsub.publish("DEAL_DELETED", {
+						onDealChange: {
+							eventType: "DEAL_DELETED",
+							dealChanges: deletedDeal,
+						},
+					});
+
+					console.log(" a deal was deleted", deletedDeal, "\n____________________");
+					return true;
+				})
+				.catch(err => {
+					console.log("there was an error deleting a deal", err, "\n____________________");
+					throw err;
+				});
+		},
+
+		isDealPaymentPayed: async (parent, args, context, info) => {
+			const allDeals = await dealResolvers?.Query?.getAllDeals(); //getting all the deals
+			const today = moment(); //getting todays date
+			const bulkOps = []; // Array to store bulk operations
+			let latenessFee; // gets the fee amount for every late day
+			let updateDays;
+			let updatedHasToPay;
+			let updatedLatenessFee;
+
+			for (const deal of allDeals) {
+				//looping over all the deals to get every individual one
+				// deal.updatedAt
+				const lastUpdate = moment(deal.updatedAt, "YYYY-M-D"); //gets the last date that it was updated (update this to be the updated at )
+				const daysSinceLastUpdate = Math.max(today.diff(lastUpdate, "days"), 0); //compare todays against the last updated to get the days difference
+
+				if (daysSinceLastUpdate >= 1) {
+					//condition to to run if days since last update is bigger or == to 1
+					for (const paymentInfo of deal.dealPayments) {
+						//loops over all the payment dates for each deal
+						const dueDate = moment(paymentInfo.dateOfPayment, "YYYY-M-D"); //getting due date for every due dates for every payment
+
+						const daysLate = Math.max(today.diff(dueDate, "days"), 0); //getting the days late  if a payment has not ben made
+
+						if (daysLate == 1) {
+							//if days late is bigger that 0 runs a condition
+							if (paymentInfo.isLate === false && daysLate == 1) {
+								//runs a condition if the is late field is false in a individual payment
+								console.log("one the is late == false _________________________");
+
+								bulkOps.push(
+									{
+										//pushes to the bulk array to make a multi update  depending on how many update are added
+
+										updateOne: {
+											//updates one deal
+
+											filter: {
+												_id: deal.id, //gets the deal with a given id
+												"dealPayments.payment_id": paymentInfo.payment_id, //get the dealPayments of that deals that has a given payment_id
+											},
+											update: {
+												//new info that is updated
+
+												$set: {
+													"dealPayments.$.isLate": true, //set is late to be true
+													"dealPayments.$.hasToPay": (paymentInfo.hasToPay += 80), //set has to pay a new value
+													"dealPayments.$.latenessFee": 80, //sets late ness fee to 80 dollars
+													"dealPayments.$.daysLate": 1, //set days late to be the given amount of late days
+												},
+											},
+										},
+									},
+
+									{
+										updateOne: {
+											//updates one deal
+
+											filter: {
+												_id: deal.id, //gets the deal with a given id
+											},
+											update: {
+												//new info that is updated
+												$set: {
+													remainingBalance: (deal.remainingBalance += 80), //sets late ness fee to 80 dollars
+													totalLatenessFee: (deal.totalLatenessFee += 80), //sets totalLatenessFee a a new given amount
+												},
+											},
+										},
+									}
+								);
+							}
+
+							if (paymentInfo.isLate === true && daysLate == 1) {
+								latenessFee = paymentInfo.latenessFee + 10;
+								updateDays = daysLate + paymentInfo.daysLate;
+								latenessFee = Math.min(latenessFee, 520); // Cap at $520
+								updateDays = Math.min(updateDays, 45); // Cap at 45 days
+								updatedHasToPay = paymentInfo.hasToPay += 10;
+								updatedLatenessFee = latenessFee;
+
+								bulkOps.push(
+									{
+										//pushes to the bulk array to make a multi update  depending on how many update are added
+										updateOne: {
+											//updates one deal
+											filter: {
+												_id: deal.id, //gets the deal with a given id
+												"dealPayments.payment_id": paymentInfo.payment_id, //get the dealPayments of that deals that has a given payment_id
+											},
+											update: {
+												//new info that is updated
+												$set: {
+													"dealPayments.$.isLate": true, //set is late to be true
+													"dealPayments.$.hasToPay": updatedHasToPay, //set has to pay a new value
+													"dealPayments.$.latenessFee": updatedLatenessFee, //sets late ness fee to the calculated amount
+													"dealPayments.$.daysLate": updateDays, //set days late to be the given amount of late days
+												},
+											},
+										},
+									},
+
+									//pushes to the bulk array to make a multi update  depending on how many update are added
+
+									{
+										updateOne: {
+											//updates one deal
+
+											filter: {
+												_id: deal.id, //gets the deal with a given id
+											},
+											update: {
+												//new info that is updated
+												$set: {
+													remainingBalance: (deal.remainingBalance += 10), //sets late ness fee to 80 dollars
+													totalLatenessFee: (deal.totalLatenessFee += 10), //sets totalLatenessFee a a new given amount
+												},
+											},
+										},
+									}
+								);
+							}
+						}
+
+						if (daysLate > 1 && daysLate <= 45) {
+							//if days late is less than or === to 45 it runs a this condition
+
+							let prevHasToPay = paymentInfo.hasToPay;
+							let prevLateness = paymentInfo.latenessFee;
+							let prevDaysLate = paymentInfo.daysLate;
+							let prevRemainingBalance = deal.remainingBalance;
+							let prevTotalLatenessFee = deal.totalLatenessFee;
+
+							if (prevDaysLate === 0 && paymentInfo.isLate === false) {
+								latenessFee = 80 + 10 * (daysLate - 1);
+								latenessFee = Math.min(latenessFee, 520); // Cap at $520
+								updatedHasToPay = prevHasToPay + latenessFee;
+								updateDays = daysLate;
+							} else if (prevDaysLate >= 1 && paymentInfo.isLate === true) {
+								latenessFee = 10 * daysLate;
+								latenessFee = Math.min(latenessFee, 520); // Cap at $520
+								updatedHasToPay = latenessFee + prevHasToPay;
+								updatedLatenessFee = prevLateness + latenessFee;
+								updateDays = daysLate + prevDaysLate;
+							}
+
+							updateDays = Math.min(updateDays, 45); // Cap at 45 days
+
+							// console.log({
+							// 	"prev-Has-To-Pay": prevHasToPay,
+							// 	"updated-Has-To-Pay": updatedHasToPay,
+							// 	"prev-LateNess": prevLateness,
+							// 	"updated-LateNess": updatedLatenessFee,
+							// 	"prev-Days-Late": prevDaysLate,
+							// 	"updated-Days-Late": updateDays,
+							// 	"prev-Remaining-Balance": prevRemainingBalance,
+							// 	"updated-Remaining-Balance": prevRemainingBalance + latenessFee,
+							// 	"prev-total-Lateness": prevTotalLatenessFee,
+							// 	"updated-total-Lateness": prevTotalLatenessFee + latenessFee,
+							// });
+
+							bulkOps.push(
+								{
+									//pushes to the bulk array to make a multi update  depending on how many update are added
+									updateOne: {
+										//updates one deal
+										filter: {
+											_id: deal.id, //gets the deal with a given id
+											"dealPayments.payment_id": paymentInfo.payment_id, //get the dealPayments of that deals that has a given payment_id
+										},
+										update: {
+											//new info that is updated
+											$set: {
+												"dealPayments.$.isLate": true, //set is late to be true
+												"dealPayments.$.hasToPay": updatedHasToPay, //set has to pay a new value
+												"dealPayments.$.latenessFee": updatedLatenessFee, //sets late ness fee to the calculated amount
+												"dealPayments.$.daysLate": updateDays, //set days late to be the given amount of late days
+											},
+										},
+									},
+								},
+
+								{
+									updateOne: {
+										//updates one deal
+
+										filter: {
+											_id: deal.id, //gets the deal with a given id
+										},
+										update: {
+											//new info that is updated
+											$set: {
+												remainingBalance: prevRemainingBalance + latenessFee, //sets late ness fee to 80 dollars
+												totalLatenessFee: prevTotalLatenessFee + latenessFee, //sets totalLatenessFee a a new given amount
+											},
+										},
+									},
+								}
+							);
+						}
+					}
+				}
+			}
+
+			if (bulkOps.length > 0) {
+				await Deal.bulkWrite(bulkOps)
+					.then(updatedDeals => {
+						return updatedDeals;
+					})
+					.catch(err => {
+						console.log("Error performing bulk write", err);
+					});
+			}
+
+			return await dealResolvers?.Query?.getAllDeals();
+		},
+	},
+
+	Subscription: {
+		onDealChange: {
+			subscribe: () => pubsub.asyncIterator(["DEAL_ADDED", "DEAL_UPDATED", "DEAL_DELETED"]),
+		},
+	},
+
+	Deal: {
+		// Use toISOString() for custom DateTime scalar
+		createdAt: deal => deal.createdAt.toISOString(),
+		updatedAt: deal => deal.updatedAt.toISOString(),
+	},
+};
+
+// Schedule the function to run every day at a specific time (e.g., midnight)
+cron.schedule("0 0 * * *", async () => {
+	try {
+		await dealResolvers.Mutation.isDealPaymentPayed(); // Call your function here
+		console.log("isDealPaymentPayed function executed successfully");
+	} catch (error) {
+		console.error("Error executing isDealPaymentPayed:", error);
+	}
+});
+
+module.exports = { dealResolvers };
+
+
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+deal front end  query
+
+
+
+
+import { gql } from "@apollo/client";
+
+// query to get all clients
+export const get_all_deals = gql`
+	query {
+		getAllDeals {
+			id
+			downPayment
+			payment
+			paymentDates {
+				payment_id
+				monthFullyPay
+				isLate
+				dateOfPayment
+				hasToPay
+				amountPayedThisMonth
+				latenessFee
+				daysLate
+			}
+			remainingBalance
+			sellingPrice
+			carName {
+				id
+				vehicle
+			}
+			carModel {
+				id
+				model
+			}
+			carColor
+			carYear
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhones {
+					number
+				}
+			}
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+// query to get one client
+export const get_one_deal = gql`
+	query getOneDeal($id: ID!) {
+		getOneDeal(id: $id) {
+			id
+			downPayment
+			payment
+			paymentDates {
+				payment_id
+				monthFullyPay
+				isLate
+				dateOfPayment
+				hasToPay
+				amountPayedThisMonth
+				latenessFee
+				daysLate
+			}
+			remainingBalance
+			sellingPrice
+			carName {
+				id
+				vehicle
+			}
+			carModel {
+				id
+				model
+			}
+			carColor
+			carYear
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhones {
+					number
+				}
+			}
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const client_added_subscription = gql`
+	subscription {
+		clientAdded {
+			id
+			clientName
+			clientLastName
+			cellPhone
+		}
+	}
+`;
+
+
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+
+
+
+
+
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+deal dront end mutation
+import { gql } from "@apollo/client";
+
+// import(gql);
+
+export const create_one_deal = gql`
+	mutation createOneDeal($dayOfDeal: String!, $downPayment: Float!, $payment: Float!, $dealPayments: [dealPaymentsInput]!, $remainingBalance: Float!, $sellingPrice: Float!, $carName: CarInput!, $carModel: ModelInput!, $carColor: String, $carYear: String, $client_id: ID!) {
+		createOneDeal(dayOfDeal: $dayOfDeal, downPayment: $downPayment, payment: $payment, dealPayments: $dealPayments, remainingBalance: $remainingBalance, sellingPrice: $sellingPrice, carName: $carName, carModel: $carModel, carColor: $carColor, carYear: $carYear, client_id: $client_id) {
+			id
+			downPayment
+			payment
+			dealPayments {
+				payment_id
+				dateOfPayment
+				daysLate
+				hasToPay
+				amountPayedThisMonth
+				monthFullyPay
+				isLate
+				latenessFee
+			}
+			remainingBalance
+			sellingPrice
+			carName {
+				id
+				vehicle
+			}
+			carModel {
+				id
+				model
+			}
+			carColor
+			carYear
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhones {
+					number
+				}
+			}
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+// Define the PaymentDateInput input type
+// export const PaymentDateInput = gql`
+// 	input PaymentDateInput {
+// 		monthFullyPay: Boolean!
+// 		isLate: Boolean!
+// 		dateOfPayment: DateTime!
+// 		hasToPay: Float!
+// 		AmountPayedThisMonth: Float!
+// 		remainingBalance: Float!
+// 		latenessFee: Float!
+// 		daysLate: Int!
+// 	}
+// `;
+
+export const update_One_deal = gql`
+	mutation updateOneDeal($id: ID!, $downPayment: Float, $payment: Float, $paymentDate: [String!], $remainingBalance: Float, $sellingPrice: Float) {
+		updateOneDeal(id: $id, downPayment: $downPayment, payment: $payment, paymentDate: $paymentDate, remainingBalance: $remainingBalance, sellingPrice: $sellingPrice) {
+			id
+			downPayment
+			payment
+			remainingBalance
+			sellingPrice
+			paymentDate
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhone
+			}
+			vehicle_id {
+				id
+				vehicleName
+				vehicleModel
+				year
+				color
+				boughtPrice
+			}
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const update_One_deal_payment = gql`
+	mutation updateOneDealPayment($id: ID!, $selectedPayments: [dealPaymentsInput!], $amountPayed: AmountPayedInput) {
+		updateOneDealPayment(id: $id, selectedPayments: $selectedPayments, amountPayed: $amountPayed) {
+			id
+			downPayment
+			payment
+			dealPayments {
+				payment_id
+				dateOfPayment
+				daysLate
+				hasToPay
+				amountPayedThisMonth
+				latenessFee
+				isLate
+				monthFullyPay
+			}
+			remainingBalance
+			sellingPrice
+			carName {
+				id
+				vehicle
+			}
+			carModel {
+				id
+				model
+			}
+			carColor
+			carYear
+			client_id {
+				id
+				clientName
+				clientLastName
+				cellPhones {
+					number
+				}
+			}
+			createdAt
+			updatedAt
+		}
+	}
+`;
+
+export const delete_one_deal = gql`
+	mutation deleteOneDeal($id: ID!) {
+		deleteOneDeal(id: $id) {
+			id
+		}
+	}
+`;
+
+
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+
+
+
+
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+deal create one front end 
+
+import { useState, useEffect } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { useNavigate, Link } from "react-router-dom";
+import { create_one_deal } from "../../GraphQL/mutations/dealMutations";
+import io from "socket.io-client"; //importing socket.io-client
+import { get_all_clients } from "../../GraphQL/queries/clientQueries";
+import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
+import { get_one_deal } from "../../GraphQL/queries/dealQueries";
+import moment from "moment";
+
+const CreateOneDeal = ({ reload, setReload }) => {
+	// const [socket] = useState(() => io(":8080")); //connect to the server
+	const navigate = useNavigate();
+
+	const GetClients = useQuery(get_all_clients);
+	const getVehicle = useQuery(get_all_vehicles);
+	const [vehicles, setVehicles] = useState([]);
+	const [clients, setClients] = useState([]);
+	// Dependencies for the useEffect hook
+	const [info, setInfo] = useState({
+		// remainingBalance: 0,
+	});
+
+	// Apollo Client mutation hook for creating a single list item
+	const [createOneDeal, { error }] = useMutation(create_one_deal);
+	const [paymentData, setPaymentData] = useState();
+
+	useEffect(() => {
+		if (GetClients.loading) {
+			console.log("loading clients"); // Log a message when data is loading
+		}
+		if (getVehicle.loading) {
+			console.log("loading vehicles"); // Log a message when data is loading
+		}
+		if (GetClients.data) {
+			console.log(GetClients.data); // Log the fetched data
+			setClients(GetClients.data?.getAllClients); // Set the Clients retrieved from the query to the state
+		}
+		if (getVehicle.data) {
+			console.log(getVehicle.data); // Log the fetched data
+			setVehicles(getVehicle.data?.getAllVehicles); // Set the Clients retrieved from the query to the state
+		}
+		if (GetClients.error) {
+			console.log("there was an error", GetClients.error); // Log an error message if an error occurs
+		}
+		if (getVehicle.error) {
+			console.log("there was an error", getVehicle.error); // Log an error message if an error occurs
+		}
+	}, [GetClients.data, GetClients.error, GetClients.loading, getVehicle.data, getVehicle.error, getVehicle.loading, clients, vehicles]); // Dependencies for the useEffect hook
+
+	// Function to handle form submission
+	const submit = e => {
+		e.preventDefault(); // Prevent default form submission behavior
+
+		createOneDeal({
+			variables: {
+				dayOfDeal: info?.dayOfDeal,
+				downPayment: parseFloat(info.downPayment),
+				payment: parseFloat(info.payment),
+				dealPayments: info?.dealPayments,
+				remainingBalance: parseFloat(info?.remainingBalance),
+				sellingPrice: parseFloat(info.sellingPrice),
+				carName: info?.carName,
+				carModel: info?.carModel,
+				carColor: info?.carColor,
+				carYear: info?.carYear,
+				client_id: info?.client_id,
+			},
+			refetchQueries: [{ query: get_one_deal }],
+		})
+			.then(res => {
+				navigate("/deals");
+				console.log("here is the response", res.data.createOneDeal);
+				// socket.emit("new_client_added", res.data.createOneDeal);
+				setReload(!reload);
+			})
+			.catch(error => {
+				console.log(error);
+				setValidations(true);
+			});
+	};
+
+	useEffect(() => {
+		if (info?.dayOfDeal && info?.downPayment && info?.payment && info?.sellingPrice) {
+			const dealPayments = dateCalculator(info.dayOfDeal, info.downPayment, info.payment, info.sellingPrice);
+			setInfo(prevInfo => ({
+				...prevInfo,
+				dealPayments: dealPayments,
+			}));
+		}
+	}, [info.dayOfDeal, info.downPayment, info.payment, info.sellingPrice]); // Updated dependencies array
+
+	const infoToBeSubmitted = e => {
+		const { name, value } = e.target;
+		console.log(`Selected ${name}: ${value}`); // This will log which field is being updated and its value
+
+		let newValue = value; // Initialize newValue to the value directly
+		if (name === "carName" || name === "carModel") {
+			// If the name is "vehicle", parse the value into an object
+			newValue = JSON.parse(value);
+		} else if (name === "sellingPrice" || name === "downPayment" || name === "payment") {
+			// If it's a numeric field, parse the value into a float
+			newValue = parseFloat(value);
+		}
+
+		setInfo(prevInfo => ({
+			...prevInfo,
+			[name]: newValue,
+		}));
+	};
+
+	function dateCalculator(initialDate, downPayment, payment, sellPrice) {
+		let dealPayments = [];
+		let currentDate = moment(initialDate).add(1, "months");
+		let remainingBalance = sellPrice - downPayment;
+		setInfo({ ...info, remainingBalance: remainingBalance });
+		while (remainingBalance > 0) {
+			let amountToPay = Math.min(payment, remainingBalance);
+
+			dealPayments.push({
+				dateOfPayment: currentDate.format("YYYY-MM-DD"),
+				daysLate: 0,
+				hasToPay: amountToPay,
+				amountPayedThisMonth: 0,
+				latenessFee: 0,
+				isLate: false,
+				monthFullyPay: false,
+			});
+
+			remainingBalance -= amountToPay;
+			currentDate.add(1, "months");
+		}
+
+		return dealPayments;
+	}
+
+	// const [selectedVehicle, setSelectedVehicle] = useState();
+
+	const [validations, setValidations] = useState(false);
+	// Component rendering
+	return (
+		<div className="children-content">
+			<h1>Nueva Venta</h1>
+			<form onSubmit={submit} className="form-create">
+				<div className="form-section">
+					<div className="form-dropdown-input-container ">
+						<select name="client_id" id="" onChange={infoToBeSubmitted} className="form-dropdown-input">
+							<option value="" selected disabled>
+								Seleccionar Cliente
+							</option>
+							{clients?.map(c => {
+								return (
+									<option key={c?.id} value={`${c?.id}`}>
+										{c?.clientName} {c?.clientLastName}
+									</option>
+								);
+							})}
+						</select>
+						{info?.client_id == false ? (
+							<div className="form-validation-container">
+								<p className="input-validation">Cliente Es Requerido</p>
+							</div>
+						) : null}
+						{validations ? (
+							<div className="form-validation-container">
+								<p className="input-validation">Cliente Es Requerido</p>
+							</div>
+						) : null}
+					</div>
+
+					{info?.client_id ? (
+						<div className="form-dropdown-input-container ">
+							<select name="carName" onChange={infoToBeSubmitted} className="form-dropdown-input">
+								<option value="" selected disabled>
+									Seleccionar Vehicles
+								</option>
+								{vehicles?.map(v => {
+									return (
+										<option
+											key={v?.id}
+											value={JSON.stringify({
+												id: v?.id,
+												vehicle: v.vehicleName,
+											})}>
+											{v?.vehicleName}
+										</option>
+									);
+								})}
+							</select>
+
+							{info?.carName ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">vehículo Es Requerido</p>
+								</div>
+							)}
+
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">vehículo Es Requerido</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.carName ? (
+						<div className="form-dropdown-input-container">
+							<select name="carModel" onChange={infoToBeSubmitted} className="form-dropdown-input">
+								<option disabled selected value="">
+									seleccionar Modelos
+								</option>
+								{((vehicles.find(v => info?.carName?.id === v?.id) || {}).vehicleModels || []).map(m => {
+									return (
+										<option
+											key={m?.modelId}
+											value={JSON.stringify({
+												id: m?.modelId,
+												model: m?.model,
+											})}>
+											{m?.model}
+										</option>
+									);
+								})}
+							</select>
+							{info?.carModel ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">Modelo Es Requerido</p>
+								</div>
+							)}
+
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">Modelo Es Requerido</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.carModel ? (
+						<div className="form-dropdown-input-container">
+							<select name="carYear" onChange={infoToBeSubmitted} className="form-dropdown-input">
+								<option disabled selected value="">
+									Seleccionar Año
+								</option>
+								{((vehicles.find(v => info?.carName?.id === v?.id) || {}).years || []).map(y => {
+									return (
+										<option key={y?.yearId} value={y?.year}>
+											{y?.year}
+										</option>
+									);
+								})}
+							</select>
+							{info?.carYear ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">Año Es Requerido</p>
+								</div>
+							)}
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">Año Es Requerido</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.carYear ? (
+						<div className="form-dropdown-input-container">
+							<select name="carColor" onChange={infoToBeSubmitted} className="form-dropdown-input">
+								<option disabled selected value="">
+									Seleccionar Color
+								</option>
+								{((vehicles.find(v => info?.carName?.id === v?.id) || {}).colors || []).map(c => {
+									return (
+										<option key={c?.colorId} value={c?.color}>
+											{c?.color}
+										</option>
+									);
+								})}
+							</select>
+						</div>
+					) : null}
+
+					{info?.carYear ? (
+						<div>
+							<input
+								type="number"
+								step="0.01"
+								name="sellingPrice"
+								onChange={e => {
+									infoToBeSubmitted(e);
+								}}
+								// value={info.cellPhone}
+								placeholder="Precio"
+								className="form-input"
+							/>
+							{info?.sellingPrice ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">Precio Es Requerido</p>
+								</div>
+							)}
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">Precio Es Requerido</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.sellingPrice ? (
+						<div>
+							<input
+								type="number"
+								name="downPayment"
+								onChange={e => infoToBeSubmitted(e)}
+								// value={info.clientName}
+								step="0.01"
+								maxLength={20}
+								// minLength={1}
+								placeholder="Inicial"
+								className="form-input"
+							/>
+							{info?.downPayment ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">Inicial Es Requerido</p>
+								</div>
+							)}
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">Inicial Es Requerido</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.downPayment ? (
+						<div>
+							<input
+								step="0.01"
+								type="number"
+								name="payment"
+								onChange={e => infoToBeSubmitted(e)}
+								// value={info.clientLastName}
+								placeholder="Pago"
+								className="form-input"
+							/>
+							{info?.payment ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">Pago Es Requerido</p>
+								</div>
+							)}
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">Pago Es Requerido</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					{info?.payment ? (
+						<div>
+							<input
+								type="date"
+								name="dayOfDeal"
+								// onClick={infoToBeSubmitted}
+								onChange={e => infoToBeSubmitted(e)}
+								// value={info.cellPhone}
+								placeholder="Dia De Venta"
+								className="form-input"
+							/>
+							{info?.dayOfDeal ? null : (
+								<div className="form-validation-container">
+									<p className="input-validation">Dia DE Venta Es Requerido</p>
+								</div>
+							)}
+
+							{validations ? (
+								<div className="form-validation-container">
+									<p className="input-validation">Dia DE Venta Es Requerido</p>
+								</div>
+							) : null}
+						</div>
+					) : null}
+
+					<div>
+						<input step="0.01" type="number" name="remainingBalance" onChange={e => infoToBeSubmitted(e)} disabled placeholder={`Balance Pendiente: ${parseFloat(info?.remainingBalance) || parseFloat(0.0)}`} className="form-input" />
+					</div>
+				</div>
+
+				{/* ${info?.client_id && info?.carName && info?.carModel && info?.carYear && info?.downPayment && info?.payment && info?.dayOfDeal ? "show" : "hide"} */}
+
+				<button type="submit" className={`form-submit-btn `}>
+					Agregar Venta
+				</button>
+			</form>
+		</div>
+	);
+};
+
+export default CreateOneDeal;
+
+!!!!!!!!
+!!!!!!!!
+!!!!!!!!
+
+
+
+

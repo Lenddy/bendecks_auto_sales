@@ -10,7 +10,7 @@ import { VEHICLE_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscri
 
 function GetAllVehicles() {
 	const navigate = useNavigate();
-	const navigateTO = (url) => {
+	const navigateTO = url => {
 		navigate(url);
 	};
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -24,7 +24,7 @@ function GetAllVehicles() {
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!   find out why the subsciption is not updating the info on the page for others
 	// Subscription for client changes
 	useSubscription(VEHICLE_CHANGE_SUBSCRIPTION, {
-		onData: (infoChange) => {
+		onData: infoChange => {
 			console.log("this the vehicle subscription :", infoChange);
 			// const changeInfo = infoChange?.data?.data?.onVehicleChange;
 			// const { eventType, vehicleChanges } = changeInfo;
@@ -92,12 +92,7 @@ function GetAllVehicles() {
 	return (
 		<div className="children-content">
 			<h1>Vehículos</h1>
-			<input
-				type="text"
-				className="filter"
-				placeholder="filtrar Por Nombre"
-				onChange={(e) => setSearch(e.target.value)}
-			/>
+			<input type="text" className="filter" placeholder="filtrar Por Nombre" onChange={e => setSearch(e.target.value)} />
 
 			<table>
 				<thead>
@@ -120,32 +115,22 @@ function GetAllVehicles() {
 					{vehicles
 						.filter(
 							(v, idx) =>
-								v?.vehicleName
-
-									.toLowerCase()
-									.includes(search.toLowerCase()) ||
-								v?.vehicleModel
-									.toLowerCase()
-									.includes(search.toLowerCase())
+								v?.vehicleName.toLowerCase().includes(search.toLowerCase()) || v?.vehicleModel.toLowerCase().includes(search.toLowerCase())
 						)
-						.map((v) => {
+						.map(v => {
 							return (
 								<tr key={v?.id} className="table-data">
 									{windowWidth > 500 ? (
 										<td>
 											<Link to={`/vehicles/${v?.id}`}>
-												<p className="link-connection">
-													{v?.id}
-												</p>
+												<p className="link-connection">{v?.id}</p>
 											</Link>
 										</td>
 									) : // <th></th>
 									null}
 									<td>
 										<Link to={`/vehicles/${v?.id}`}>
-											<p className="link-connection">
-												{v?.vehicleName}
-											</p>
+											<p className="link-connection">{v?.vehicleName}</p>
 										</Link>
 									</td>
 									<td>

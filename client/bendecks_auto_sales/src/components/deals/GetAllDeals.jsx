@@ -10,7 +10,7 @@ import moment from "moment";
 
 function GetAllDeals() {
 	const navigate = useNavigate();
-	const navigateTO = (url) => {
+	const navigateTO = url => {
 		navigate(url);
 	};
 
@@ -60,13 +60,11 @@ function GetAllDeals() {
 
 	// Render the retrieved clients
 
-	const pendingPayment = (idx) => {
-		return deals?.[idx]?.paymentDates?.filter(
-			(pd) => pd?.monthFullyPay === false
-		)?.length;
+	const pendingPayment = idx => {
+		return deals?.[idx]?.paymentDates?.filter(pd => pd?.monthFullyPay === false)?.length;
 	};
 
-	const calculateLateClass = (paymentDate) => {
+	const calculateLateClass = paymentDate => {
 		// // console.log("this is the payment ", paymentDate);
 		const daysLate = moment().diff(moment(paymentDate), "days");
 		// setLatenessDays(daysLate);
@@ -108,24 +106,14 @@ function GetAllDeals() {
 
 		<tbody>
 			{deals
-				?.filter(
-					(d, idx) =>
-						d?.client_id?.clientName
-							.toLowerCase()
-							.includes(search.toLowerCase()) ||
-						d?.client_id?.clientLastName
-							.toLowerCase()
-							.includes(search.toLowerCase())
-				)
+				?.filter((d, idx) => d?.client_id?.clientName.toLowerCase().includes(search.toLowerCase()) || d?.client_id?.clientLastName.toLowerCase().includes(search.toLowerCase()))
 				.map((d, idx) => {
 					return (
 						<tr key={d?.id} className="table-data">
 							{windowWidth > 710 ? (
 								<td>
 									<Link to={`/deals/${d.id}`}>
-										<p className="link-connection">
-											{d.id}
-										</p>
+										<p className="link-connection">{d.id}</p>
 									</Link>
 								</td>
 							) : null}
@@ -133,26 +121,13 @@ function GetAllDeals() {
 							<td>
 								<Link to={`/deals/${d.id}`}>
 									<p className="link-connection">
-										{d?.client_id?.clientName}{" "}
-										{d?.client_id?.clientLastName}
+										{d?.client_id?.clientName} {d?.client_id?.clientLastName}
 									</p>
 								</Link>
 							</td>
-							<td
-								className={`table-multi-data ${calculateLateClass(
-									d?.paymentDates.find(
-										(p) => !p.monthFullyPay
-									)?.dateOfPayment
-								)}`}
-							>
+							<td className={`table-multi-data ${calculateLateClass(d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>
 								<Link to={`/deals/${d.id}`}>
-									<p className="link-connection">
-										{
-											d?.paymentDates.find(
-												(p) => !p.monthFullyPay
-											)?.dateOfPayment
-										}
-									</p>
+									<p className="link-connection">{d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
 								</Link>
 							</td>
 							{windowWidth > 400 ? (
@@ -169,12 +144,7 @@ function GetAllDeals() {
 	return (
 		<div className="children-content">
 			<h1>Ventas</h1>
-			<input
-				type="text"
-				className="filter"
-				placeholder="filtrar Por Nombre"
-				onChange={(e) => setSearch(e.target.value)}
-			/>
+			<input type="text" className="filter" placeholder="filtrar Por Nombre" onChange={e => setSearch(e.target.value)} />
 
 			<table>
 				<thead>
@@ -207,24 +177,14 @@ function GetAllDeals() {
 
 				<tbody>
 					{deals
-						?.filter(
-							(d, idx) =>
-								d?.client_id?.clientName
-									.toLowerCase()
-									.includes(search.toLowerCase()) ||
-								d?.client_id?.clientLastName
-									.toLowerCase()
-									.includes(search.toLowerCase())
-						)
+						?.filter((d, idx) => d?.client_id?.clientName.toLowerCase().includes(search.toLowerCase()) || d?.client_id?.clientLastName.toLowerCase().includes(search.toLowerCase()))
 						.map((d, idx) => {
 							return (
 								<tr key={d?.id} className="table-data">
 									{windowWidth > 710 ? (
 										<td>
 											<Link to={`/deals/${d.id}`}>
-												<p className="link-connection">
-													{d.id}
-												</p>
+												<p className="link-connection">{d.id}</p>
 											</Link>
 										</td>
 									) : null}
@@ -232,57 +192,23 @@ function GetAllDeals() {
 									<td>
 										<Link to={`/deals/${d.id}`}>
 											<p className="link-connection">
-												{d?.client_id?.clientName}{" "}
-												{d?.client_id?.clientLastName}
+												{d?.client_id?.clientName} {d?.client_id?.clientLastName}
 											</p>
 										</Link>
 									</td>
 									<td className={`table-multi-data `}>
 										<Link to={`/deals/${d.id}`}>
-											<p
-												className={`link-connection ${calculateLateClass(
-													d?.paymentDates.find(
-														(p) => !p.monthFullyPay
-													)?.dateOfPayment
-												)}`}
-											>
-												{
-													d?.paymentDates.find(
-														(p) => !p.monthFullyPay
-													)?.dateOfPayment
-												}
-											</p>
+											<p className={`link-connection ${calculateLateClass(d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>{d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment}</p>
 										</Link>
 									</td>
 									{windowWidth > 400 ? (
 										<td className="table-multi-data">
-											<p className="">
-												{pendingPayment(idx)}
-											</p>
+											<p className="">{pendingPayment(idx)}</p>
 										</td>
 									) : null}
 									{windowWidth > 400 ? (
-										<td
-											className={`table-multi-data ${calculateLateClass(
-												d?.paymentDates.find(
-													(p) => !p.monthFullyPay
-												)?.dateOfPayment
-											)}`}
-										>
-											<p className="">
-												{Math.max(
-													moment().diff(
-														moment(
-															d?.paymentDates.find(
-																(p) =>
-																	!p.monthFullyPay
-															)?.dateOfPayment
-														),
-														"days"
-													),
-													0
-												)}
-											</p>
+										<td className={`table-multi-data ${calculateLateClass(d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>
+											<p className="">{Math.max(moment().diff(moment(d?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment), "days"), 0)}</p>
 										</td>
 									) : null}
 								</tr>

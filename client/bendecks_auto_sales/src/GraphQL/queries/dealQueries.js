@@ -14,7 +14,6 @@ export const get_all_deals = gql`
 				dateOfPayment
 				hasToPay
 				amountPayedThisMonth
-				remainingBalance
 				latenessFee
 				daysLate
 			}
@@ -58,7 +57,6 @@ export const get_one_deal = gql`
 				dateOfPayment
 				hasToPay
 				amountPayedThisMonth
-				remainingBalance
 				latenessFee
 				daysLate
 			}

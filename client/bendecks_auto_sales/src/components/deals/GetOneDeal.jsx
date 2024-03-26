@@ -43,7 +43,7 @@ function GetOneDeal() {
 		// );
 	}, [loading, data, error]);
 
-	const submit = (e) => {
+	const submit = e => {
 		e.preventDefault();
 
 		updateOneDealPayment({
@@ -54,15 +54,15 @@ function GetOneDeal() {
 				// amountPayed||
 			},
 		})
-			.then((res) => {
+			.then(res => {
 				navigate(`/deals/${id}`);
 			})
-			.catch((error) => {
+			.catch(error => {
 				console.log("there was an error", error);
 			});
 	};
 
-	const paymentSelected = (payment_id) => {
+	const paymentSelected = payment_id => {
 		const AllPayments = [];
 
 		for (const payment of deal.paymentDates) {
@@ -79,7 +79,7 @@ function GetOneDeal() {
 		return;
 	};
 
-	const infoToBeSubmitted = (e) => {
+	const infoToBeSubmitted = e => {
 		const { name, value } = e.target;
 
 		const AllPayments = [];
@@ -104,15 +104,14 @@ function GetOneDeal() {
 	const [latenessDays, setLatenessDays] = useState();
 
 	const secondaryPaymentMethod = () => {
-		setPaymentMethod((prev) => !prev);
+		setPaymentMethod(prev => !prev);
 	};
 
 	const pendingPayment = () => {
-		return deal?.paymentDates?.filter((pd) => pd?.monthFullyPay === false)
-			.length;
+		return deal?.paymentDates?.filter(pd => pd?.monthFullyPay === false).length;
 	};
 
-	const calculateLateClass = (paymentDate) => {
+	const calculateLateClass = paymentDate => {
 		const daysLate = moment().diff(moment(paymentDate), "days");
 
 		if (daysLate >= 45) {
@@ -137,8 +136,7 @@ function GetOneDeal() {
 				<div>
 					<h1>
 						Venta con ID:
-						<span className="link-connection">{id}</span> no se pudo
-						encontrara asegúrese de que sea el id correcto
+						<span className="link-connection">{id}</span> no se pudo encontrara asegúrese de que sea el id correcto
 					</h1>
 
 					<button onClick={() => navigate("/deals")}>regresar</button>
@@ -151,20 +149,13 @@ function GetOneDeal() {
 					<div className="">
 						<div className="general-info-container">
 							<h2 className="general-info">
-								{" "}
-								<Link
-									to={`/${deal?.client_id?.id}`}
-									className="link-connection"
-								>
+								<Link to={`/${deal?.client_id?.id}`} className="link-connection">
 									{`${deal?.client_id?.clientName} ${deal?.client_id?.clientLastName}`}
 								</Link>
 							</h2>
 
 							<h2 className="general-info">
-								<Link
-									to={`/${deal?.carName?.id}`}
-									className="link-connection"
-								>
+								<Link to={`/vehicles/${deal?.carName?.id}`} className="link-connection">
 									{deal?.carName?.vehicle}
 								</Link>
 								/{deal?.carModel?.model}
@@ -175,25 +166,7 @@ function GetOneDeal() {
 							</h2>
 							<h2 className={`general-info `}>
 								Dias de Atraso/
-								<span
-									className={`o ${calculateLateClass(
-										deal?.paymentDates.find(
-											(p) => !p.monthFullyPay
-										)?.dateOfPayment
-									)}`}
-								>
-									{Math.max(
-										moment().diff(
-											moment(
-												deal?.paymentDates.find(
-													(p) => !p.monthFullyPay
-												)?.dateOfPayment
-											),
-											"days"
-										),
-										0
-									)}
-								</span>
+								<span className={`o ${calculateLateClass(deal?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment)}`}>{Math.max(moment().diff(moment(deal?.paymentDates.find(p => !p.monthFullyPay)?.dateOfPayment), "days"), 0)}</span>
 							</h2>
 						</div>
 					</div>
@@ -217,23 +190,18 @@ function GetOneDeal() {
 									name="payment_id"
 									id=""
 									className="form-dropdown-input"
-									onChange={(e) => {
+									onChange={e => {
 										// infoToBeSubmitted(e);
 										paymentSelected(e.target.value);
-									}}
-								>
+									}}>
 									<option selected disabled>
 										Seleccionar Pagos
 									</option>
 									{deal?.paymentDates?.map((pd, idx) => {
 										if (pd?.monthFullyPay === false) {
 											return (
-												<option
-													key={pd?.payment_id}
-													value={pd?.payment_id}
-												>
-													Pago {idx + 1}:{" "}
-													{pd?.hasToPay}
+												<option key={pd?.payment_id} value={pd?.payment_id}>
+													Pago {idx + 1}: {pd?.hasToPay}
 												</option>
 											);
 										}
@@ -244,19 +212,7 @@ function GetOneDeal() {
 
 						<div className="form-submit-container">
 							<div>
-								<button
-									type="submit"
-									className={`form-submit-btn  ${
-										(selectedPayment !== undefined &&
-											selectedPayment?.length > 0) ||
-										info?.amount ||
-										info?.amount?.amountPayed > 0 ||
-										isNaN(info?.amount?.amountPayed) ===
-											false
-											? "show"
-											: "hide"
-									} `}
-								>
+								<button type="submit" className={`form-submit-btn  ${(selectedPayment !== undefined && selectedPayment?.length > 0) || info?.amount || info?.amountPayed?.amount > 0 || isNaN(info?.amountPayed?.amount) === false ? "show" : "hide"} `}>
 									Hacer pago
 								</button>
 							</div>
@@ -265,11 +221,10 @@ function GetOneDeal() {
 								type="button"
 								className="form-swap-btn"
 								onClick={() => {
-									setPaymentMethod((prev) => !prev);
+									setPaymentMethod(prev => !prev);
 									setSelectedPayment(undefined);
 									setInfo({});
-								}}
-							>
+								}}>
 								Cambiar Método De Pago
 							</button>
 						</div>

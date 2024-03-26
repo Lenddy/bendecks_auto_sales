@@ -7,7 +7,6 @@ const DealSchema = new Schema(
 		downPayment: {
 			type: Number,
 			required: true,
-			// min: [1, "Name Of The Vehicle Must Be At Least 1 Characters Long"],
 		},
 
 		payment: {
@@ -21,8 +20,44 @@ const DealSchema = new Schema(
 			require: true,
 		},
 
-		paymentDates: {
+		dealPayments: {
 			type: Array,
+			// type: [
+			// 	{
+			// 		payment_id: {
+			// 			type: String,
+			// 			required: true,
+			// 		},
+			// 		dateOfPayment: {
+			// 			type: String,
+			// 			required: true,
+			// 		},
+			// 		daysLate: {
+			// 			type: Number,
+			// 			required: true,
+			// 		},
+			// 		hasToPay: {
+			// 			type: Number,
+			// 			required: true,
+			// 		},
+			// 		amountPayedThisMonth: {
+			// 			type: Number,
+			// 			required: true,
+			// 		},
+			// 		latenessFee: {
+			// 			type: Number,
+			// 			required: true,
+			// 		},
+			// 		isLate: {
+			// 			type: Boolean,
+			// 			required: true,
+			// 		},
+			// 		monthFullyPay: {
+			// 			type: Boolean,
+			// 			required: true,
+			// 		},
+			// 	},
+			// ],
 			required: true,
 		},
 
@@ -42,12 +77,30 @@ const DealSchema = new Schema(
 		},
 
 		carName: {
-			type: Object,
+			type: {
+				id: {
+					type: String,
+					required: true,
+				},
+				vehicle: {
+					type: String,
+					required: true,
+				},
+			},
 			required: true,
 		},
 
 		carModel: {
-			type: Object,
+			type: {
+				id: {
+					type: String,
+					required: true,
+				},
+				model: {
+					type: String,
+					required: true,
+				},
+			},
 			required: true,
 		},
 
@@ -56,7 +109,8 @@ const DealSchema = new Schema(
 		},
 
 		carYear: {
-			type: Object,
+			type: String,
+			required: true,
 		},
 
 		boughtPrice: {
