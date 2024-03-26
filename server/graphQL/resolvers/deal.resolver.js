@@ -41,7 +41,6 @@ const dealResolvers = {
 	},
 
 	Mutation: {
-		// FIXME: YOU CAN GE THE NAME OF THE PAYMANTDATES TO DEALPAYMENTS FIELS AND THE CREATE ONE IS NOT WORKING ANY MORE FINE OUT WHY
 		createOneDeal: async (_, { dayOfDeal, downPayment, payment, dealPayments, remainingBalance, sellingPrice, carName, carModel, carColor, carYear, client_id }) => {
 			const create = {
 				dayOfDeal,

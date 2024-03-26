@@ -6,6 +6,7 @@ import { update_One_deal_payment } from "../../GraphQL/mutations/dealMutations";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 import moment from "moment";
+import { delete_one_deal } from "../../GraphQL/mutations/dealMutations";
 
 function GetOneDeal() {
 	const { id } = useParams();
@@ -21,6 +22,23 @@ function GetOneDeal() {
 	const [selectedPayment, setSelectedPayment] = useState();
 
 	const [notFound, setNotFound] = useState(false);
+
+	const [deleteOneDeal] = useMutation(delete_one_deal);
+
+	const deleteDeal = () => {
+		deleteOneDeal({
+			variables: {
+				id, // Only pass the ID to the deletion mutation
+			},
+		})
+			.then(() => {
+				// Redirect after successful deletion
+				navigate("/deals");
+			})
+			.catch(error => {
+				console.log(error);
+			});
+	};
 
 	useEffect(() => {
 		if (loading) {
@@ -127,11 +145,6 @@ function GetOneDeal() {
 		}
 	};
 
-	// !show more information of the deals   like the remaining balance and the  name of the deal owner and even the  info of the car
-
-	//! make the second for or payment not be there until a btn is click like another form of payment
-
-	// ! update the last of the ui here and in the get one of the  deals  make the going into red or green depending on if the payment is made or not and make the subscription work
 	return (
 		<div className="children-content">
 			{notFound ? (
@@ -228,6 +241,11 @@ function GetOneDeal() {
 									setInfo({});
 								}}>
 								Cambiar Método De Pago
+							</button>
+						</div>
+						<div>
+							<button type="button" onClick={deleteDeal}>
+								Delete
 							</button>
 						</div>
 					</form>

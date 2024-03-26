@@ -11,55 +11,34 @@ const clientResolvers = {
 		},
 		getAllClients: async () => {
 			return await Client.find()
-				.then((clients) => {
-					console.log(
-						"all the clients",
-						clients,
-						"\n____________________"
-					);
+				.then(clients => {
+					console.log("all the clients", clients, "\n____________________");
 					return clients;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error fetching all the clients",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error fetching all the clients", err, "\n____________________");
 					throw err;
 				}); //gets all the client(items) in the data base
 		},
 		getOneClient: async (_, { id }) => {
 			return await Client.findById(id)
-				.then((client) => {
-					console.log(
-						"one client ",
-						client,
-						"\n____________________"
-					);
+				.then(client => {
+					console.log("one client ", client, "\n____________________");
 					return client;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error fetching one client",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error fetching one client", err, "\n____________________");
 					throw err;
 				}); //gets one the client(item) from the data base
 		},
 	},
 
 	Mutation: {
-		//! make it work with objects
-		// payment_id: uuidv4(),
-		createOneClient: async (
-			_,
-			{ clientName, clientLastName, cellPhones }
-		) => {
+		createOneClient: async (_, { clientName, clientLastName, cellPhones }) => {
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 
-			cellPhones = cellPhones.map((numberDate) => {
+			cellPhones = cellPhones.map(numberDate => {
 				return {
 					...numberDate,
 					numberId: uuidv4(), // Generates a unique UUID
@@ -74,7 +53,7 @@ const clientResolvers = {
 				createdAt,
 				updatedAt,
 			})
-				.then((newClient) => {
+				.then(newClient => {
 					// When a client is added
 					pubsub.publish("CLIENT_ADDED", {
 						onClientChange: {
@@ -82,20 +61,12 @@ const clientResolvers = {
 							clientChanges: newClient,
 						},
 					});
-					console.log(
-						"new client created",
-						newClient,
-						"\n____________________"
-					);
+					console.log("new client created", newClient, "\n____________________");
 					// pubsub.publish("CLIENT_ADDED", { clientAdded: newClient });
 					return newClient;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error creating a new client",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error creating a new client", err, "\n____________________");
 					throw err;
 				});
 		},
@@ -177,7 +148,7 @@ const clientResolvers = {
 			return await Client.findByIdAndUpdate(id, update, {
 				new: true,
 			})
-				.then((updatedClient) => {
+				.then(updatedClient => {
 					// Publish event after client is updated
 					pubsub.publish("CLIENT_UPDATED", {
 						onClientChange: {
@@ -190,14 +161,14 @@ const clientResolvers = {
 
 					return updatedClient;
 				})
-				.catch((err) => {
+				.catch(err => {
 					console.log("error", err);
 				});
 		},
 
 		deleteOneClient: async (_, { id }) => {
 			return await Client.findByIdAndDelete(id)
-				.then((deletedClient) => {
+				.then(deletedClient => {
 					// When a client is deleted
 					pubsub.publish("CLIENT_DELETED", {
 						onClientChange: {
@@ -205,19 +176,11 @@ const clientResolvers = {
 							clientChanges: deletedClient,
 						},
 					});
-					console.log(
-						" a client was deleted",
-						deletedClient,
-						"\n____________________"
-					);
+					console.log(" a client was deleted", deletedClient, "\n____________________");
 					return deletedClient;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error deleting a client",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error deleting a client", err, "\n____________________");
 					throw err;
 				});
 		},
@@ -239,8 +202,8 @@ const clientResolvers = {
 
 	Client: {
 		// Use toISOString() for custom DateTime scalar
-		createdAt: (client) => client.createdAt.toISOString(),
-		updatedAt: (client) => client.updatedAt.toISOString(),
+		createdAt: client => client.createdAt.toISOString(),
+		updatedAt: client => client.updatedAt.toISOString(),
 	},
 };
 

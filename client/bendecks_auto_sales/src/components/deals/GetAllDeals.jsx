@@ -1,27 +1,52 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
 import { useQuery, useSubscription } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
-
 import { useNavigate, Link, useParams } from "react-router-dom";
-
 import { useState, useEffect } from "react";
-
 import { get_all_deals } from "../../GraphQL/queries/dealQueries";
+import { DEAL_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscriptions";
 import moment from "moment";
 
 function GetAllDeals() {
 	const navigate = useNavigate();
-	const navigateTO = url => {
-		navigate(url);
-	};
-
+	const [deals, setDeals] = useState([]);
+	const [search, setSearch] = useState("");
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+	const [color, setColor] = useState();
 
 	// Fetch data using the useQuery hook by executing the getAllClients query
 	const { error, loading, data } = useQuery(get_all_deals);
 
-	// Set up state to manage the Clients fetched from the query
-	const [deals, setDeals] = useState([]);
-	const [search, setSearch] = useState("");
+	// FIXME:  the add and the delete on the sub do not  work find out why
+
+	useSubscription(DEAL_CHANGE_SUBSCRIPTION, {
+		onData: infoChange => {
+			console.log("this the deal subscription :", infoChange);
+			const changeInfo = infoChange?.data?.data?.onDealChange;
+			const { eventType, dealChanges } = changeInfo;
+			console.log("New data from deal subscription:", changeInfo);
+
+			if (eventType === "DEAL_ADDED") {
+				// Handle new client addition
+				console.log("added hit", dealChanges);
+				setDeals(prev => [...prev, dealChanges]);
+				console.log("deals now are ", deals);
+				setColor(true);
+			} else if (eventType === "DEAL_UPDATED") {
+				console.log("updated hit");
+				// Handle client update
+				setDeals(prev => prev.map(d => (d.id === dealChanges.id ? dealChanges : d)));
+				console.log("deals now are ", deals);
+			} else if (eventType === "DEAL_DELETED") {
+				console.log("delete hit", dealChanges);
+				// Handle client deletion
+				setDeals(prev => prev.filter(d => d.id !== dealChanges.id));
+				console.log("deals now are ", deals);
+				setColor(false);
+			} else {
+				console.log("Unknown event type");
+			}
+		},
+	});
 
 	// useEffect hook to handle changes in error, loading, and data states
 	useEffect(() => {
@@ -36,13 +61,6 @@ function GetAllDeals() {
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
 		}
-		// if (subscriptionData && subscriptionData.clientAdded) {
-		// 	setClients((prevClients) => [
-		// 		...prevClients,
-		// 		subscriptionData.clientAdded,
-		// 	]);
-		// console.log("the subscription work", subscriptionData.clientAdded);
-		// }subscriptionData
 	}, [error, loading, data, deals]); // Dependencies for the useEffect hook
 
 	useEffect(() => {
@@ -90,7 +108,7 @@ function GetAllDeals() {
 							</th>
 						) : null}
 
-						<th>
+						<th className={`${color === true ? "late-warning" : color === true ? "late-danger" : ""}`}>
 							<h2>Nombre</h2>
 						</th>
 						<th>

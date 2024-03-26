@@ -8,7 +8,10 @@ export const CLIENT_CHANGE_SUBSCRIPTION = gql`
 				id
 				clientName
 				clientLastName
-				cellPhone
+				cellPhones {
+					numberId
+					number
+				}
 				createdAt
 				updatedAt
 			}
@@ -22,9 +25,18 @@ export const VEHICLE_CHANGE_SUBSCRIPTION = gql`
 			vehicleChanges {
 				id
 				vehicleName
-				vehicleModel
-				year
-				color
+				vehicleModels {
+					modelId
+					model
+				}
+				years {
+					yearId
+					year
+				}
+				colors {
+					colorId
+					color
+				}
 				boughtPrice
 				createdAt
 				updatedAt
@@ -32,17 +44,38 @@ export const VEHICLE_CHANGE_SUBSCRIPTION = gql`
 		}
 	}
 `;
+
 export const DEAL_CHANGE_SUBSCRIPTION = gql`
-	subscription onClientChange {
-		onClientChange {
+	subscription {
+		onDealChange {
 			eventType
-			clientChanges {
+			dealChanges {
 				id
-				clientName
-				clientLastName
-				cellPhone
-				createdAt
-				updatedAt
+				downPayment
+				payment
+				dealPayments {
+					payment_id
+					dateOfPayment
+					daysLate
+					hasToPay
+					amountPayedThisMonth
+					latenessFee
+					isLate
+					monthFullyPay
+				}
+				remainingBalance
+				totalLatenessFee
+				sellingPrice
+				carName {
+					id
+					vehicle
+				}
+				carModel {
+					id
+					model
+				}
+				carColor
+				carYear
 			}
 		}
 	}

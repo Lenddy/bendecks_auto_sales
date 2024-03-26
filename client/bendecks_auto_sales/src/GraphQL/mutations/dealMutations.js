@@ -117,8 +117,7 @@ export const update_One_deal_payment = gql`
 
 export const delete_one_deal = gql`
 	mutation deleteOneDeal($id: ID!) {
-		deleteOneDeal(id: $id) {
-			id
-		}
+		deleteOneDeal(id: $id)
+		# id
 	}
 `;

@@ -16,6 +16,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 	const getVehicle = useQuery(get_all_vehicles);
 	const [vehicles, setVehicles] = useState([]);
 	const [clients, setClients] = useState([]);
+	const [validations, setValidations] = useState(false);
 	// Dependencies for the useEffect hook
 	const [info, setInfo] = useState({
 		// remainingBalance: 0,
@@ -71,13 +72,13 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				carYear: info?.carYear,
 				client_id: info?.client_id,
 			},
-			refetchQueries: [{ query: get_one_deal }],
+			// refetchQueries: [{ query: get_one_deal }],
 		})
 			.then(res => {
 				navigate(`/deal/${res?.data?.createOneDeal?.id}`);
 				console.log("here is the response", res.data.createOneDeal);
 				// socket.emit("new_client_added", res.data.createOneDeal);
-				setReload(!reload);
+				// setReload(!reload);
 			})
 			.catch(error => {
 				console.error("Mutation error:", error);
@@ -141,7 +142,6 @@ const CreateOneDeal = ({ reload, setReload }) => {
 
 	// const [selectedVehicle, setSelectedVehicle] = useState();
 
-	const [validations, setValidations] = useState(false);
 	// Component rendering
 	return (
 		<div className="children-content">
@@ -390,9 +390,9 @@ const CreateOneDeal = ({ reload, setReload }) => {
 					</div>
 				</div>
 
-				{/* ${info?.client_id && info?.carName && info?.carModel && info?.carYear && info?.downPayment && info?.payment && info?.dayOfDeal ? "show" : "hide"} */}
+				{/* } */}
 
-				<button type="submit" className={`form-submit-btn `}>
+				<button type="submit" className={`form-submit-btn ${info?.client_id && info?.carName && info?.carModel && info?.carYear && info?.downPayment && info?.payment && info?.dayOfDeal ? "show" : "hide"}`}>
 					Agregar Venta
 				</button>
 			</form>

@@ -26,31 +26,25 @@ function GetAllVehicles() {
 	useSubscription(VEHICLE_CHANGE_SUBSCRIPTION, {
 		onData: infoChange => {
 			console.log("this the vehicle subscription :", infoChange);
-			// const changeInfo = infoChange?.data?.data?.onVehicleChange;
-			// const { eventType, vehicleChanges } = changeInfo;
-			// console.log("New data from vehicle subscription:", changeInfo);
+			const changeInfo = infoChange?.data?.data?.onVehicleChange;
+			const { eventType, vehicleChanges } = changeInfo;
+			console.log("New data from vehicle subscription:", changeInfo);
 
-			// if (eventType === "VEHICLE_ADDED") {
-			// 	// Handle new client addition
-			// 	console.log("added hit");
-			// 	setVehicles((prev) => [...prev, vehicleChanges]);
-			// } else if (eventType === "VEHICLE_UPDATED") {
-			// 	console.log("updated hit");
-			// 	// Handle client update
-			// 	setVehicles((prev) =>
-			// 		prev.map((v) =>
-			// 			v.id === vehicleChanges.id ? vehicleChanges : v
-			// 		)
-			// 	);
-			// } else if (eventType === "VEHICLE_DELETED") {
-			// 	console.log("delete hit");
-			// 	// Handle client deletion
-			// 	setVehicles((prev) =>
-			// 		prev.filter((v) => v.id !== vehicleChanges.id)
-			// 	);
-			// } else {
-			// 	console.log("Unknown event type");
-			// }
+			if (eventType === "VEHICLE_ADDED") {
+				// Handle new client addition
+				console.log("added hit");
+				setVehicles(prev => [...prev, vehicleChanges]);
+			} else if (eventType === "VEHICLE_UPDATED") {
+				console.log("updated hit");
+				// Handle client update
+				setVehicles(prev => prev.map(v => (v.id === vehicleChanges.id ? vehicleChanges : v)));
+			} else if (eventType === "VEHICLE_DELETED") {
+				console.log("delete hit");
+				// Handle client deletion
+				setVehicles(prev => prev.filter(v => v.id !== vehicleChanges.id));
+			} else {
+				console.log("Unknown event type");
+			}
 			// eventType;
 			// clientChanges;
 
@@ -113,10 +107,7 @@ function GetAllVehicles() {
 				</thead>
 				<tbody>
 					{vehicles
-						.filter(
-							(v, idx) =>
-								v?.vehicleName.toLowerCase().includes(search.toLowerCase()) || v?.vehicleModel.toLowerCase().includes(search.toLowerCase())
-						)
+						.filter((v, idx) => v?.vehicleName.toLowerCase().includes(search.toLowerCase()) || v?.vehicleModel.toLowerCase().includes(search.toLowerCase()))
 						.map(v => {
 							return (
 								<tr key={v?.id} className="table-data">

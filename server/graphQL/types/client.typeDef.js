@@ -45,18 +45,9 @@ const clientTypeDef = gql`
 
 	#mutations
 	type Mutation {
-		createOneClient(
-			clientName: String!
-			clientLastName: String!
-			cellPhones: [cellNumberInput!]!
-		): Client!
+		createOneClient(clientName: String!, clientLastName: String!, cellPhones: [cellNumberInput!]!): Client!
 
-		updateOneClient(
-			id: ID!
-			clientName: String
-			clientLastName: String
-			cellPhones: [NumberInput]
-		): Client!
+		updateOneClient(id: ID!, clientName: String, clientLastName: String, cellPhones: [NumberInput]): Client!
 
 		deleteOneClient(id: ID!): Client!
 

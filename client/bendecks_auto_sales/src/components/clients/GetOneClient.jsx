@@ -30,9 +30,7 @@ function GetOneClient() {
 	const [sections, setSections] = useState();
 
 	const [numberUpdate, setNumberUpdate] = useState([]);
-	const [confirmDelete, setConfirmDelete] = useState(
-		Array(sections?.length).fill(false)
-	);
+	const [confirmDelete, setConfirmDelete] = useState(Array(sections?.length).fill(false));
 
 	const [updateOneClient] = useMutation(
 		update_One_client
@@ -72,18 +70,17 @@ function GetOneClient() {
 			variables: {
 				id, // Only pass the ID to the deletion mutation
 			},
-			refetchQueries: [{ query: get_all_clients }],
 		})
 			.then(() => {
 				// Redirect after successful deletion
 				navigate("/dashboard");
 			})
-			.catch((error) => {
+			.catch(error => {
 				console.log(error);
 			});
 	};
 
-	const infoToBeSubmitted = (e) => {
+	const infoToBeSubmitted = e => {
 		console.log(e);
 		setInfo({
 			...info,
@@ -91,7 +88,7 @@ function GetOneClient() {
 		});
 	};
 
-	const submit = (e) => {
+	const submit = e => {
 		e.preventDefault();
 		updateOneClient({
 			variables: {
@@ -102,13 +99,13 @@ function GetOneClient() {
 			},
 			refetchQueries: [{ query: get_all_clients }],
 		})
-			.then((res) => {
+			.then(res => {
 				// console.log(res.data);
 				setFocus(false);
 
 				setNumberUpdate([]);
 			})
-			.catch((error) => {
+			.catch(error => {
 				console.log("there was an error", error);
 			});
 	};
@@ -137,23 +134,19 @@ function GetOneClient() {
 			status: "add", // Status for adding
 		};
 		setNumberUpdate([...numberUpdate, newSection]);
-		setSections((prevSections) => [...prevSections, newSection]);
+		setSections(prevSections => [...prevSections, newSection]);
 	};
 
-	const deleteSection = (index) => {
-		const filteredSections = sections.filter(
-			(_, secIndex) => secIndex !== index
-		);
+	const deleteSection = index => {
+		const filteredSections = sections.filter((_, secIndex) => secIndex !== index);
 		setSections(filteredSections);
 
-		const filterConfirmDelete = confirmDelete.filter(
-			(_, deletedIndex) => deletedIndex !== index
-		);
+		const filterConfirmDelete = confirmDelete.filter((_, deletedIndex) => deletedIndex !== index);
 		setConfirmDelete(filterConfirmDelete);
 
 		// Check if section exists in numberUpdate
 		let objectExists = false;
-		const updatedNumberUpdate = numberUpdate.map((item) => {
+		const updatedNumberUpdate = numberUpdate.map(item => {
 			if (item.id === index) {
 				objectExists = true;
 				return { ...item, status: "delete" }; // Update status to "delete"
@@ -177,10 +170,9 @@ function GetOneClient() {
 	const changeSectionVal = (e, index) => {
 		let objectExists = false;
 
-		const { __typename, numberId, ...sectionWithoutTypename } =
-			sections[index];
+		const { __typename, numberId, ...sectionWithoutTypename } = sections[index];
 
-		const updatedNumberUpdate = numberUpdate.map((item) => {
+		const updatedNumberUpdate = numberUpdate.map(item => {
 			if (item.status === "add" && item.numberId === numberId) {
 				objectExists = true;
 				return {
@@ -190,11 +182,7 @@ function GetOneClient() {
 				};
 			}
 
-			if (
-				item.numberId === numberId &&
-				item.numberId !== undefined &&
-				item.status !== "add"
-			) {
+			if (item.numberId === numberId && item.numberId !== undefined && item.status !== "add") {
 				objectExists = true;
 				return {
 					numberId: item.numberId,
@@ -226,8 +214,8 @@ function GetOneClient() {
 		}
 	};
 
-	const toggleConfirmDelete = (index) => {
-		setConfirmDelete((prevState) => {
+	const toggleConfirmDelete = index => {
+		setConfirmDelete(prevState => {
 			const newState = [...prevState];
 			newState[index] = !newState[index];
 			return newState;
@@ -243,8 +231,7 @@ function GetOneClient() {
 					<div>
 						<h1>
 							Cliente con ID:
-							<span className="link-connection">{id}</span> no se
-							pudo encontrara asegúrese de que seal el id correcto
+							<span className="link-connection">{id}</span> no se pudo encontrara asegúrese de que seal el id correcto
 						</h1>
 
 						<button onClick={() => navigate("/")}>regresar</button>
@@ -285,29 +272,20 @@ function GetOneClient() {
 							</div>
 							{sections?.length > 0 ? (
 								sections.map((phone, index) => (
-									<div
-										key={phone?.numberId}
-										className="form-editable-phone-section"
-									>
+									<div key={phone?.numberId} className="form-editable-phone-section">
 										{index === sections.length - 1 ? (
 											<h1
 												contentEditable
 												suppressContentEditableWarning
 												name={`cellPhone-${index}`}
-												onInput={(e) => {
+												onInput={e => {
 													changeSectionVal(e, index);
 												}}
 												onFocus={() => setFocus(true)}
 												// onBlur={() => setFocus(false)}
 												className="form-editable-field"
-												ref={
-													index ===
-													sections.length - 1
-														? newSectionRef
-														: null
-												}
-												key={index}
-											>
+												ref={index === sections.length - 1 ? newSectionRef : null}
+												key={index}>
 												{phone?.number}
 											</h1>
 										) : (
@@ -316,7 +294,7 @@ function GetOneClient() {
 												suppressContentEditableWarning
 												className="form-editable-field"
 												name={`cellPhone-${index}`}
-												onInput={(e) => {
+												onInput={e => {
 													changeSectionVal(e, index);
 												}}
 												onFocus={() => setFocus(true)}
@@ -330,46 +308,19 @@ function GetOneClient() {
 											// form-confirm-deletion-container
 											<div className="">
 												{!confirmDelete[index] ? (
-													<button
-														type="button"
-														className="form-delete-input-section space"
-														onClick={() =>
-															toggleConfirmDelete(
-																index
-															)
-														}
-														key={index}
-													>
+													<button type="button" className="form-delete-input-section space" onClick={() => toggleConfirmDelete(index)} key={index}>
 														<p>&#8722;</p>
 													</button>
 												) : (
 													<div className="form-confirm-deletion-container">
 														<div className="">
-															<button
-																type="button"
-																onClick={() =>
-																	deleteSection(
-																		index
-																	)
-																}
-																className="form-delete-input-section"
-																key={index}
-															>
+															<button type="button" onClick={() => deleteSection(index)} className="form-delete-input-section" key={index}>
 																<p> &#10003;</p>
 															</button>
 														</div>
 
 														<div className="btnNewSection">
-															<button
-																type="button"
-																onClick={() =>
-																	toggleConfirmDelete(
-																		index
-																	)
-																}
-																className="form-delete-input-section"
-																key={index}
-															>
+															<button type="button" onClick={() => toggleConfirmDelete(index)} className="form-delete-input-section" key={index}>
 																<p> &#10005;</p>
 															</button>
 														</div>
@@ -385,12 +336,11 @@ function GetOneClient() {
 										contentEditable
 										suppressContentEditableWarning
 										name="cellPhone-0"
-										onInput={(e) => {
+										onInput={e => {
 											changeSectionVal(e, 0);
 										}}
 										// onChange={infoToBeSubmitted}
-										className="form-editable-field"
-									>
+										className="form-editable-field">
 										{client?.cellPhones[0]?.number}
 									</h1>
 								</div>
@@ -403,50 +353,30 @@ function GetOneClient() {
 									onClick={async () => {
 										await addSection(), focusNewInput();
 									}}
-									className="form-add-input-section"
-								>
+									className="form-add-input-section">
 									<p>&#43;</p>
 								</button>
 							</div>
 
 							<div className="form-submit-container">
-								<button
-									type="submit"
-									className={`form-submit-btn ${
-										focus ? "show" : "hide"
-									}`}
-								>
+								<button type="submit" className={`form-submit-btn ${focus ? "show" : "hide"}`}>
 									Actualizar Cliente
 								</button>
 
 								{clientDelete === false ? (
-									<button
-										type="button"
-										className={`form-submit-btn`}
-										onClick={() => setClientDelete(true)}
-									>
+									<button type="button" className={`form-submit-btn`} onClick={() => setClientDelete(true)}>
 										Borrar Cliente
 									</button>
 								) : (
 									<div className="confirm-delete-item">
 										<div>
-											<button
-												type="button"
-												onClick={() => deleteClient()}
-												className="form-delete-input-section"
-											>
+											<button type="button" onClick={() => deleteClient()} className="form-delete-input-section">
 												<p> &#10003;</p>
 											</button>
 										</div>
 
 										<div>
-											<button
-												type="button"
-												onClick={() =>
-													setClientDelete(false)
-												}
-												className="form-delete-input-section"
-											>
+											<button type="button" onClick={() => setClientDelete(false)} className="form-delete-input-section">
 												<p> &#10005;</p>
 											</button>
 										</div>
@@ -462,20 +392,3 @@ function GetOneClient() {
 }
 
 export default GetOneClient; // Export the GetAllList component
-
-// // handles the Input Changes from the inputs that have multiple sections
-// const handleInputChange = (e, index) => {
-// 	const updatedSections = sections.map((section, secIndex) => {
-// 		if (index === secIndex) {
-// 			return { ...section, [e.target.name]: e.target.value };
-// 		}
-// 		return section;
-// 	});
-// 	setSections(updatedSections);
-
-// 	// Update the info.cellPhone with the cell phone numbers from all sections
-// 	const updatedCellPhones = updatedSections.map(
-// 		(section) => section.cellPhone
-// 	);
-// 	setInfo({ ...info, cellPhone: updatedCellPhones });
-// };

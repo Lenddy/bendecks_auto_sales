@@ -1,10 +1,5 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
-import {
-	useQuery,
-	useSubscription,
-	gql,
-	useApolloClient,
-} from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
+import { useQuery, useSubscription, gql, useApolloClient } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
 import { useNavigate, Link, useParams } from "react-router-dom";
 
 import { useState, useEffect } from "react";
@@ -15,7 +10,7 @@ import { CLIENT_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscrip
 function GetAllClients() {
 	// const [socket] = useState(() => io(":8080")); //connect to the server
 	const navigate = useNavigate();
-	const navigateTO = (url) => {
+	const navigateTO = url => {
 		navigate(url);
 	};
 
@@ -32,7 +27,7 @@ function GetAllClients() {
 
 	// Subscription for client changes
 	useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
-		onData: (infoChange) => {
+		onData: infoChange => {
 			console.log("this the subscription :", infoChange);
 			const changeClient = infoChange?.data?.data?.onClientChange;
 			const { eventType, clientChanges } = changeClient;
@@ -40,29 +35,20 @@ function GetAllClients() {
 
 			if (eventType === "CLIENT_ADDED") {
 				// Handle new client addition
-				setClients((prevClients) => [...prevClients, clientChanges]);
+				setClients(prevClients => [...prevClients, clientChanges]);
 			} else if (eventType === "CLIENT_UPDATED") {
 				// Handle client update
-				setClients((prevClients) =>
-					prevClients.map((c) =>
-						c.id === clientChanges.id ? clientChanges : c
-					)
-				);
+				setClients(prevClients => prevClients.map(c => (c.id === clientChanges.id ? clientChanges : c)));
 			} else if (eventType === "CLIENT_DELETED") {
 				// Handle client deletion
-				setClients((prevClients) =>
-					prevClients.filter((c) => c.id !== clientChanges.id)
-				);
+				setClients(prevClients => prevClients.filter(c => c.id !== clientChanges.id));
 			} else {
 				console.log("Unknown event type");
 			}
-			// eventType;
-			// clientChanges;
-
-			// setNewChange(changeClient);
-			// setClients((prevClients) => [...prevClients, newChange]);
 		},
 	});
+
+	// todo
 	// const client = useApolloClient();
 	// useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
 	// 	onData: ({ subscriptionData }) => {
@@ -88,17 +74,11 @@ function GetAllClients() {
 	// });
 
 	// Effect for handling new changes and initial data load
-	// ? delete the use effect
 	useEffect(() => {
-		// if (newChange) {
-		// 	console.log("Client was updated", newChange);
-		// 	setClients((prevClients) => [...prevClients, newChange]);
-		// }
-
 		if (loading) {
-			console.log("Loading...");
+			// console.log("Loading...");
 		} else if (data) {
-			console.log("All clients:", data);
+			// console.log("All clients:", data);
 			setClients(data.getAllClients); // Ensure this matches the structure from your GraphQL server
 		} else if (error) {
 			console.log("Error:", error);
@@ -121,12 +101,7 @@ function GetAllClients() {
 	return (
 		<div className="children-content">
 			<h1>Clientes</h1>
-			<input
-				type="text"
-				className="filter"
-				placeholder="Filtrar Por Nombre"
-				onChange={(e) => setSearch(e.target.value)}
-			/>
+			<input type="text" className="filter" placeholder="Filtrar Por Nombre" onChange={e => setSearch(e.target.value)} />
 
 			{loading ? (
 				<h1>loading</h1>
@@ -149,35 +124,21 @@ function GetAllClients() {
 					</thead>
 					<tbody>
 						{clients
-							.filter(
-								(c, idx) =>
-									c?.clientName
-										.toLowerCase()
-										.includes(search.toLowerCase()) ||
-									c?.clientLastName
-										.toLowerCase()
-										.includes(search.toLowerCase())
-							)
-							.map((c) => {
+							.filter((c, idx) => c?.clientName.toLowerCase().includes(search.toLowerCase()) || c?.clientLastName.toLowerCase().includes(search.toLowerCase()))
+							.map(c => {
 								return (
 									<tr key={c?.id} className="table-data">
 										{windowWidth > 500 ? (
 											<td>
 												<Link to={`/${c?.id}`}>
-													<p className="link-connection">
-														{c?.id}
-													</p>
+													<p className="link-connection">{c?.id}</p>
 												</Link>
 											</td>
 										) : null}
 
 										<td>
 											<Link to={`/${c?.id}`}>
-												<p className="link-connection">
-													{c?.clientName +
-														" " +
-														c?.clientLastName}
-												</p>
+												<p className="link-connection">{c?.clientName + " " + c?.clientLastName}</p>
 											</Link>
 										</td>
 										<td className="table-multi-data">

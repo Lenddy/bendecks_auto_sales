@@ -49,7 +49,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 	const [validations, setValidations] = useState(false);
 
 	// Function to handle input changes and update state accordingly
-	const infoToBeSubmitted = (e) => {
+	const infoToBeSubmitted = e => {
 		// if (e.target.name === "clientName") {
 		// 	setValidations({ ...validations, [e.target.name]: null });
 		// }
@@ -60,7 +60,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 	};
 
 	// Function to handle form submission
-	const submit = async (e) => {
+	const submit = async e => {
 		e.preventDefault(); // Prevent default form submission behavior
 
 		await createOneClient({
@@ -70,19 +70,16 @@ const CreateOneClient = ({ reload, setReload }) => {
 				cellPhones: sections,
 			},
 			// this is re fetching the data
-			refetchQueries: [{ query: get_all_clients }],
+			// refetchQueries: [{ query: get_all_clients }],
 		})
-			.then(async (res) => {
+			.then(async res => {
 				let id = res.data.createOneClient.id;
 				await navigate(`/${id}`);
-				await console.log(
-					"here is the response",
-					res.data.createOneClient
-				);
+				await console.log("here is the response", res.data.createOneClient);
 				// socket.emit("new_client_added", res.data.createOneClient);
 				// setReload(!reload);
 			})
-			.catch((error) => {
+			.catch(error => {
 				// console.log("fail");
 				setValidations(true);
 
@@ -143,23 +140,16 @@ const CreateOneClient = ({ reload, setReload }) => {
 				const phoneNumber = value.replace(/[^\d]/g, "");
 				const phoneNumberLength = phoneNumber.length;
 
-				if (phoneNumberLength <= 3)
-					return { ...section, [e.target.name]: phoneNumber };
+				if (phoneNumberLength <= 3) return { ...section, [e.target.name]: phoneNumber };
 				if (phoneNumberLength <= 6) {
 					return {
 						...section,
-						[e.target.name]: `(${phoneNumber.slice(
-							0,
-							3
-						)}) ${phoneNumber.slice(3)}`,
+						[e.target.name]: `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`,
 					};
 				}
 				return {
 					...section,
-					[e.target.name]: `(${phoneNumber.slice(
-						0,
-						3
-					)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
+					[e.target.name]: `(${phoneNumber.slice(0, 3)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
 				};
 			}
 			return section;
@@ -168,16 +158,12 @@ const CreateOneClient = ({ reload, setReload }) => {
 		setSections(updatedSections);
 
 		// Assuming you want to update the info object after formatting the phone number
-		const updatedCellPhones = updatedSections.map(
-			(section) => section.number
-		);
+		const updatedCellPhones = updatedSections.map(section => section.number);
 		setInfo({ ...info, cellPhones: updatedCellPhones });
 	};
 
-	const deleteSection = (index) => {
-		const filteredSections = sections.filter(
-			(_, secIndex) => secIndex !== index
-		);
+	const deleteSection = index => {
+		const filteredSections = sections.filter((_, secIndex) => secIndex !== index);
 		setSections(filteredSections);
 	};
 
@@ -191,7 +177,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 						<input
 							type="text"
 							name="clientName"
-							onChange={(e) => {
+							onChange={e => {
 								infoToBeSubmitted(e);
 								setValidations(false);
 							}}
@@ -199,22 +185,13 @@ const CreateOneClient = ({ reload, setReload }) => {
 							placeholder="Nombre"
 							className="form-input"
 						/>
-						{info?.clientName?.length > 0 &&
-						info?.clientName?.length < 2 ? (
-							<p className="input-validation">
-								Nombre Debe De Tener Por Lo Menos 2 Caracteres
-							</p>
-						) : validations ? (
-							<p className="input-validation">
-								El Nombre Es Requerido
-							</p>
-						) : null}
+						{info?.clientName?.length > 0 && info?.clientName?.length < 2 ? <p className="input-validation">Nombre Debe De Tener Por Lo Menos 2 Caracteres</p> : validations ? <p className="input-validation">El Nombre Es Requerido</p> : null}
 					</div>
 
 					<div>
 						<input
 							name="clientLastName"
-							onChange={(e) => {
+							onChange={e => {
 								infoToBeSubmitted(e);
 								setValidations(false);
 							}}
@@ -222,16 +199,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 							placeholder="Apellido"
 							className="form-input"
 						/>
-						{info?.clientLastName?.length > 0 &&
-						info?.clientLastName?.length < 2 ? (
-							<p className="input-validation">
-								Apellido Debe De Tener Por Lo Menos 2 Caracteres
-							</p>
-						) : validations ? (
-							<p className="input-validation">
-								El Apellido Es Requerido
-							</p>
-						) : null}
+						{info?.clientLastName?.length > 0 && info?.clientLastName?.length < 2 ? <p className="input-validation">Apellido Debe De Tener Por Lo Menos 2 Caracteres</p> : validations ? <p className="input-validation">El Apellido Es Requerido</p> : null}
 					</div>
 
 					{sections.map((section, index) => (
@@ -240,7 +208,7 @@ const CreateOneClient = ({ reload, setReload }) => {
 								<input
 									type="text"
 									name="number"
-									onChange={(e) => {
+									onChange={e => {
 										handleInputChange(e, index);
 										setValidations(false);
 									}}
@@ -251,55 +219,33 @@ const CreateOneClient = ({ reload, setReload }) => {
 
 								{sections.length > 1 && (
 									<div>
-										<button
-											type="button"
-											onClick={() => deleteSection(index)}
-											className="form-delete-input-section"
-										>
+										<button type="button" onClick={() => deleteSection(index)} className="form-delete-input-section">
 											<p>&#8722;</p>
 										</button>
 									</div>
 								)}
 							</div>
 
-							{sections[index].number?.length > 0 &&
-							sections[index].number?.length < 13 ? (
+							{sections[index].number?.length > 0 && sections[index].number?.length < 13 ? (
 								<div className="form-validation-container">
-									<p className="input-validation">
-										Numero Telefónico Debe Ser Valido
-									</p>
+									<p className="input-validation">Numero Telefónico Debe Ser Valido</p>
 								</div>
 							) : validations ? (
 								<div className="form-validation-container">
-									<p className="input-validation">
-										El Primer Numero Telefónico Es Requerido
-									</p>
+									<p className="input-validation">El Primer Numero Telefónico Es Requerido</p>
 								</div>
 							) : null}
 						</div>
 					))}
 
 					<div className="form-new-section-btn-container">
-						<button
-							type="button"
-							onClick={addSection}
-							className="form-add-input-section"
-						>
+						<button type="button" onClick={addSection} className="form-add-input-section">
 							<p>&#43;</p>
 						</button>
 					</div>
 				</div>
 
-				<button
-					type="submit"
-					className={`form-submit-btn ${
-						info?.clientName?.length >= 2 &&
-						info?.clientLastName?.length >= 2 &&
-						info?.cellPhones?.[0]?.length >= 13
-							? "show"
-							: "hide"
-					}`}
-				>
+				<button type="submit" className={`form-submit-btn ${info?.clientName?.length >= 2 && info?.clientLastName?.length >= 2 && info?.cellPhones?.[0]?.length >= 13 ? "show" : "hide"}`}>
 					Agregar Cliente
 				</button>
 			</form>
