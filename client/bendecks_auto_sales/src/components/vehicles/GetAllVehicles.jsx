@@ -45,11 +45,6 @@ function GetAllVehicles() {
 			} else {
 				console.log("Unknown event type");
 			}
-			// eventType;
-			// clientChanges;
-
-			// setNewChange(changeClient);
-			// setClients((prevClients) => [...prevClients, newChange]);
 		},
 	});
 

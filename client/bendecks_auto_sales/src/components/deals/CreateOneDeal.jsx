@@ -79,6 +79,7 @@ const CreateOneDeal = ({ reload, setReload }) => {
 				console.log("here is the response", res.data.createOneDeal);
 				// socket.emit("new_client_added", res.data.createOneDeal);
 				// setReload(!reload);
+				// setInfo({});
 			})
 			.catch(error => {
 				console.error("Mutation error:", error);

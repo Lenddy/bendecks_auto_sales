@@ -20,7 +20,7 @@ function GetAllDeals() {
 
 	useSubscription(DEAL_CHANGE_SUBSCRIPTION, {
 		onData: infoChange => {
-			console.log("this the deal subscription :", infoChange);
+			console.log("this the deal subscription:", infoChange);
 			const changeInfo = infoChange?.data?.data?.onDealChange;
 			const { eventType, dealChanges } = changeInfo;
 			console.log("New data from deal subscription:", changeInfo);
@@ -29,19 +29,14 @@ function GetAllDeals() {
 				// Handle new client addition
 				console.log("added hit", dealChanges);
 				setDeals(prev => [...prev, dealChanges]);
-				console.log("deals now are ", deals);
-				setColor(true);
 			} else if (eventType === "DEAL_UPDATED") {
 				console.log("updated hit");
 				// Handle client update
 				setDeals(prev => prev.map(d => (d.id === dealChanges.id ? dealChanges : d)));
-				console.log("deals now are ", deals);
 			} else if (eventType === "DEAL_DELETED") {
 				console.log("delete hit", dealChanges);
 				// Handle client deletion
 				setDeals(prev => prev.filter(d => d.id !== dealChanges.id));
-				console.log("deals now are ", deals);
-				setColor(false);
 			} else {
 				console.log("Unknown event type");
 			}
@@ -56,12 +51,11 @@ function GetAllDeals() {
 		if (data) {
 			console.log(data); // Log the fetched data
 			setDeals(data.getAllDeals); // Set the Clients retrieved from the query to the state
-			// console.log("thissssssss =>>>", data?.getAllDeals[1]?.dealPayments);
 		}
 		if (error) {
 			console.log("there was an error", error); // Log an error message if an error occurs
 		}
-	}, [error, loading, data, deals]); // Dependencies for the useEffect hook
+	}, [error, loading, data]); // Dependencies for the useEffect hook
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -98,6 +92,14 @@ function GetAllDeals() {
 		<div className="children-content">
 			<h1>Ventas</h1>
 			<input type="text" className="filter" placeholder="filtrar Por Nombre" onChange={e => setSearch(e.target.value)} />
+
+			{/* {
+			updatedInfo !== undefined ?
+			<div>
+				{d?.client_id?.clientName} {d?.client_id?.clientLastName}
+			</div>:
+
+			} */}
 
 			<table>
 				<thead>
@@ -143,7 +145,7 @@ function GetAllDeals() {
 									) : null}
 
 									<td>
-										<Link to={`/deals/${d.id}`}>
+										<Link to={`/deal/${d.id}`}>
 											<p className="link-connection">
 												{d?.client_id?.clientName} {d?.client_id?.clientLastName}
 											</p>
@@ -162,6 +164,7 @@ function GetAllDeals() {
 									{windowWidth > 400 ? (
 										<td className={`table-multi-data ${calculateLateClass(d?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate)}`}>
 											<p className="">{d?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate}</p>
+											{/* <p className="">0</p> */}
 										</td>
 									) : null}
 								</tr>
