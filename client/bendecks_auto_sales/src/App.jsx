@@ -3,7 +3,7 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
-import Log_reg from "./components/Log_reg";
+// import Log_reg from "./components/Log_reg";
 
 import GetAllClients from "./components/clients/GetAllClients";
 import GetOneClient from "./components/clients/GetOneClient";

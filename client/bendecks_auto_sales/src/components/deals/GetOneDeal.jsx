@@ -19,8 +19,8 @@ function GetOneDeal() {
 	const [info, setInfo] = useState({});
 	const [deal, setDeal] = useState();
 	const [selectedPayment, setSelectedPayment] = useState();
-
 	const [notFound, setNotFound] = useState(false);
+	const [dealDelete, setDealDelete] = useState(false);
 
 	const [deleteOneDeal] = useMutation(delete_one_deal);
 
@@ -222,22 +222,39 @@ function GetOneDeal() {
 									Hacer pago
 								</button>
 							</div>
-
-							<button
-								type="button"
-								className="form-swap-btn"
-								onClick={() => {
-									setPaymentMethod(prev => !prev);
-									setSelectedPayment(undefined);
-									setInfo({});
-								}}>
-								Cambiar Método De Pago
-							</button>
+							<div>
+								<button
+									type="button"
+									className="form-swap-btn"
+									onClick={() => {
+										setPaymentMethod(prev => !prev);
+										setSelectedPayment(undefined);
+										setInfo({});
+									}}>
+									Cambiar Método De Pago
+								</button>
+							</div>
 						</div>
-						<div>
-							<button type="button" onClick={deleteDeal}>
-								Delete
-							</button>
+						<div className="confirm-delete-container">
+							{dealDelete === false ? (
+								<button type="button" className={`form-submit-btn`} onClick={() => setDealDelete(true)}>
+									Borrar Venta
+								</button>
+							) : (
+								<div className="confirm-delete-item">
+									<div>
+										<button type="button" onClick={() => deleteDeal()} className="form-delete-input-section">
+											<p> &#10003;</p>
+										</button>
+									</div>
+
+									<div>
+										<button type="button" onClick={() => setDealDelete(false)} className="form-delete-input-section">
+											<p> &#10005;</p>
+										</button>
+									</div>
+								</div>
+							)}
 						</div>
 					</form>
 				</div>

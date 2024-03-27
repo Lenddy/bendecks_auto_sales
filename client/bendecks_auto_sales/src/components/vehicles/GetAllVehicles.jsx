@@ -88,7 +88,7 @@ function GetAllVehicles() {
 				</thead>
 				<tbody>
 					{vehicles
-						.filter(v => v?.vehicleName.toLowerCase().includes(search.toLowerCase()) || v?.vehicleModel.toLowerCase().includes(search.toLowerCase()))
+						.filter(v => v?.vehicleName?.toLowerCase()?.includes(search?.toLowerCase()))
 						.map(v => {
 							return (
 								<tr key={v?.id} className="table-data">

@@ -203,6 +203,77 @@ function GetOneClient() {
 		setNumberUpdate(updatedNumberUpdate);
 	};
 
+	// todo make use this so that the numbers are formate
+
+	// const changeSectionVal = (e, index) => {
+	// 	let objectExists = false;
+
+	// 	const updatedSections = sections.map((section, secIndex) => {
+	// 		if (index === secIndex) {
+	// 			let value = e.target.value;
+	// 			if (!value) return { ...section, [e.target.name]: value };
+
+	// 			const phoneNumber = value.replace(/[^\d]/g, "");
+	// 			const phoneNumberLength = phoneNumber.length;
+
+	// 			if (phoneNumberLength <= 3) return { ...section, [e.target.name]: phoneNumber };
+	// 			if (phoneNumberLength <= 6) {
+	// 				return {
+	// 					...section,
+	// 					[e.target.name]: `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`,
+	// 				};
+	// 			}
+	// 			return {
+	// 				...section,
+	// 				[e.target.name]: `(${phoneNumber.slice(0, 3)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
+	// 			};
+	// 		}
+	// 		return section;
+	// 	});
+
+	// 	const { __typename, numberId, ...sectionWithoutTypename } = updatedSections[index];
+
+	// 	const updatedNumberUpdate = numberUpdate.map(item => {
+	// 		if (item.status === "add" && item.numberId === numberId) {
+	// 			objectExists = true;
+	// 			return {
+	// 				numberId: item.numberId,
+	// 				number: e.target.textContent,
+	// 				status: "add",
+	// 			};
+	// 		}
+
+	// 		if (item.numberId === numberId && item.numberId !== undefined && item.status !== "add") {
+	// 			objectExists = true;
+	// 			return {
+	// 				numberId: item.numberId,
+	// 				number: e.target.textContent,
+	// 				status: "update",
+	// 			};
+	// 		}
+
+	// 		if (item.status === "add" && item.numberId === numberId) {
+	// 			objectExists = true;
+	// 		}
+	// 		return item;
+	// 	});
+
+	// 	if (!objectExists) {
+	// 		updatedNumberUpdate.push({
+	// 			numberId,
+	// 			number: e.target.textContent,
+	// 			status: "update",
+	// 		});
+	// 	}
+
+	// 	setSections(updatedSections);
+	// 	setNumberUpdate(updatedNumberUpdate);
+
+	// 	// Assuming you want to update the info object after formatting the phone number
+	// 	const updatedCellPhones = updatedSections.map(section => section.number);
+	// 	setInfo({ ...info, cellPhones: updatedCellPhones });
+	// };
+
 	const focusNewInput = () => {
 		if (newSectionRef.current) {
 			newSectionRef.current.focus();
@@ -216,6 +287,37 @@ function GetOneClient() {
 			return newState;
 		});
 	};
+
+	// const handleInputChange = (e, index) => {
+	// 	const updatedSections = sections.map((section, secIndex) => {
+	// 		if (index === secIndex) {
+	// 			let value = e.target.value;
+	// 			if (!value) return { ...section, [e.target.name]: value };
+
+	// 			const phoneNumber = value.replace(/[^\d]/g, "");
+	// 			const phoneNumberLength = phoneNumber.length;
+
+	// 			if (phoneNumberLength <= 3) return { ...section, [e.target.name]: phoneNumber };
+	// 			if (phoneNumberLength <= 6) {
+	// 				return {
+	// 					...section,
+	// 					[e.target.name]: `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`,
+	// 				};
+	// 			}
+	// 			return {
+	// 				...section,
+	// 				[e.target.name]: `(${phoneNumber.slice(0, 3)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
+	// 			};
+	// 		}
+	// 		return section;
+	// 	});
+
+	// 	setSections(updatedSections);
+
+	// 	// Assuming you want to update the info object after formatting the phone number
+	// 	const updatedCellPhones = updatedSections.map(section => section.number);
+	// 	setInfo({ ...info, cellPhones: updatedCellPhones });
+	// };
 
 	return (
 		<div className="children-content">
