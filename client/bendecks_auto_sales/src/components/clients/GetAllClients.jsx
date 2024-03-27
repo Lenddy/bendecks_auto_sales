@@ -1,55 +1,16 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
-import { useQuery, useSubscription, gql, useApolloClient } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
-import { useNavigate, Link, useParams } from "react-router-dom";
-
+import { useQuery, useSubscription } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 import { CLIENT_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscriptions";
-// import io from "socket.io-client"; //importing socket.io-client
 
 function GetAllClients() {
-	// const [socket] = useState(() => io(":8080")); //connect to the server
-	const navigate = useNavigate();
-	const navigateTO = url => {
-		navigate(url);
-	};
-
-	// use promisees to get all the data
-
 	// Fetch data using the useQuery hook by executing the getAllClients query
-	const { error, loading, data } = useQuery(get_all_clients);
-
-	// State to manage Clients and new changes
-	const [search, setSearch] = useState("");
+	const { error, loading, data, refetch } = useQuery(get_all_clients);
 	const [clients, setClients] = useState([]);
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-	// const [newChange, setNewChange] = useState();
-
-	// Subscription for client changes
-	useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
-		onData: infoChange => {
-			console.log("this the subscription :", infoChange);
-			const changeClient = infoChange?.data?.data?.onClientChange;
-			const { eventType, clientChanges } = changeClient;
-			console.log("New data from subscription:", changeClient);
-
-			if (eventType === "CLIENT_ADDED") {
-				// Handle new client addition
-				setClients(prevClients => [...prevClients, clientChanges]);
-			} else if (eventType === "CLIENT_UPDATED") {
-				// Handle client update
-				setClients(prevClients => prevClients.map(c => (c.id === clientChanges.id ? clientChanges : c)));
-			} else if (eventType === "CLIENT_DELETED") {
-				// Handle client deletion
-				setClients(prevClients => prevClients.filter(c => c.id !== clientChanges.id));
-			} else {
-				console.log("Unknown event type");
-			}
-		},
-	});
-
-	// todo
-	// const client = useApolloClient();
+	const [search, setSearch] = useState("");
 	// useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
 	// 	onData: ({ subscriptionData }) => {
 	// 		const newClient = subscriptionData.data.newClient;
@@ -73,30 +34,55 @@ function GetAllClients() {
 	// 	},
 	// });
 
-	// Effect for handling new changes and initial data load
-	useEffect(() => {
-		if (loading) {
-			// console.log("Loading...");
-		} else if (data) {
-			// console.log("All clients:", data);
-			setClients(data.getAllClients); // Ensure this matches the structure from your GraphQL server
-		} else if (error) {
-			console.log("Error:", error);
-		}
-	}, [error, loading, data]); //newChange
-
 	useEffect(() => {
 		const handleResize = () => {
 			setWindowWidth(window.innerWidth);
 		};
-
 		window.addEventListener("resize", handleResize);
-
 		// Cleanup
 		return () => {
 			window.removeEventListener("resize", handleResize);
 		};
 	}, []); // Empty dependency array ensures that this effect runs only once on mount
+
+	useEffect(() => {
+		if (loading) {
+			// console.log("loading");
+		}
+		if (data) {
+			// console.log(data);
+			setClients(data.getAllClients);
+		}
+		if (error) {
+			// console.log("there was an error", error);
+		}
+		const fetchData = async () => {
+			await refetch();
+		};
+		fetchData();
+	}, [error, loading, data, refetch]);
+
+	// Subscription for client changes
+	useSubscription(CLIENT_CHANGE_SUBSCRIPTION, {
+		onError: err => console.log("this is the error from subscription", err),
+		onData: infoChange => {
+			// console.log("this the subscription :", infoChange);
+			const changeClient = infoChange?.data?.data?.onClientChange;
+			const { eventType, clientChanges } = changeClient;
+			// console.log("New data from subscription:", changeClient);
+			if (eventType === "CLIENT_ADDED") {
+				// Handle new client addition
+				setClients(prevClients => [...prevClients, clientChanges]);
+			} else if (eventType === "CLIENT_UPDATED") {
+				// Handle client update
+				setClients(prevClients => prevClients.map(c => (c.id === clientChanges.id ? clientChanges : c)));
+			} else if (eventType === "CLIENT_DELETED") {
+				// Handle client deletion
+				setClients(prevClients => prevClients.filter(c => c.id !== clientChanges.id));
+			}
+		},
+		onComplete: complete => console.log("subscription completed", complete),
+	});
 
 	return (
 		<div className="children-content">
@@ -124,7 +110,7 @@ function GetAllClients() {
 					</thead>
 					<tbody>
 						{clients
-							.filter((c, idx) => c?.clientName.toLowerCase().includes(search.toLowerCase()) || c?.clientLastName.toLowerCase().includes(search.toLowerCase()))
+							.filter((c, idx) => c?.clientName?.toLowerCase()?.includes(search?.toLowerCase()) || c?.clientLastName?.toLowerCase()?.includes(search?.toLowerCase()))
 							.map(c => {
 								return (
 									<tr key={c?.id} className="table-data">
@@ -141,21 +127,7 @@ function GetAllClients() {
 												<p className="link-connection">{c?.clientName + " " + c?.clientLastName}</p>
 											</Link>
 										</td>
-										<td className="table-multi-data">
-											{/* {c?.cellPhones?.map((n, idx) => {
-												return (
-													<span
-														key={idx}
-														className=""
-													>
-														<span>{n.number}</span>{" "}
-														,
-														<br />
-													</span>
-												);
-											})} */}
-											{c?.cellPhones[0]?.number}
-										</td>
+										<td className="table-multi-data">{c?.cellPhones[0]?.number}</td>
 									</tr>
 								);
 							})}

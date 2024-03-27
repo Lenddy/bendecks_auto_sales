@@ -1,5 +1,5 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
-import { useNavigate, Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { get_one_client } from "../../GraphQL/queries/clientQueries";
 import { useMutation, useQuery } from "@apollo/client";
@@ -10,7 +10,6 @@ import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 function GetOneClient() {
 	const { id } = useParams();
 	const newSectionRef = useRef(null);
-
 	const navigate = useNavigate();
 
 	// Fetch data using the useQuery hook by executing the getAllList query
@@ -21,16 +20,29 @@ function GetOneClient() {
 	// Set up state to manage the lists fetched from the query
 	const [client, setClient] = useState();
 	const [clientDelete, setClientDelete] = useState(false);
-
 	const [notFound, setNotFound] = useState(false);
-
 	const [info, setInfo] = useState({});
 	const [focus, setFocus] = useState(false);
-
 	const [sections, setSections] = useState();
-
 	const [numberUpdate, setNumberUpdate] = useState([]);
 	const [confirmDelete, setConfirmDelete] = useState(Array(sections?.length).fill(false));
+
+	// useEffect hook to handle changes in error, loading, and data states
+	useEffect(() => {
+		if (loading) {
+			// console.log("loading"); // Log a message when data is loading
+		}
+		if (data) {
+			console.log(data); // Log the fetched data
+			setClient(data?.getOneClient); // Set the lists retrieved from the query to the state
+			setSections(client?.cellPhones);
+			// console.log("sections ----->", sections); // Log the fetched data
+		}
+		if (error) {
+			// console.log("there was an error", error); // Log an error message if an error occurs
+			setNotFound(true);
+		}
+	}, [error, loading, data, client]); // Dependencies for the useEffect hook
 
 	const [updateOneClient] = useMutation(
 		update_One_client
@@ -109,23 +121,6 @@ function GetOneClient() {
 				console.log("there was an error", error);
 			});
 	};
-
-	// useEffect hook to handle changes in error, loading, and data states
-	useEffect(() => {
-		if (loading) {
-			console.log("loading"); // Log a message when data is loading
-		}
-		if (data) {
-			console.log(data); // Log the fetched data
-			setClient(data?.getOneClient); // Set the lists retrieved from the query to the state
-			setSections(client?.cellPhones);
-			// console.log("sections ----->", sections); // Log the fetched data
-		}
-		if (error) {
-			console.log("there was an error", error); // Log an error message if an error occurs
-			setNotFound(true);
-		}
-	}, [error, loading, data, client]); // Dependencies for the useEffect hook
 
 	const addSection = () => {
 		const newSection = {
@@ -221,8 +216,6 @@ function GetOneClient() {
 			return newState;
 		});
 	};
-
-	// now figure out how to delete the last deleted items from the database  maybe add a new field that says delete and update so that in the back end you can make the change to delete and or updated
 
 	return (
 		<div className="children-content">

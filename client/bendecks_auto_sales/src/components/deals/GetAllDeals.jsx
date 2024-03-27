@@ -1,82 +1,79 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
 import { useQuery, useSubscription } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { get_all_deals } from "../../GraphQL/queries/dealQueries";
 import { DEAL_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscriptions";
 
 function GetAllDeals() {
-	const navigate = useNavigate();
-
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-	// Fetch data using the useQuery hook by executing the getAllClients query
-	const { error, loading, data } = useQuery(get_all_deals);
+	const { error, loading, data, refetch } = useQuery(get_all_deals); // Fetch data using the useQuery hook by executing the getAllClients query;
 	const [deals, setDeals] = useState([]);
 	const [search, setSearch] = useState("");
-	// const [backUp, setBackUp] = useState();
 
 	useSubscription(DEAL_CHANGE_SUBSCRIPTION, {
 		onError: err => console.log("this is the error from subscription", err),
 		onData: infoChange => {
-			console.log("this the deal subscription:", infoChange);
+			// console.log("this the deal subscription:", infoChange);
 			const changeInfo = infoChange?.data?.data?.onDealChange;
 			const { eventType, dealChanges } = changeInfo;
-			console.log("New data from deal subscription:", changeInfo);
+			// console.log("New data from deal subscription:", changeInfo);
 
 			if (eventType === "DEAL_ADDED") {
 				// Handle new client addition
-				console.log("added hit", dealChanges);
+				// console.log("added hit", dealChanges);
 				// setBackUp(changeInfo);
 				setDeals(prev => [...prev, dealChanges]);
 				// console.log("this is updated deals", deals);
 			} else if (eventType === "DEAL_UPDATED") {
-				console.log("updated hit");
+				// console.log("updated hit");
 				// Handle client update
 				setDeals(prev => prev.map(d => (d.id === dealChanges.id ? dealChanges : d)));
 			} else if (eventType === "DEAL_DELETED") {
-				console.log("delete hit", dealChanges);
+				// console.log("delete hit", dealChanges);
 				// Handle client deletion
 				setDeals(prev => prev.filter(d => d.id !== dealChanges.id));
-			} else {
-				console.log("Unknown event type");
 			}
+			//  else {
+			// 	console.log("Unknown event type");
+			// }
 			// console.log("back up here ", backUp);
 		},
 		onComplete: complete => console.log("subscription completed", complete),
 	});
 
-	// useSubscription(DEAL_CHANGE_SUBSCRIPTION,{
-	// 	x
-	// })
-
-	// useEffect hook to handle changes in error, loading, and data states
-	useEffect(() => {
-		if (loading) {
-			console.log("loading"); // Log a message when data is loading
-		}
-		if (data) {
-			console.log(data); // Log the fetched data
-			setDeals(data.getAllDeals); // Set the Clients retrieved from the query to the state
-		}
-		if (error) {
-			console.log("there was an error", error); // Log an error message if an error occurs
-		}
-	}, [error, loading, data]); // Dependencies for the useEffect hook
+	// const { data: subscriptionData, error: subscriptionError } = useSubscription(DEAL_CHANGE_SUBSCRIPTION);
 
 	useEffect(() => {
 		const handleResize = () => {
 			setWindowWidth(window.innerWidth);
 		};
-
 		window.addEventListener("resize", handleResize);
-
 		// Cleanup
 		return () => {
 			window.removeEventListener("resize", handleResize);
 		};
 	}, []); // Empty dependency array ensures that this effect runs only once on mount
 
-	// Render the retrieved clients
+	// useEffect hook to handle changes in error, loading, and data states
+	useEffect(() => {
+		if (loading) {
+			// console.log("loading"); // Log a message when data is loading
+		}
+		if (data) {
+			// console.log(data); // Log the fetched data
+			setDeals(data.getAllDeals); // Set the Clients retrieved from the query to the state
+		}
+		if (error) {
+			// console.log("there was an error", error); // Log an error message if an error occurs
+		}
+
+		const fetchData = async () => {
+			await refetch();
+		};
+		fetchData();
+	}, [error, loading, data, refetch]); // Dependencies for the useEffect hook
+	// subscriptionError, subscriptionData,
 
 	const pendingPayment = idx => {
 		return deals?.[idx]?.dealPayments?.filter(pd => pd?.monthFullyPay === false)?.length;
@@ -130,7 +127,7 @@ function GetAllDeals() {
 
 				<tbody>
 					{deals
-						?.filter((d, idx) => d?.client_id?.clientName.toLowerCase().includes(search.toLowerCase()) || d?.client_id?.clientLastName.toLowerCase().includes(search.toLowerCase()))
+						?.filter(d => d?.client_id?.clientName.toLowerCase().includes(search.toLowerCase()) || d?.client_id?.clientLastName.toLowerCase().includes(search.toLowerCase()))
 						.map((d, idx) => {
 							return (
 								<tr key={d?.id} className="table-data">
@@ -171,13 +168,6 @@ function GetAllDeals() {
 						})}
 				</tbody>
 			</table>
-
-			{/* {
-				backUp.length > 0 ?
-				<div>
-					<h1>name:{backUp.}</h1>
-				</div>
-			} */}
 		</div>
 	);
 }

@@ -1,24 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { create_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 
-import io from "socket.io-client"; //importing socket.io-client
-
-const CreateOneVehicle = ({ reload, setReload }) => {
-	const [info, setInfo] = useState({
-		// cellPhone: [{ number: "" }],
-	});
+const CreateOneVehicle = () => {
+	const [info, setInfo] = useState({});
 	const [validations, setValidations] = useState(false);
 
 	const navigate = useNavigate();
 
 	// Apollo Client mutation hook for creating a single list item
-	const [createOneVehicle, { error }] = useMutation(create_one_vehicle);
+	const [createOneVehicle] = useMutation(create_one_vehicle);
 
 	// Function to handle input changes and update state accordingly
-	const infoToBeSubmitted = (e) => {
+	const infoToBeSubmitted = e => {
 		setInfo({
 			...info,
 			[e.target.name]: e.target.value,
@@ -26,7 +22,7 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 	};
 
 	// Function to handle form submission
-	const submit = async (e) => {
+	const submit = async e => {
 		e.preventDefault();
 
 		await createOneVehicle({
@@ -35,23 +31,19 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 				vehicleModels: info?.vehicleModels,
 				years: info?.years,
 				colors: info?.colors,
-				// boughtPrice: parseFloat(info.boughtPrice),
 			},
 			// this is re fetching the data
 			refetchQueries: [{ query: get_all_vehicles }],
 		})
-			.then(async (res) => {
+			.then(async res => {
 				let id = res.data.createOneVehicle.id;
 				await navigate(`/vehicles/${id}`);
 
-				await console.log(
-					"here is the response",
-					res.data.createOneVehicle
-				);
+				await console.log("here is the response", res.data.createOneVehicle);
 				// socket.emit("new_client_added", res.data.createOneVehicle);
 				// setReload(!reload);
 			})
-			.catch((error) => {
+			.catch(() => {
 				setValidations(true);
 			});
 	};
@@ -82,10 +74,8 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 		// const updatedColors = updatedSections.map((section) => section.color);
 	};
 
-	const deleteSection = (index) => {
-		const filteredSections = sections.filter(
-			(_, secIndex) => secIndex !== index
-		);
+	const deleteSection = index => {
+		const filteredSections = sections.filter((_, secIndex) => secIndex !== index);
 		setSections(filteredSections);
 	};
 
@@ -107,10 +97,8 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 		// const updatedColors = updatedSections.map((section) => section.color);
 	};
 
-	const deleteSection2 = (index) => {
-		const filteredSections = sections2.filter(
-			(_, secIndex) => secIndex !== index
-		);
+	const deleteSection2 = index => {
+		const filteredSections = sections2.filter((_, secIndex) => secIndex !== index);
 		setSections2(filteredSections);
 	};
 
@@ -131,10 +119,8 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 		// const updatedColors = updatedSections.map((section) => section.color);
 	};
 
-	const deleteSection3 = (index) => {
-		const filteredSections = sections3.filter(
-			(_, secIndex) => secIndex !== index
-		);
+	const deleteSection3 = index => {
+		const filteredSections = sections3.filter((_, secIndex) => secIndex !== index);
 		setSections3(filteredSections);
 	};
 
@@ -173,24 +159,14 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 						<input
 							type="text"
 							name="vehicleName"
-							onChange={(e) => {
+							onChange={e => {
 								infoToBeSubmitted(e);
 								setValidations(false);
 							}}
 							placeholder="Nombre Del Vehículo"
 							className="form-input"
 						/>
-						{info?.vehicleName?.length > 0 &&
-						info?.vehicleName?.length < 2 ? (
-							<p className="input-validation">
-								Nombre Del Vehículo Debe De Tener Por Lo Menos 2
-								Caracteres
-							</p>
-						) : validations ? (
-							<p className="input-validation">
-								El Nombre Del Vehículo Es Requerido
-							</p>
-						) : null}
+						{info?.vehicleName?.length > 0 && info?.vehicleName?.length < 2 ? <p className="input-validation">Nombre Del Vehículo Debe De Tener Por Lo Menos 2 Caracteres</p> : validations ? <p className="input-validation">El Nombre Del Vehículo Es Requerido</p> : null}
 					</div>
 
 					{sections.map((section, index) => (
@@ -199,7 +175,7 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 								<input
 									type="text"
 									name="model"
-									onChange={(e) => {
+									onChange={e => {
 										handleInputChange(e, index);
 										setValidations(false);
 									}}
@@ -209,41 +185,27 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 
 								{sections.length > 1 && (
 									<div>
-										<button
-											type="button"
-											onClick={() => deleteSection(index)}
-											className="form-delete-input-section"
-										>
+										<button type="button" onClick={() => deleteSection(index)} className="form-delete-input-section">
 											<p>&#8722;</p>
 										</button>
 									</div>
 								)}
 							</div>
 
-							{sections[index].model?.length > 0 &&
-							sections[index].model?.length < 2 ? (
+							{sections[index].model?.length > 0 && sections[index].model?.length < 2 ? (
 								<div className="form-validation-container">
-									<p className="input-validation">
-										El Modelo Del Vehículo Debe De Tener Por
-										Lo Menos 2 Caracteres
-									</p>
+									<p className="input-validation">El Modelo Del Vehículo Debe De Tener Por Lo Menos 2 Caracteres</p>
 								</div>
 							) : validations ? (
 								<div className="form-validation-container">
-									<p className="input-validation">
-										El Modelo Es Requerido
-									</p>
+									<p className="input-validation">El Modelo Es Requerido</p>
 								</div>
 							) : null}
 						</div>
 					))}
 
 					<div className="form-new-section-btn-container">
-						<button
-							type="button"
-							onClick={() => addSection()}
-							className="form-add-input-section"
-						>
+						<button type="button" onClick={() => addSection()} className="form-add-input-section">
 							<p>&#43;</p>
 						</button>
 					</div>
@@ -254,7 +216,7 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 								<input
 									type="number"
 									name="year"
-									onChange={(e) => {
+									onChange={e => {
 										handleInputChange2(e, index);
 										setValidations(false);
 									}}
@@ -264,43 +226,27 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 
 								{sections2.length > 1 && (
 									<div>
-										<button
-											type="button"
-											onClick={() =>
-												deleteSection2(index)
-											}
-											className="form-delete-input-section"
-										>
+										<button type="button" onClick={() => deleteSection2(index)} className="form-delete-input-section">
 											<p>&#8722;</p>
 										</button>
 									</div>
 								)}
 							</div>
 
-							{sections2?.[index].year?.length > 0 &&
-							sections2?.[index].year?.length < 2 ? (
+							{sections2?.[index].year?.length > 0 && sections2?.[index].year?.length < 2 ? (
 								<div className="form-validation-container">
-									<p className="input-validation">
-										Año Debe De Tener Por Lo Menos 2
-										Caracteres
-									</p>
+									<p className="input-validation">Año Debe De Tener Por Lo Menos 2 Caracteres</p>
 								</div>
 							) : validations ? (
 								<div className="form-validation-container">
-									<p className="input-validation">
-										El Año Es Requerido
-									</p>
+									<p className="input-validation">El Año Es Requerido</p>
 								</div>
 							) : null}
 						</div>
 					))}
 
 					<div className="form-new-section-btn-container">
-						<button
-							type="button"
-							onClick={() => addSection2()}
-							className="form-add-input-section"
-						>
+						<button type="button" onClick={() => addSection2()} className="form-add-input-section">
 							<p>&#43;</p>
 						</button>
 					</div>
@@ -311,7 +257,7 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 								<input
 									type="text"
 									name="color"
-									onChange={(e) => {
+									onChange={e => {
 										handleInputChange3(e, index);
 										setValidations(false);
 									}}
@@ -321,52 +267,29 @@ const CreateOneVehicle = ({ reload, setReload }) => {
 
 								{sections3.length > 1 && (
 									<div>
-										<button
-											type="button"
-											onClick={() =>
-												deleteSection3(index)
-											}
-											className="form-delete-input-section"
-										>
+										<button type="button" onClick={() => deleteSection3(index)} className="form-delete-input-section">
 											<p>&#8722;</p>
 										</button>
 									</div>
 								)}
 							</div>
 
-							{sections3?.[index].color?.length > 0 &&
-							sections3?.[index].color?.length < 2 ? (
+							{sections3?.[index].color?.length > 0 && sections3?.[index].color?.length < 2 ? (
 								<div className="form-validation-container">
-									<p className="input-validation">
-										El Color Debe De Tener Por Lo Menos 2
-										Caracteres
-									</p>
+									<p className="input-validation">El Color Debe De Tener Por Lo Menos 2 Caracteres</p>
 								</div>
 							) : null}
 						</div>
 					))}
 
 					<div className="form-new-section-btn-container">
-						<button
-							type="button"
-							onClick={() => addSection3()}
-							className="form-add-input-section"
-						>
+						<button type="button" onClick={() => addSection3()} className="form-add-input-section">
 							<p>&#43;</p>
 						</button>
 					</div>
 				</div>
 
-				<button
-					type="submit"
-					className={`form-submit-btn ${
-						info?.vehicleName?.length >= 2 &&
-						info?.vehicleModels?.[0]?.model?.length >= 2 &&
-						info?.years?.[0]?.year.length >= 2
-							? "show"
-							: "hide"
-					}`}
-				>
+				<button type="submit" className={`form-submit-btn ${info?.vehicleName?.length >= 2 && info?.vehicleModels?.[0]?.model?.length >= 2 && info?.years?.[0]?.year.length >= 2 ? "show" : "hide"}`}>
 					Agregar Vehículo
 				</button>
 			</form>

@@ -3,9 +3,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { get_one_deal } from "../../GraphQL/queries/dealQueries";
 import { update_One_deal_payment } from "../../GraphQL/mutations/dealMutations";
-import { get_all_clients } from "../../GraphQL/queries/clientQueries";
-import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
-import moment from "moment";
+// import { get_all_clients } from "../../GraphQL/queries/clientQueries";
+// import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 import { delete_one_deal } from "../../GraphQL/mutations/dealMutations";
 
 function GetOneDeal() {
@@ -42,23 +41,16 @@ function GetOneDeal() {
 
 	useEffect(() => {
 		if (loading) {
-			console.log("loading", loading);
+			// console.log("loading", loading);
 		}
-
 		if (data) {
-			console.log("data", data);
+			// console.log("data", data);
 			setDeal(data.getOneDeal);
 		}
 		if (error) {
 			setNotFound(true);
-			console.log("error", error);
+			// console.log("error", error);
 		}
-
-		// console.log(
-		// 	"remaining payments :",
-		// 	deal?.dealPayments?.filter((pd) => pd?.monthFullyPay === false)
-		// 		.length
-		// );
 	}, [loading, data, error]);
 
 	const submit = e => {
@@ -79,8 +71,8 @@ function GetOneDeal() {
 				setInfo({});
 				console.log(res.data.updateOneDealPayment);
 			})
-			.catch(error => {
-				console.log("there was an error", error);
+			.catch(() => {
+				// console.log("there was an error", error);
 			});
 	};
 
@@ -123,11 +115,10 @@ function GetOneDeal() {
 	};
 
 	const [paymentMethod, setPaymentMethod] = useState(false);
-	const [latenessDays, setLatenessDays] = useState();
 
-	const secondaryPaymentMethod = () => {
-		setPaymentMethod(prev => !prev);
-	};
+	// const secondaryPaymentMethod = () => {
+	// 	setPaymentMethod(prev => !prev);
+	// };
 
 	const pendingPayment = () => {
 		return deal?.dealPayments?.filter(pd => pd?.monthFullyPay === false).length;

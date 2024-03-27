@@ -1,20 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { create_one_client } from "../../GraphQL/mutations/clientMutations";
-import { get_all_clients } from "../../GraphQL/queries/clientQueries";
-import { gql } from "@apollo/client";
-import io from "socket.io-client"; //importing socket.io-client
 
-const CreateOneClient = ({ reload, setReload }) => {
-	const [info, setInfo] = useState({
-		// cellPhone: [{ number: "" }],
-	});
-
+const CreateOneClient = () => {
+	const [info, setInfo] = useState({});
 	const navigate = useNavigate();
-
-	// Apollo Client mutation hook for creating a single list item
-	const [createOneClient, { error }] = useMutation(
+	const [createOneClient] = useMutation(
 		create_one_client
 		// 	 {
 		// 	update(cache, { data: { addNewItem } }) {
@@ -45,14 +37,10 @@ const CreateOneClient = ({ reload, setReload }) => {
 		// }
 	);
 	const [sections, setSections] = useState([{ number: "" }]);
-
 	const [validations, setValidations] = useState(false);
 
 	// Function to handle input changes and update state accordingly
 	const infoToBeSubmitted = e => {
-		// if (e.target.name === "clientName") {
-		// 	setValidations({ ...validations, [e.target.name]: null });
-		// }
 		setInfo({
 			...info,
 			[e.target.name]: e.target.value,
@@ -69,67 +57,20 @@ const CreateOneClient = ({ reload, setReload }) => {
 				clientLastName: info?.clientLastName,
 				cellPhones: sections,
 			},
-			// this is re fetching the data
-			// refetchQueries: [{ query: get_all_clients }],
 		})
 			.then(async res => {
 				let id = res.data.createOneClient.id;
 				await navigate(`/${id}`);
-				await console.log("here is the response", res.data.createOneClient);
-				// socket.emit("new_client_added", res.data.createOneClient);
-				// setReload(!reload);
+				// await console.log("here is the response", res.data.createOneClient);
 			})
 			.catch(error => {
-				// console.log("fail");
 				setValidations(true);
-
-				// console.log(error);
 			});
 	};
 
 	const addSection = () => {
 		setSections([...sections, { number: "" }]);
 	};
-
-	// const handleInputChange = (e, index) => {
-	// 	const updatedSections = sections.map((section, secIndex) => {
-	// 		if (index === secIndex) {
-	// 			let value = e.target.value;
-	// 			if (!value) return { ...section, [e.target.name]: value };
-
-	// 			const phoneNumber = value.replace(/[^\d]/g, "");
-	// 			const phoneNumberLength = phoneNumber.length;
-
-	// 			if (phoneNumberLength < 4)
-	// 				return { ...section, [e.target.name]: phoneNumber };
-	// 			if (phoneNumberLength < 7) {
-	// 				return {
-	// 					...section,
-	// 					[e.target.name]: `(${phoneNumber.slice(
-	// 						0,
-	// 						3
-	// 					)} ${phoneNumber.slice(3)}`,
-	// 				};
-	// 			}
-	// 			return {
-	// 				...section,
-	// 				[e.target.name]: `(${phoneNumber.slice(
-	// 					0,
-	// 					3
-	// 				)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
-	// 			};
-	// 		}
-	// 		return section;
-	// 	});
-
-	// 	setSections(updatedSections);
-
-	// 	// Assuming you want to update the info object after formatting the phone number
-	// 	const updatedCellPhones = updatedSections.map(
-	// 		(section) => section.number
-	// 	);
-	// 	setInfo({ ...info, cellPhones: updatedCellPhones });
-	// };
 
 	const handleInputChange = (e, index) => {
 		const updatedSections = sections.map((section, secIndex) => {
