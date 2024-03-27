@@ -10,9 +10,7 @@ import { VEHICLE_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscri
 
 function GetAllVehicles() {
 	const navigate = useNavigate();
-	const navigateTO = url => {
-		navigate(url);
-	};
+
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 	// Fetch data using the useQuery hook by executing the getAllVehicles query
@@ -21,7 +19,6 @@ function GetAllVehicles() {
 	// Set up state to manage the Clients fetched from the query
 	const [vehicles, setVehicles] = useState([]);
 
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!   find out why the subsciption is not updating the info on the page for others
 	// Subscription for client changes
 	useSubscription(VEHICLE_CHANGE_SUBSCRIPTION, {
 		onData: infoChange => {

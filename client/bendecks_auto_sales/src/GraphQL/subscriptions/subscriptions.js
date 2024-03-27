@@ -76,6 +76,17 @@ export const DEAL_CHANGE_SUBSCRIPTION = gql`
 				}
 				carColor
 				carYear
+				client_id {
+					id
+					clientName
+					clientLastName
+					cellPhones {
+						numberId
+						number
+					}
+					createdAt
+					updatedAt
+				}
 			}
 		}
 	}

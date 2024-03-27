@@ -1,24 +1,22 @@
 // Import necessary modules from Apollo Client and custom GraphQL queries
 import { useQuery, useSubscription } from "@apollo/client"; // Import useQuery hook to execute GraphQL queries
-import { useNavigate, Link, useParams } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { get_all_deals } from "../../GraphQL/queries/dealQueries";
 import { DEAL_CHANGE_SUBSCRIPTION } from "../../GraphQL/subscriptions/subscriptions";
-import moment from "moment";
 
 function GetAllDeals() {
 	const navigate = useNavigate();
-	const [deals, setDeals] = useState([]);
-	const [search, setSearch] = useState("");
-	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-	const [color, setColor] = useState();
 
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 	// Fetch data using the useQuery hook by executing the getAllClients query
 	const { error, loading, data } = useQuery(get_all_deals);
-
-	// FIXME:  the add and the delete on the sub do not  work find out why
+	const [deals, setDeals] = useState([]);
+	const [search, setSearch] = useState("");
+	// const [backUp, setBackUp] = useState();
 
 	useSubscription(DEAL_CHANGE_SUBSCRIPTION, {
+		onError: err => console.log("this is the error from subscription", err),
 		onData: infoChange => {
 			console.log("this the deal subscription:", infoChange);
 			const changeInfo = infoChange?.data?.data?.onDealChange;
@@ -28,7 +26,9 @@ function GetAllDeals() {
 			if (eventType === "DEAL_ADDED") {
 				// Handle new client addition
 				console.log("added hit", dealChanges);
+				// setBackUp(changeInfo);
 				setDeals(prev => [...prev, dealChanges]);
+				// console.log("this is updated deals", deals);
 			} else if (eventType === "DEAL_UPDATED") {
 				console.log("updated hit");
 				// Handle client update
@@ -40,8 +40,14 @@ function GetAllDeals() {
 			} else {
 				console.log("Unknown event type");
 			}
+			// console.log("back up here ", backUp);
 		},
+		onComplete: complete => console.log("subscription completed", complete),
 	});
+
+	// useSubscription(DEAL_CHANGE_SUBSCRIPTION,{
+	// 	x
+	// })
 
 	// useEffect hook to handle changes in error, loading, and data states
 	useEffect(() => {
@@ -93,14 +99,6 @@ function GetAllDeals() {
 			<h1>Ventas</h1>
 			<input type="text" className="filter" placeholder="filtrar Por Nombre" onChange={e => setSearch(e.target.value)} />
 
-			{/* {
-			updatedInfo !== undefined ?
-			<div>
-				{d?.client_id?.clientName} {d?.client_id?.clientLastName}
-			</div>:
-
-			} */}
-
 			<table>
 				<thead>
 					<tr className="table-header">
@@ -110,7 +108,7 @@ function GetAllDeals() {
 							</th>
 						) : null}
 
-						<th className={`${color === true ? "late-warning" : color === true ? "late-danger" : ""}`}>
+						<th>
 							<h2>Nombre</h2>
 						</th>
 						<th>
@@ -159,6 +157,7 @@ function GetAllDeals() {
 									{windowWidth > 400 ? (
 										<td className="table-multi-data">
 											<p className="">{pendingPayment(idx)}</p>
+											{/* <p>place holder</p> */}
 										</td>
 									) : null}
 									{windowWidth > 400 ? (
@@ -172,6 +171,13 @@ function GetAllDeals() {
 						})}
 				</tbody>
 			</table>
+
+			{/* {
+				backUp.length > 0 ?
+				<div>
+					<h1>name:{backUp.}</h1>
+				</div>
+			} */}
 		</div>
 	);
 }

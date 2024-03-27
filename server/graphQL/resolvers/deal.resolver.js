@@ -42,17 +42,7 @@ const dealResolvers = {
 
 	Mutation: {
 		createOneDeal: async (_, { dayOfDeal, downPayment, payment, dealPayments, remainingBalance, sellingPrice, carName, carModel, carColor, carYear, client_id }) => {
-			const create = {
-				dayOfDeal,
-				downPayment,
-				payment,
-				remainingBalance,
-				totalLatenessFee: parseFloat(0),
-				sellingPrice,
-				carName,
-				carModel,
-				client_id,
-			};
+			const create = { dayOfDeal, downPayment, payment, remainingBalance, totalLatenessFee: parseFloat(0), sellingPrice, carName, carModel, client_id };
 
 			dealPayments = dealPayments.map(dealPayments => {
 				return {
@@ -79,16 +69,17 @@ const dealResolvers = {
 			return await Deal.create(create)
 				.then(async newDeal => {
 					console.log("new deal created", newDeal, "\n____________________");
+					const deal = await dealResolvers.Query.getOneDeal(null, {
+						id: newDeal.id,
+					});
 					pubsub.publish("DEAL_ADDED", {
 						onDealChange: {
 							eventType: "DEAL_ADDED",
-							dealChanges: newDeal,
+							dealChanges: deal,
 						},
 					});
 					// Use the getOneDeal method to fetch and populate the new deal
-					return await dealResolvers.Query.getOneDeal(null, {
-						id: newDeal.id,
-					});
+					return deal;
 				})
 				.catch(err => {
 					console.log("there was an error creating a new Deal", err, "\n____________________");
@@ -213,10 +204,14 @@ const dealResolvers = {
 				{ new: true } // Return the updated document
 			)
 				.then(async updatedDeal => {
+					const deal = await dealResolvers.Query.getOneDeal(null, {
+						id: updatedDeal.id,
+					});
+
 					pubsub.publish("DEAL_UPDATED", {
 						onDealChange: {
 							eventType: "DEAL_UPDATED",
-							dealChanges: updatedDeal,
+							dealChanges: deal,
 						},
 					});
 
@@ -225,9 +220,7 @@ const dealResolvers = {
 					// 	updatedDeal,
 					// 	"\n____________________"
 					// );
-					return await dealResolvers.Query.getOneDeal(null, {
-						id: updatedDeal.id,
-					});
+					return deal;
 				})
 				.catch(err => {
 					console.log("there was an error updating a deal payment", err, "\n____________________");
@@ -236,16 +229,19 @@ const dealResolvers = {
 		},
 
 		deleteOneDeal: async (_, { id }) => {
+			const deal = await dealResolvers.Query.getOneDeal(null, {
+				id: id,
+			});
 			return await Deal.findByIdAndDelete(id)
 				.then(async deletedDeal => {
 					pubsub.publish("DEAL_DELETED", {
 						onDealChange: {
 							eventType: "DEAL_DELETED",
-							dealChanges: deletedDeal,
+							dealChanges: deal,
 						},
 					});
 
-					console.log(" a deal was deleted", deletedDeal, "\n____________________");
+					console.log(" a deal was deleted", deal, "\n____________________");
 					return true;
 				})
 				.catch(err => {
