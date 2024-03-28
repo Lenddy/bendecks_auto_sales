@@ -111,7 +111,7 @@ const CreateOneClient = () => {
 	// Component rendering
 	return (
 		<div className="children-content">
-			<h1>Nuevo Cliente</h1>
+			<h1 className="section">Nuevo Cliente</h1>
 			<form onSubmit={submit} className="form-create">
 				<div className="form-section">
 					<div>

@@ -189,6 +189,10 @@
 	font-size: 20px;
 }
 
+.section {
+	margin: 10px auto;
+}
+
 /* get all  */
 table {
 	width: 100%;
@@ -295,6 +299,10 @@ td {
 	border: var(--clr-secondary) solid 5px;
 	border-radius: 50px;
 }
+.form-add-input-section:hover,
+.form-delete-input-section:hover {
+	cursor: pointer;
+}
 
 .form-add-input-section > p,
 .form-delete-input-section > p {
@@ -323,6 +331,10 @@ td {
 	min-width: 150px;
 	font-size: 20px;
 	padding: 5px;
+}
+
+.form-submit-btn:hover {
+	cursor: pointer;
 }
 
 .form-add-input-section:active,
@@ -367,6 +379,10 @@ td {
 	/* background-color: red; */
 	caret-color: var(--clr-clk-text);
 	caret-shape: block;
+	padding: 5px 10px;
+}
+.form-editable-field:hover {
+	cursor: pointer;
 }
 
 .form-confirm-deletion-container {
@@ -392,7 +408,7 @@ td {
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	max-width: 50px;
+	max-width: 100000px;
 }
 .space {
 	margin-left: 10px;

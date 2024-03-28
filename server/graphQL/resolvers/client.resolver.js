@@ -118,6 +118,7 @@ const clientResolvers = {
 							},
 						});
 					} else if (phone.status === "delete") {
+						console.log(phone);
 						// If status is delete, push delete operation
 						bulkOps.push({
 							updateOne: {

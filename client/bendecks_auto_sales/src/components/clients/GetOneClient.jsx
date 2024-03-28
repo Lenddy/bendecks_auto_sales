@@ -23,6 +23,7 @@ function GetOneClient() {
 	const [notFound, setNotFound] = useState(false);
 	const [info, setInfo] = useState({});
 	const [focus, setFocus] = useState(false);
+	const [isFocused, setIsFocused] = useState(false);
 	const [sections, setSections] = useState();
 	const [numberUpdate, setNumberUpdate] = useState([]);
 	const [confirmDelete, setConfirmDelete] = useState(Array(sections?.length).fill(false));
@@ -42,6 +43,7 @@ function GetOneClient() {
 			// console.log("there was an error", error); // Log an error message if an error occurs
 			setNotFound(true);
 		}
+		// console.log("sections info ", sections)
 	}, [error, loading, data, client]); // Dependencies for the useEffect hook
 
 	const [updateOneClient] = useMutation(
@@ -163,116 +165,68 @@ function GetOneClient() {
 	};
 
 	const changeSectionVal = (e, index) => {
-		let objectExists = false;
+		const maxLength = 13;
+		const updatedSections = sections.map((section, secIndex) => {
+			if (index === secIndex) {
+				let value = e.target.textContent;
 
-		const { __typename, numberId, ...sectionWithoutTypename } = sections[index];
+				// Limit the length to 13 characters
+				if (value.length > 13) {
+					value = value.slice(0, maxLength);
+				}
 
-		const updatedNumberUpdate = numberUpdate.map(item => {
-			if (item.status === "add" && item.numberId === numberId) {
-				objectExists = true;
-				return {
-					numberId: item.numberId,
-					number: e.target.textContent,
-					status: "add",
-				};
+				if (!value) return { ...section, number: value };
+
+				const phoneNumber = value.replace(/[^\d]/g, "");
+				const formattedNumber = formatPhoneNumber(phoneNumber); // Format the phone number
+
+				return { ...section, number: formattedNumber };
 			}
-
-			if (item.numberId === numberId && item.numberId !== undefined && item.status !== "add") {
-				objectExists = true;
-				return {
-					numberId: item.numberId,
-					number: e.target.textContent,
-					status: "update",
-				};
-			}
-
-			if (item.status === "add" && item.numberId === numberId) {
-				objectExists = true;
-			}
-			return item;
+			return section;
 		});
 
-		if (!objectExists) {
-			updatedNumberUpdate.push({
-				numberId,
-				number: e.target.textContent,
-				status: "update",
-			});
-		}
+		setSections(updatedSections);
 
-		setNumberUpdate(updatedNumberUpdate);
+		// Update the info object after formatting the phone number
+		const updatedCellPhones = updatedSections.map(section => section.number);
+		setInfo({ ...info, cellPhones: updatedCellPhones });
+
+		// Update number update with the formatted number
+		setNumberUpdate(prevNumberUpdate => {
+			return prevNumberUpdate.map(item => {
+				if (item.numberId === sections[index].numberId) {
+					return {
+						...item,
+						number: updatedSections[index].number,
+					};
+				}
+				return item;
+			});
+		});
+
+		// Set focus to the end of the input
+		e.target.focus();
+		const range = document.createRange();
+		const sel = window.getSelection();
+		range.selectNodeContents(e.target);
+		range.collapse(false);
+		sel.removeAllRanges();
+		sel.addRange(range);
 	};
 
-	// todo make use this so that the numbers are formate
+	// Function to format phone number
+	const formatPhoneNumber = phoneNumber => {
+		if (!phoneNumber) return "";
 
-	// const changeSectionVal = (e, index) => {
-	// 	let objectExists = false;
-
-	// 	const updatedSections = sections.map((section, secIndex) => {
-	// 		if (index === secIndex) {
-	// 			let value = e.target.value;
-	// 			if (!value) return { ...section, [e.target.name]: value };
-
-	// 			const phoneNumber = value.replace(/[^\d]/g, "");
-	// 			const phoneNumberLength = phoneNumber.length;
-
-	// 			if (phoneNumberLength <= 3) return { ...section, [e.target.name]: phoneNumber };
-	// 			if (phoneNumberLength <= 6) {
-	// 				return {
-	// 					...section,
-	// 					[e.target.name]: `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`,
-	// 				};
-	// 			}
-	// 			return {
-	// 				...section,
-	// 				[e.target.name]: `(${phoneNumber.slice(0, 3)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
-	// 			};
-	// 		}
-	// 		return section;
-	// 	});
-
-	// 	const { __typename, numberId, ...sectionWithoutTypename } = updatedSections[index];
-
-	// 	const updatedNumberUpdate = numberUpdate.map(item => {
-	// 		if (item.status === "add" && item.numberId === numberId) {
-	// 			objectExists = true;
-	// 			return {
-	// 				numberId: item.numberId,
-	// 				number: e.target.textContent,
-	// 				status: "add",
-	// 			};
-	// 		}
-
-	// 		if (item.numberId === numberId && item.numberId !== undefined && item.status !== "add") {
-	// 			objectExists = true;
-	// 			return {
-	// 				numberId: item.numberId,
-	// 				number: e.target.textContent,
-	// 				status: "update",
-	// 			};
-	// 		}
-
-	// 		if (item.status === "add" && item.numberId === numberId) {
-	// 			objectExists = true;
-	// 		}
-	// 		return item;
-	// 	});
-
-	// 	if (!objectExists) {
-	// 		updatedNumberUpdate.push({
-	// 			numberId,
-	// 			number: e.target.textContent,
-	// 			status: "update",
-	// 		});
-	// 	}
-
-	// 	setSections(updatedSections);
-	// 	setNumberUpdate(updatedNumberUpdate);
-
-	// 	// Assuming you want to update the info object after formatting the phone number
-	// 	const updatedCellPhones = updatedSections.map(section => section.number);
-	// 	setInfo({ ...info, cellPhones: updatedCellPhones });
-	// };
+		const phoneNumberLength = phoneNumber.length;
+		if (phoneNumberLength <= 3) {
+			return phoneNumber;
+		} else if (phoneNumberLength <= 6) {
+			return `(${phoneNumber.slice(0, 3)})${phoneNumber.slice(3)}`;
+		} else {
+			return `(${phoneNumber.slice(0, 3)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+		}
+	};
 
 	const focusNewInput = () => {
 		if (newSectionRef.current) {
@@ -288,36 +242,24 @@ function GetOneClient() {
 		});
 	};
 
-	// const handleInputChange = (e, index) => {
-	// 	const updatedSections = sections.map((section, secIndex) => {
-	// 		if (index === secIndex) {
-	// 			let value = e.target.value;
-	// 			if (!value) return { ...section, [e.target.name]: value };
+	const handleKeyDown = e => {
+		const { keyCode } = e;
+		const isNumericKey = keyCode >= 48 && keyCode <= 57; // Numeric keys (0-9)
+		const isDeleteKey = keyCode === 8 || keyCode === 46; // Backspace or delete key codes
+		const isMaxLength = e.target.textContent.length === 13;
 
-	// 			const phoneNumber = value.replace(/[^\d]/g, "");
-	// 			const phoneNumberLength = phoneNumber.length;
+		// Prevent input if not a numeric or delete key and already at maximum length
+		if (!(isNumericKey || isDeleteKey) || (isMaxLength && isNumericKey)) {
+			e.preventDefault();
+		}
+	};
 
-	// 			if (phoneNumberLength <= 3) return { ...section, [e.target.name]: phoneNumber };
-	// 			if (phoneNumberLength <= 6) {
-	// 				return {
-	// 					...section,
-	// 					[e.target.name]: `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`,
-	// 				};
-	// 			}
-	// 			return {
-	// 				...section,
-	// 				[e.target.name]: `(${phoneNumber.slice(0, 3)})${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`,
-	// 			};
-	// 		}
-	// 		return section;
-	// 	});
-
-	// 	setSections(updatedSections);
-
-	// 	// Assuming you want to update the info object after formatting the phone number
-	// 	const updatedCellPhones = updatedSections.map(section => section.number);
-	// 	setInfo({ ...info, cellPhones: updatedCellPhones });
-	// };
+	const handleMouseDown = event => {
+		// Prevent default action to stop cursor movement when clicked
+		if (isFocused) {
+			event.preventDefault();
+		}
+	};
 
 	return (
 		<div className="children-content">
@@ -333,7 +275,7 @@ function GetOneClient() {
 					</div>
 				) : (
 					<div className="form-update-container">
-						<h1>Cliente</h1>
+						<h1 className="section">Cliente</h1>
 						<h1 className="link-connection">{id}</h1>
 						<form onSubmit={submit} className="form-update">
 							<div className="form-section-union-container">
@@ -376,10 +318,15 @@ function GetOneClient() {
 												onInput={e => {
 													changeSectionVal(e, index);
 												}}
-												onFocus={() => setFocus(true)}
-												// onBlur={() => setFocus(false)}
+												onFocus={e => {
+													setFocus(true);
+													// handleFocus(e);
+												}}
+												onMouseDown={handleMouseDown}
+												// onBlur={() => handleBlur()}
 												className="form-editable-field"
 												ref={index === sections.length - 1 ? newSectionRef : null}
+												onKeyDown={handleKeyDown}
 												key={index}>
 												{phone?.number}
 											</h1>
@@ -392,9 +339,10 @@ function GetOneClient() {
 												onInput={e => {
 													changeSectionVal(e, index);
 												}}
+												onMouseDown={handleMouseDown}
 												onFocus={() => setFocus(true)}
-												// onBlur={() => setFocus(false)}
-											>
+												onBlur={() => setFocus(false)}
+												onKeyDown={handleKeyDown}>
 												{phone?.number}
 											</h1>
 										)}
