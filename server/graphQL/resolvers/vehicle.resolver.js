@@ -13,73 +13,57 @@ const vehicleResolvers = {
 		},
 		getAllVehicles: async () => {
 			return await Vehicle.find()
-				.then((vehicles) => {
-					console.log(
-						"all the vehicles",
-						vehicles,
-						"\n____________________"
-					);
+				.then(vehicles => {
+					console.log("all the vehicles", vehicles, "\n____________________");
 					return vehicles;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error fetching all the vehicles",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error fetching all the vehicles", err, "\n____________________");
 					throw err;
 				}); //gets all the vehicles(items) in the data base
 		},
 		getOneVehicle: async (_, { id }) => {
 			return await Vehicle.findById(id)
-				.then((vehicle) => {
-					console.log(
-						"one vehicle ",
-						vehicle,
-						"\n____________________"
-					);
+				.then(vehicle => {
+					console.log("one vehicle ", vehicle, "\n____________________");
 					return vehicle;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error fetching one vehicle",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error fetching one vehicle", err, "\n____________________");
 					throw err;
 				}); //gets one the vehicle(item) from the data base
 		},
 	},
 
 	Mutation: {
-		createOneVehicle: async (
-			_,
-			{ vehicleName, vehicleModels, years, colors, boughtPrice }
-		) => {
+		createOneVehicle: async (_, { vehicleName, vehicleModels, years, colors, boughtPrice }) => {
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			//Date;
 
-			vehicleModels = vehicleModels.map((modelDate) => {
+			vehicleModels = vehicleModels.map(modelDate => {
 				return {
 					modelId: uuidv4(), // Generates a unique UUID
 					...modelDate,
 				};
 			});
 
-			years = years.map((yearDate) => {
+			years = years.map(yearDate => {
 				return {
 					yearId: uuidv4(), // Generates a unique UUID
 					...yearDate,
 				};
 			});
 
-			colors = colors.map((colorDate) => {
-				return {
-					colorId: uuidv4(), // Generates a unique UUID
-					...colorDate,
-				};
-			});
+			if (colors !== undefined) {
+				colors = colors.map(colorDate => {
+					return {
+						colorId: uuidv4(), // Generates a unique UUID
+						...colorDate,
+					};
+				});
+			}
+
 			return await Vehicle.create({
 				vehicleName,
 				vehicleModels,
@@ -89,7 +73,7 @@ const vehicleResolvers = {
 				createdAt,
 				updatedAt,
 			})
-				.then((newVehicle) => {
+				.then(newVehicle => {
 					pubsub.publish("VEHICLE_ADDED", {
 						onVehicleChange: {
 							eventType: "VEHICLE_ADDED",
@@ -101,33 +85,17 @@ const vehicleResolvers = {
 					// 	pubsub._events
 					// );
 
-					console.log(
-						"new Vehicle created",
-						newVehicle,
-						"\n____________________"
-					);
+					console.log("new Vehicle created", newVehicle, "\n____________________");
 					return newVehicle;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error creating a new Vehicle",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error creating a new Vehicle", err, "\n____________________");
 					throw err;
 				});
 		},
 
 		updateOneVehicle: async (parent, args, context, info) => {
-			const {
-				id,
-				vehicleName,
-				vehicleModels,
-				years,
-				colors,
-				boughtPrice,
-				sellingPrice,
-			} = args;
+			const { id, vehicleName, vehicleModels, years, colors, boughtPrice, sellingPrice } = args;
 
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
@@ -327,33 +295,25 @@ const vehicleResolvers = {
 			return await Vehicle.findByIdAndUpdate(id, update, {
 				new: true,
 			})
-				.then((updatedVehicle) => {
+				.then(updatedVehicle => {
 					pubsub.publish("VEHICLE_UPDATED", {
 						onVehicleChange: {
 							eventType: "VEHICLE_UPDATED",
 							vehicleChanges: updatedVehicle,
 						},
 					});
-					console.log(
-						"vehicle updated",
-						updatedVehicle,
-						"\n____________________"
-					);
+					console.log("vehicle updated", updatedVehicle, "\n____________________");
 					return updatedVehicle;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error updating a vehicle",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error updating a vehicle", err, "\n____________________");
 					throw err;
 				});
 		},
 
 		deleteOneVehicle: async (_, { id }) => {
 			return await Vehicle.findByIdAndDelete(id)
-				.then((deletedVehicle) => {
+				.then(deletedVehicle => {
 					pubsub.publish("VEHICLE_DELETED", {
 						onVehicleChange: {
 							eventType: "VEHICLE_DELETED",
@@ -361,19 +321,11 @@ const vehicleResolvers = {
 						},
 					});
 
-					console.log(
-						" a Vehicle was deleted",
-						deletedVehicle,
-						"\n____________________"
-					);
+					console.log(" a Vehicle was deleted", deletedVehicle, "\n____________________");
 					return deletedVehicle;
 				})
-				.catch((err) => {
-					console.log(
-						"there was an error deleting a Vehicle",
-						err,
-						"\n____________________"
-					);
+				.catch(err => {
+					console.log("there was an error deleting a Vehicle", err, "\n____________________");
 					throw err;
 				});
 		},
@@ -395,8 +347,8 @@ const vehicleResolvers = {
 
 	Vehicle: {
 		// Use toISOString() for custom DateTime scalar
-		createdAt: (vehicle) => vehicle.createdAt.toISOString(),
-		updatedAt: (vehicle) => vehicle.updatedAt.toISOString(),
+		createdAt: vehicle => vehicle.createdAt.toISOString(),
+		updatedAt: vehicle => vehicle.updatedAt.toISOString(),
 	},
 };
 

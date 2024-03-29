@@ -128,6 +128,7 @@ function GetAllDeals() {
 				<tbody>
 					{deals
 						?.filter(d => d?.client_id?.clientName?.toLowerCase()?.includes(search?.toLowerCase()) || d?.client_id?.clientLastName?.toLowerCase()?.includes(search.toLowerCase()))
+						// .filter(d => d.remainingBalance !== 0)
 						.map((d, idx) => {
 							return (
 								<tr key={d?.id} className="table-data">

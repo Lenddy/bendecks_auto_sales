@@ -21,7 +21,6 @@ function GetOneDeal() {
 	const [selectedPayment, setSelectedPayment] = useState();
 	const [notFound, setNotFound] = useState(false);
 	const [dealDelete, setDealDelete] = useState(false);
-
 	const [deleteOneDeal] = useMutation(delete_one_deal);
 
 	const deleteDeal = () => {
@@ -174,6 +173,11 @@ function GetOneDeal() {
 								Dias de Atraso/
 								<span className={`o ${calculateLateClass(deal?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate)}`}>{deal?.dealPayments?.find(p => !p.monthFullyPay)?.daysLate}</span>
 							</h2>
+
+							<h2 className={`general-info `}>
+								Balance/
+								{deal?.remainingBalance}
+							</h2>
 						</div>
 					</div>
 
@@ -218,7 +222,7 @@ function GetOneDeal() {
 
 						<div className="form-submit-container">
 							<div>
-								<button type="submit" className={`form-submit-btn  ${(selectedPayment !== undefined && selectedPayment?.length > 0) || info?.amount || info?.amountPayed?.amount > 0 || isNaN(info?.amountPayed?.amount) === false ? "show" : "hide"} `}>
+								<button type="submit" className={`form-submit-btn  ${(selectedPayment !== undefined && selectedPayment?.length > 0) || info?.amount || info?.amountPayed?.amount > 0 || isNaN(info?.amountPayed?.amount) === false ? "show" : "hide"} `} onClick={() => setPaymentMethod(true)}>
 									Hacer pago
 								</button>
 							</div>

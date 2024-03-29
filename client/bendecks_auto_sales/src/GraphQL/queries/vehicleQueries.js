@@ -50,13 +50,13 @@ export const get_one_vehicle = gql`
 	}
 `;
 
-export const client_added_subscription = gql`
-	subscription {
-		clientAdded {
-			id
-			clientName
-			clientLastName
-			cellPhone
-		}
-	}
-`;
+// export const client_added_subscription = gql`
+// 	subscription {
+// 		clientAdded {
+// 			id
+// 			clientName
+// 			clientLastName
+// 			cellPhone
+// 		}
+// 	}
+// `;

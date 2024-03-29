@@ -5,7 +5,9 @@ import { create_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 
 const CreateOneVehicle = () => {
-	const [info, setInfo] = useState({});
+	const [info, setInfo] = useState({
+		colors: [],
+	});
 	const [validations, setValidations] = useState(false);
 
 	const navigate = useNavigate();
@@ -152,7 +154,7 @@ const CreateOneVehicle = () => {
 	// Component rendering
 	return (
 		<div className="children-content">
-			<h1>Nuevo Cliente</h1>
+			<h1>Nuevo Vehículo</h1>
 			<form onSubmit={submit} className="form-create">
 				<div className="form-section">
 					<div>

@@ -134,10 +134,15 @@ const dealResolvers = {
 		updateOneDealPayment: async (parent, { id, selectedPayments, amountPayed }, context, info) => {
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
+			const oldDeal = await dealResolvers?.Query?.getOneDeal(null, { id });
+			console.log("this is the one deal ------------------------------------>", oldDeal);
+
 			if (selectedPayments !== undefined && selectedPayments.length > 0) {
 				console.log("the selectedPayments hit");
 				const bulkOps = [];
+				let total_amount = 0;
 				for (payment of selectedPayments) {
+					total_amount += payment.hasToPay;
 					bulkOps.push({
 						updateOne: {
 							filter: {
@@ -155,6 +160,19 @@ const dealResolvers = {
 						},
 					});
 				}
+
+				bulkOps.push({
+					updateOne: {
+						filter: {
+							_id: id,
+						},
+						update: {
+							$set: {
+								remainingBalance: (oldDeal.remainingBalance -= total_amount),
+							},
+						},
+					},
+				});
 				console.log("after the loop");
 
 				if (bulkOps.length > 0) {
@@ -165,8 +183,10 @@ const dealResolvers = {
 			if (amountPayed !== undefined) {
 				const bulkOps = [];
 				let remainingAmount = amountPayed.amount;
+				let total_amount = 0;
 
 				for (const payment of amountPayed.dealPayments) {
+					total_amount += payment.hasToPay;
 					if (remainingAmount <= 0) {
 						console.log("breaking the loop");
 						break;
@@ -192,6 +212,19 @@ const dealResolvers = {
 					remainingAmount -= paymentAmount;
 				}
 				console.log("after the loop");
+
+				bulkOps.push({
+					updateOne: {
+						filter: {
+							_id: id,
+						},
+						update: {
+							$set: {
+								remainingBalance: (oldDeal.remainingBalance -= total_amount),
+							},
+						},
+					},
+				});
 
 				if (bulkOps.length > 0) {
 					await Deal.bulkWrite(bulkOps);
