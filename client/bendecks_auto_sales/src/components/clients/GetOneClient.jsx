@@ -131,7 +131,7 @@ function GetOneClient() {
 			status: "add", // Status for adding
 		};
 		setNumberUpdate([...numberUpdate, newSection]);
-		setSections(prevSections => [...prevSections, newSection]);
+		setSections(prevSections => [newSection, ...prevSections]);
 	};
 
 	const deleteSection = index => {

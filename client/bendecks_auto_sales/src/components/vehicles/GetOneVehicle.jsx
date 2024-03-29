@@ -607,80 +607,64 @@ const GetOneVehicle = () => {
 						</div>
 						<h1>Colores</h1>
 
-						{colorSections?.length > 0 ? (
-							colorSections.map((color, index) => (
-								<div key={color?.colorId} className="form-editable-phone-section">
-									{index === colorSections.length - 1 ? (
-										<h1
-											contentEditable
-											suppressContentEditableWarning
-											name={`color-${index}`}
-											onInput={e => {
-												changeColorSectionVal(e, index);
-											}}
-											onFocus={() => setFocus(true)}
-											// onBlur={() => setFocus(false)}
-											className="form-editable-field"
-											ref={index === colorSections.length - 1 ? newColorSectionRef : null}
-											key={index}>
-											{color?.color}
-										</h1>
-									) : (
-										<h1
-											contentEditable
-											suppressContentEditableWarning
-											className="form-editable-field"
-											name={`color-${index}`}
-											onInput={e => {
-												changeColorSectionVal(e, index);
-											}}
-											onFocus={() => setFocus(true)}
-											// onBlur={() => setFocus(false)}
-										>
-											{color?.color}
-										</h1>
-									)}
+						{colorSections?.length > 0
+							? colorSections.map((color, index) => (
+									<div key={color?.colorId} className="form-editable-phone-section">
+										{index === colorSections.length - 1 ? (
+											<h1
+												contentEditable
+												suppressContentEditableWarning
+												name={`color-${index}`}
+												onInput={e => {
+													changeColorSectionVal(e, index);
+												}}
+												onFocus={() => setFocus(true)}
+												// onBlur={() => setFocus(false)}
+												className="form-editable-field"
+												ref={index === colorSections.length - 1 ? newColorSectionRef : null}
+												key={index}>
+												{color?.color}
+											</h1>
+										) : (
+											<h1
+												contentEditable
+												suppressContentEditableWarning
+												className="form-editable-field"
+												name={`color-${index}`}
+												onInput={e => {
+													changeColorSectionVal(e, index);
+												}}
+												onFocus={() => setFocus(true)}>
+												{color?.color}
+											</h1>
+										)}
 
-									{colorSections.length > 1 && (
-										<div>
-											{!confirmColorDelete[index] ? (
-												<button type="button" className="form-delete-input-section space" onClick={() => toggleConfirmColorDelete(index)} key={index}>
-													<p>&#8722;</p>
-												</button>
-											) : (
-												<div className="form-confirm-deletion-container">
-													<div className="form-new-section-btn-container">
-														<button type="button" onClick={() => deleteColorSection(index)} className="form-delete-input-section" key={index}>
-															<p> &#10003;</p>
-														</button>
-													</div>
+										{colorSections.length > 1 && (
+											<div>
+												{!confirmColorDelete[index] ? (
+													<button type="button" className="form-delete-input-section space" onClick={() => toggleConfirmColorDelete(index)} key={index}>
+														<p>&#8722;</p>
+													</button>
+												) : (
+													<div className="form-confirm-deletion-container">
+														<div className="form-new-section-btn-container">
+															<button type="button" onClick={() => deleteColorSection(index)} className="form-delete-input-section" key={index}>
+																<p> &#10003;</p>
+															</button>
+														</div>
 
-													<div className="form-new-section-btn-container">
-														<button type="button" onClick={() => toggleConfirmColorDelete(index)} className="form-delete-input-section" key={index}>
-															<p> &#10005;</p>
-														</button>
+														<div className="form-new-section-btn-container">
+															<button type="button" onClick={() => toggleConfirmColorDelete(index)} className="form-delete-input-section" key={index}>
+																<p> &#10005;</p>
+															</button>
+														</div>
 													</div>
-												</div>
-											)}
-										</div>
-									)}
-								</div>
-							))
-						) : (
-							<div className="form-editable-phone-section">
-								<h1
-									contentEditable
-									suppressContentEditableWarning
-									name={`vehicle-0`}
-									onInput={e => {
-										changeColorSectionVal(e, 0);
-									}}
-									// onChange={infoToBeSubmitted}
-									className="form-editable-field">
-									{vehicle?.years[0]?.year}
-								</h1>
-							</div>
-						)}
+												)}
+											</div>
+										)}
+									</div>
+							  ))
+							: null}
 
 						<div className="form-new-section-btn-container">
 							<button

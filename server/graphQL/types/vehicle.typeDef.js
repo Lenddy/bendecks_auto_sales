@@ -63,7 +63,7 @@ const vehicleTypeDef = gql`
 
 	#mutations
 	type Mutation {
-		createOneVehicle(vehicleName: String!, vehicleModels: [modelInput!]!, years: [yearInput!]!, colors: [colorInput!]!, boughtPrice: Float): Vehicle!
+		createOneVehicle(vehicleName: String!, vehicleModels: [modelInput!]!, years: [yearInput!]!, colors: [colorInput], boughtPrice: Float): Vehicle!
 
 		updateOneVehicle(id: ID!, vehicleName: String, vehicleModels: [modelInput], years: [yearInput], colors: [colorInput], boughtPrice: Float): Vehicle!
 

@@ -52,7 +52,7 @@ function GetAllVehicles() {
 			if (eventType === "VEHICLE_ADDED") {
 				// Handle new client addition
 				// console.log("added hit");
-				setVehicles(prev => [...prev, vehicleChanges]);
+				setVehicles(prev => [vehicleChanges, ...prev]);
 			} else if (eventType === "VEHICLE_UPDATED") {
 				// console.log("updated hit");
 				// Handle client update

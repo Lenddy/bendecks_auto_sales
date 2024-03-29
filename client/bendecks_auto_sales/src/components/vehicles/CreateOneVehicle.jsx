@@ -6,7 +6,7 @@ import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 
 const CreateOneVehicle = () => {
 	const [info, setInfo] = useState({
-		colors: [],
+		// colors: [],
 	});
 	const [validations, setValidations] = useState(false);
 
@@ -39,13 +39,12 @@ const CreateOneVehicle = () => {
 		})
 			.then(async res => {
 				let id = res.data.createOneVehicle.id;
-				await navigate(`/vehicles/${id}`);
+				// await navigate(`/vehicles/${id}`);
 
 				await console.log("here is the response", res.data.createOneVehicle);
-				// socket.emit("new_client_added", res.data.createOneVehicle);
-				// setReload(!reload);
 			})
-			.catch(() => {
+			.catch(err => {
+				console.log("this is the error", err);
 				setValidations(true);
 			});
 	};

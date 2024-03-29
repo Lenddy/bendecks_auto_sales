@@ -152,7 +152,7 @@ const dealResolvers = {
 							update: {
 								$set: {
 									"dealPayments.$.monthFullyPay": true,
-									"dealPayments.$.amountPayedThisMonth": payment.hasToPay,
+									"dealPayments.$.amountPayedThisMonth": payment.amountPayedThisMonth + payment.hasToPay,
 									// "dealPayments.$.remainingBalance":payment.remainingBalance -payment.hasToPay,
 									"dealPayments.$.hasToPay": payment.hasToPay - payment.hasToPay,
 								},
@@ -168,7 +168,7 @@ const dealResolvers = {
 						},
 						update: {
 							$set: {
-								remainingBalance: (oldDeal.remainingBalance -= total_amount),
+								remainingBalance: oldDeal.remainingBalance - total_amount,
 							},
 						},
 					},
@@ -182,11 +182,10 @@ const dealResolvers = {
 
 			if (amountPayed !== undefined) {
 				const bulkOps = [];
+				let total_amount = amountPayed.amount;
 				let remainingAmount = amountPayed.amount;
-				let total_amount = 0;
 
 				for (const payment of amountPayed.dealPayments) {
-					total_amount += payment.hasToPay;
 					if (remainingAmount <= 0) {
 						console.log("breaking the loop");
 						break;
@@ -203,7 +202,7 @@ const dealResolvers = {
 							update: {
 								$set: {
 									"dealPayments.$.monthFullyPay": paymentAmount >= payment.hasToPay, // Check if the payment is fully paid
-									"dealPayments.$.amountPayedThisMonth": paymentAmount,
+									"dealPayments.$.amountPayedThisMonth": payment.amountPayedThisMonth + paymentAmount,
 									"dealPayments.$.hasToPay": payment.hasToPay - paymentAmount,
 								},
 							},
@@ -220,7 +219,7 @@ const dealResolvers = {
 						},
 						update: {
 							$set: {
-								remainingBalance: (oldDeal.remainingBalance -= total_amount),
+								remainingBalance: oldDeal.remainingBalance - total_amount,
 							},
 						},
 					},

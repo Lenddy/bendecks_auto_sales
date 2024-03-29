@@ -61,7 +61,7 @@ const CreateOneClient = () => {
 			.then(async res => {
 				let id = res.data.createOneClient.id;
 				await navigate(`/${id}`);
-				// await console.log("here is the response", res.data.createOneClient);
+				await console.log("here is the response", res.data.createOneClient);
 			})
 			.catch(error => {
 				setValidations(true);

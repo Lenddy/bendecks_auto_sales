@@ -72,7 +72,7 @@ function GetAllClients() {
 			// console.log("New data from subscription:", changeClient);
 			if (eventType === "CLIENT_ADDED") {
 				// Handle new client addition
-				setClients(prevClients => [...prevClients, clientChanges]);
+				setClients(prevClients => [clientChanges, ...prevClients]);
 			} else if (eventType === "CLIENT_UPDATED") {
 				// Handle client update
 				setClients(prevClients => prevClients.map(c => (c.id === clientChanges.id ? clientChanges : c)));
