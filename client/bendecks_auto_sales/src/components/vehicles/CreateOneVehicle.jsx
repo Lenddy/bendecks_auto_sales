@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { create_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
@@ -56,6 +56,20 @@ const CreateOneVehicle = () => {
 	const [sections, setSections] = useState([{ model: "" }]);
 	const [sections2, setSections2] = useState([{ year: "" }]);
 	const [sections3, setSections3] = useState([{ color: "" }]);
+	const [years, setYears] = useState();
+
+	const vehicleYears = () => {
+		const yearsArray = [];
+		for (let year = 1960; year <= 2200; year++) {
+			yearsArray.push({ year: year.toString() });
+		}
+		console.log(yearsArray);
+		setYears(yearsArray);
+	};
+
+	useEffect(() => {
+		vehicleYears();
+	}, []);
 
 	const addSection = () => {
 		setSections([...sections, { model: "" }]);

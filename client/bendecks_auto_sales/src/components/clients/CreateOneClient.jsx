@@ -36,6 +36,7 @@ const CreateOneClient = () => {
 		// 	},
 		// }
 	);
+
 	const [sections, setSections] = useState([{ number: "" }]);
 	const [validations, setValidations] = useState(false);
 
