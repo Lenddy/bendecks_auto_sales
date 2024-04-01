@@ -36,7 +36,7 @@ const vehicleResolvers = {
 	},
 
 	Mutation: {
-		createOneVehicle: async (_, { vehicleName, vehicleModels, years, colors, boughtPrice }) => {
+		createOneVehicle: async (_, { vehicleName, vehicleModels, colors, boughtPrice }) => {
 			const createdAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			const updatedAt = new Date().toISOString(); // Use toISOString() for custom DateTime scalar
 			//Date;
@@ -48,12 +48,12 @@ const vehicleResolvers = {
 				};
 			});
 
-			years = years.map(yearDate => {
-				return {
-					yearId: uuidv4(), // Generates a unique UUID
-					...yearDate,
-				};
-			});
+			// years = years.map(yearDate => {
+			// 	return {
+			// 		yearId: uuidv4(), // Generates a unique UUID
+			// 		...yearDate,
+			// 	};
+			// });
 
 			if (colors !== undefined) {
 				colors = colors.map(colorDate => {
@@ -67,7 +67,7 @@ const vehicleResolvers = {
 			return await Vehicle.create({
 				vehicleName,
 				vehicleModels,
-				years,
+				// years,
 				colors,
 				boughtPrice,
 				createdAt,
@@ -95,7 +95,7 @@ const vehicleResolvers = {
 		},
 
 		updateOneVehicle: async (parent, args, context, info) => {
-			const { id, vehicleName, vehicleModels, years, colors, boughtPrice, sellingPrice } = args;
+			const { id, vehicleName, vehicleModels, colors, boughtPrice, sellingPrice } = args;
 
 			const update = { updatedAt: new Date().toISOString() }; // Use toISOString() for custom DateTime
 
@@ -168,67 +168,67 @@ const vehicleResolvers = {
 				}
 			}
 
-			if (years !== undefined && years.length > 0) {
-				const bulkOps = [];
+			// if (years !== undefined && years.length > 0) {
+			// 	const bulkOps = [];
 
-				for (const year of years) {
-					if (year.status === "add") {
-						const newYear = {
-							yearId: uuidv4(),
-							year: year.year,
-						};
+			// 	for (const year of years) {
+			// 		if (year.status === "add") {
+			// 			const newYear = {
+			// 				yearId: uuidv4(),
+			// 				year: year.year,
+			// 			};
 
-						bulkOps.push({
-							updateOne: {
-								filter: { _id: id },
-								update: {
-									$push: {
-										years: newYear,
-									},
-								},
-							},
-						});
-					} else if (year.status === "update") {
-						bulkOps.push({
-							updateOne: {
-								filter: {
-									_id: id,
-									"years.yearId": year.yearId,
-								},
+			// 			bulkOps.push({
+			// 				updateOne: {
+			// 					filter: { _id: id },
+			// 					update: {
+			// 						$push: {
+			// 							years: newYear,
+			// 						},
+			// 					},
+			// 				},
+			// 			});
+			// 		} else if (year.status === "update") {
+			// 			bulkOps.push({
+			// 				updateOne: {
+			// 					filter: {
+			// 						_id: id,
+			// 						"years.yearId": year.yearId,
+			// 					},
 
-								update: {
-									$set: {
-										"years.$.year": year.year,
-									},
-								},
-							},
-						});
-					} else if (year.status === "delete") {
-						// If status is delete, push delete operation
-						bulkOps.push({
-							updateOne: {
-								filter: {
-									_id: id,
-									"years.yearId": year.yearId,
-								},
+			// 					update: {
+			// 						$set: {
+			// 							"years.$.year": year.year,
+			// 						},
+			// 					},
+			// 				},
+			// 			});
+			// 		} else if (year.status === "delete") {
+			// 			// If status is delete, push delete operation
+			// 			bulkOps.push({
+			// 				updateOne: {
+			// 					filter: {
+			// 						_id: id,
+			// 						"years.yearId": year.yearId,
+			// 					},
 
-								update: {
-									$pull: {
-										years: {
-											yearId: year.yearId,
-										},
-									},
-								},
-							},
-						});
-					}
-				}
+			// 					update: {
+			// 						$pull: {
+			// 							years: {
+			// 								yearId: year.yearId,
+			// 							},
+			// 						},
+			// 					},
+			// 				},
+			// 			});
+			// 		}
+			// 	}
 
-				// Execute all bulk operations together
-				if (bulkOps.length > 0) {
-					await Vehicle.bulkWrite(bulkOps);
-				}
-			}
+			// 	// Execute all bulk operations together
+			// 	if (bulkOps.length > 0) {
+			// 		await Vehicle.bulkWrite(bulkOps);
+			// 	}
+			// }
 
 			if (colors !== undefined && colors.length > 0) {
 				const bulkOps = [];

@@ -431,6 +431,7 @@ const GetOneVehicle = () => {
 							</div>
 						</div>
 						{/* models */}
+						<h1 className="link-connection">Modelos</h1>
 						{sections?.length > 0 ? (
 							sections.map((model, index) => (
 								<div key={model?.modelId} className="form-editable-phone-section">
@@ -518,94 +519,7 @@ const GetOneVehicle = () => {
 							</button>
 						</div>
 
-						{/* years */}
-						<h1>Years</h1>
-						{yearSections?.length > 0 ? (
-							yearSections.map((year, index) => (
-								<div key={year?.yearId} className="form-editable-phone-section">
-									{index === yearSections.length - 1 ? (
-										<h1
-											contentEditable
-											suppressContentEditableWarning
-											name={`year-${index}`}
-											onInput={e => {
-												changeYearSectionVal(e, index);
-											}}
-											onFocus={() => setFocus(true)}
-											// onBlur={() => setFocus(false)}
-											className="form-editable-field"
-											ref={index === yearSections.length - 1 ? newYearSectionRef : null}
-											key={index}>
-											{year?.year}
-										</h1>
-									) : (
-										<h1
-											contentEditable
-											suppressContentEditableWarning
-											className="form-editable-field"
-											name={`year-${index}`}
-											onInput={e => {
-												changeYearSectionVal(e, index);
-											}}
-											onFocus={() => setFocus(true)}
-											// onBlur={() => setFocus(false)}
-										>
-											{year?.year}
-										</h1>
-									)}
-
-									{yearSections.length > 1 && (
-										<div>
-											{!confirmYearDelete[index] ? (
-												<button type="button" className="form-delete-input-section space" onClick={() => toggleConfirmYearDelete(index)} key={index}>
-													<p>&#8722;</p>
-												</button>
-											) : (
-												<div className="form-confirm-deletion-container">
-													<div className="form-new-section-btn-container">
-														<button type="button" onClick={() => deleteYearSection(index)} className="form-delete-input-section" key={index}>
-															<p> &#10003;</p>
-														</button>
-													</div>
-
-													<div className="form-new-section-btn-container">
-														<button type="button" onClick={() => toggleConfirmYearDelete(index)} className="form-delete-input-section" key={index}>
-															<p> &#10005;</p>
-														</button>
-													</div>
-												</div>
-											)}
-										</div>
-									)}
-								</div>
-							))
-						) : (
-							<div className="form-editable-phone-section">
-								<h1
-									contentEditable
-									suppressContentEditableWarning
-									name={`vehicle-0`}
-									onInput={e => {
-										changeYearSectionVal(e, 0);
-									}}
-									// onChange={infoToBeSubmitted}
-									className="form-editable-field">
-									{vehicle?.years[0]?.year}
-								</h1>
-							</div>
-						)}
-
-						<div className="form-new-section-btn-container">
-							<button
-								type="button"
-								onClick={async () => {
-									await addYearSection(), focusYearNewInput();
-								}}
-								className="form-add-input-section">
-								<p>&#43;</p>
-							</button>
-						</div>
-						<h1>Colores</h1>
+						<h1 className="link-connection">Colores</h1>
 
 						{colorSections?.length > 0
 							? colorSections.map((color, index) => (
@@ -710,3 +624,93 @@ const GetOneVehicle = () => {
 };
 
 export default GetOneVehicle;
+
+{
+	/* years
+						<h1>Years</h1>
+						{yearSections?.length > 0 ? (
+							yearSections.map((year, index) => (
+								<div key={year?.yearId} className="form-editable-phone-section">
+									{index === yearSections.length - 1 ? (
+										<h1
+											contentEditable
+											suppressContentEditableWarning
+											name={`year-${index}`}
+											onInput={e => {
+												changeYearSectionVal(e, index);
+											}}
+											onFocus={() => setFocus(true)}
+											// onBlur={() => setFocus(false)}
+											className="form-editable-field"
+											ref={index === yearSections.length - 1 ? newYearSectionRef : null}
+											key={index}>
+											{year?.year}
+										</h1>
+									) : (
+										<h1
+											contentEditable
+											suppressContentEditableWarning
+											className="form-editable-field"
+											name={`year-${index}`}
+											onInput={e => {
+												changeYearSectionVal(e, index);
+											}}
+											onFocus={() => setFocus(true)}
+											// onBlur={() => setFocus(false)}
+										>
+											{year?.year}
+										</h1>
+									)}
+
+									{yearSections.length > 1 && (
+										<div>
+											{!confirmYearDelete[index] ? (
+												<button type="button" className="form-delete-input-section space" onClick={() => toggleConfirmYearDelete(index)} key={index}>
+													<p>&#8722;</p>
+												</button>
+											) : (
+												<div className="form-confirm-deletion-container">
+													<div className="form-new-section-btn-container">
+														<button type="button" onClick={() => deleteYearSection(index)} className="form-delete-input-section" key={index}>
+															<p> &#10003;</p>
+														</button>
+													</div>
+
+													<div className="form-new-section-btn-container">
+														<button type="button" onClick={() => toggleConfirmYearDelete(index)} className="form-delete-input-section" key={index}>
+															<p> &#10005;</p>
+														</button>
+													</div>
+												</div>
+											)}
+										</div>
+									)}
+								</div>
+							))
+						) : (
+							<div className="form-editable-phone-section">
+								<h1
+									contentEditable
+									suppressContentEditableWarning
+									name={`vehicle-0`}
+									onInput={e => {
+										changeYearSectionVal(e, 0);
+									}}
+									// onChange={infoToBeSubmitted}
+									className="form-editable-field">
+									{vehicle?.years[0]?.year}
+								</h1>
+							</div>
+						)}
+
+						<div className="form-new-section-btn-container">
+							<button
+								type="button"
+								onClick={async () => {
+									await addYearSection(), focusYearNewInput();
+								}}
+								className="form-add-input-section">
+								<p>&#43;</p>
+							</button>
+						</div> */
+}

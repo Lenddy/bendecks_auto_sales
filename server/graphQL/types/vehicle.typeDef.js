@@ -9,7 +9,7 @@ const vehicleTypeDef = gql`
 		id: ID!
 		vehicleName: String!
 		vehicleModels: [modelType!]!
-		years: [yearType!]!
+		# years: [yearType!]!
 		colors: [colorType]
 		boughtPrice: Float
 		createdAt: DateTime!
@@ -21,10 +21,10 @@ const vehicleTypeDef = gql`
 		model: String
 	}
 
-	type yearType {
-		yearId: ID
-		year: String
-	}
+	# type yearType {
+	# 	yearId: ID
+	# 	year: String
+	# }
 
 	type colorType {
 		colorId: ID
@@ -49,11 +49,11 @@ const vehicleTypeDef = gql`
 		status: String
 	}
 
-	input yearInput {
-		yearId: ID
-		year: String
-		status: String
-	}
+	# input yearInput {
+	# 	yearId: ID
+	# 	year: String
+	# 	status: String
+	# }
 
 	input colorInput {
 		colorId: ID
@@ -63,9 +63,9 @@ const vehicleTypeDef = gql`
 
 	#mutations
 	type Mutation {
-		createOneVehicle(vehicleName: String!, vehicleModels: [modelInput!]!, years: [yearInput!]!, colors: [colorInput], boughtPrice: Float): Vehicle!
+		createOneVehicle(vehicleName: String!, vehicleModels: [modelInput!]!, colors: [colorInput], boughtPrice: Float): Vehicle!
 
-		updateOneVehicle(id: ID!, vehicleName: String, vehicleModels: [modelInput], years: [yearInput], colors: [colorInput], boughtPrice: Float): Vehicle!
+		updateOneVehicle(id: ID!, vehicleName: String, vehicleModels: [modelInput], colors: [colorInput], boughtPrice: Float): Vehicle!
 
 		deleteOneVehicle(id: ID!): Vehicle!
 	}

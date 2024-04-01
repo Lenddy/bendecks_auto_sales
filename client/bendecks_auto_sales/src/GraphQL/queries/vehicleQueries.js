@@ -10,10 +10,6 @@ export const get_all_vehicles = gql`
 				modelId
 				model
 			}
-			years {
-				yearId
-				year
-			}
 			colors {
 				colorId
 				color
@@ -34,10 +30,6 @@ export const get_one_vehicle = gql`
 			vehicleModels {
 				modelId
 				model
-			}
-			years {
-				yearId
-				year
 			}
 			colors {
 				colorId

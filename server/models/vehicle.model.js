@@ -24,20 +24,20 @@ const VehicleSchema = new Schema(
 			],
 		},
 
-		years: {
-			type: [
-				{
-					yearId: {
-						type: String,
-					},
-					year: {
-						type: String,
-						min: 2,
-						max: 4,
-					},
-				},
-			],
-		},
+		// years: {
+		// 	type: [
+		// 		{
+		// 			yearId: {
+		// 				type: String,
+		// 			},
+		// 			year: {
+		// 				type: String,
+		// 				min: 2,
+		// 				max: 4,
+		// 			},
+		// 		},
+		// 	],
+		// },
 
 		colors: {
 			type: [

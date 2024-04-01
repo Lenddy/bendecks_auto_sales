@@ -31,7 +31,7 @@ const CreateOneVehicle = () => {
 			variables: {
 				vehicleName: info?.vehicleName,
 				vehicleModels: info?.vehicleModels,
-				years: info?.years,
+				// years: info?.years,
 				colors: info?.colors,
 			},
 			// this is re fetching the data
@@ -211,7 +211,7 @@ const CreateOneVehicle = () => {
 						</button>
 					</div>
 
-					{sections2.map((section2, index) => (
+					{/* {sections2.map((section2, index) => (
 						<div key={index} className="form-new-input-container">
 							<div className="form-new-input">
 								<input
@@ -250,7 +250,7 @@ const CreateOneVehicle = () => {
 						<button type="button" onClick={() => addSection2()} className="form-add-input-section">
 							<p>&#43;</p>
 						</button>
-					</div>
+					</div> */}
 
 					{sections3.map((section3, index) => (
 						<div key={index} className="form-new-input-container">
@@ -290,7 +290,7 @@ const CreateOneVehicle = () => {
 					</div>
 				</div>
 
-				<button type="submit" className={`form-submit-btn ${info?.vehicleName?.length >= 2 && info?.vehicleModels?.[0]?.model?.length >= 2 && info?.years?.[0]?.year.length >= 2 ? "show" : "hide"}`}>
+				<button type="submit" className={`form-submit-btn ${info?.vehicleName?.length >= 2 && info?.vehicleModels?.[0]?.model?.length >= 2 ? "show" : "hide"}`}>
 					Agregar Vehículo
 				</button>
 			</form>
