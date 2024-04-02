@@ -5,6 +5,8 @@ import { create_one_deal } from "../../GraphQL/mutations/dealMutations";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 import { get_all_vehicles } from "../../GraphQL/queries/vehicleQueries";
 import moment from "moment";
+// import CreateOneClient from "../clients/CreateOneClient";
+// import CreateOneVehicle from "../vehicles/CreateOneVehicle";
 
 const CreateOneDeal = () => {
 	const navigate = useNavigate();
@@ -123,6 +125,42 @@ const CreateOneDeal = () => {
 			});
 	};
 
+	const [years, setYears] = useState();
+
+	const vehicleYears = () => {
+		const yearsArray = [];
+		for (let year = 1960; year <= 2200; year++) {
+			yearsArray.push({ year: year.toString() });
+		}
+		console.log(yearsArray);
+		setYears(yearsArray);
+	};
+
+	useEffect(() => {
+		vehicleYears();
+	}, []);
+
+	const handleKeyDown = e => {
+		const { keyCode } = e;
+		const isNumericKey = (keyCode >= 48 && keyCode <= 57) || (keyCode >= 96 && keyCode <= 105); // Numeric keys (0-9)
+		const isDeleteKey = keyCode === 8 || keyCode === 46; // Backspace or delete key codes
+		const isMaxLength = e.target.value.length >= 4;
+
+		// Allow only numeric keys and delete keys, and limit the input to a maximum length of 4
+		if (!(isNumericKey || isDeleteKey) || (isMaxLength && !isDeleteKey)) {
+			e.preventDefault();
+		}
+		// else {
+		// 	// Update the info state with the current value being typed
+		// 	setInfo(prevInfo => ({
+		// 		...prevInfo,
+		// 		[e.target.name]: e.target.value,
+		// 	}));
+		// }
+	};
+
+	const [newClient, setNewClient] = useState({ show: true });
+
 	return (
 		<div className="children-content">
 			<h1>Nueva Venta</h1>
@@ -152,6 +190,10 @@ const CreateOneDeal = () => {
 							</div>
 						) : null}
 					</div>
+
+					{/* make btns to show other creates so that if they want to add a new client / vehicle they can doing from the create deals and al so make different stages one to create one fully and anoter for updates like if the client already exist allow it to be eble to be edited  and also for the vehicles al aswell so just grap what you already have from the vehicles and the clients and just add a update and create method here   when a client is chosen or vehicle is chosen   show some detais of that item and also allow it to be editable like in the get one  so make a funtion taht allow you to get that client or vehicle if it exixt and just make it editable    and if you need to create on just make a btn that says create one and show the inputs to be inputed just copy and pate what you have on the creates  and on the get ones ans also pput this info in the get one deal 	*/}
+
+					<div>{newClient.show === true ? <button className="form-submit-btn">hello</button> : null}</div>
 
 					{info?.client_id ? (
 						<div className="form-dropdown-input-container ">
@@ -222,19 +264,19 @@ const CreateOneDeal = () => {
 
 					{info?.carModel ? (
 						<div className="form-dropdown-input-container">
-							<select name="carYear" onChange={infoToBeSubmitted} className="form-dropdown-input">
-								<option disabled selected value="">
-									Seleccionar Año
-								</option>
-								{((vehicles.find(v => info?.carName?.id === v?.id) || {}).years || []).map(y => {
-									return (
-										<option key={y?.yearId} value={y?.year}>
-											{y?.year}
-										</option>
-									);
-								})}
-							</select>
-							{info?.carYear ? null : (
+							<input
+								type="text"
+								onChange={e => {
+									infoToBeSubmitted(e);
+								}}
+								onKeyDown={e => handleKeyDown(e)}
+								name="carYear"
+								placeholder="Año"
+								className="form-input"
+								maxLength={4}
+							/>
+
+							{info?.carYear?.length === 4 ? null : (
 								<div className="form-validation-container">
 									<p className="input-validation">Año Es Requerido</p>
 								</div>
@@ -247,8 +289,8 @@ const CreateOneDeal = () => {
 						</div>
 					) : null}
 
-					{info?.carYear ? (
-						<div className="form-dropdown-input-container">
+					{info?.carYear?.length == 4 ? (
+						<div>
 							<select name="carColor" onChange={infoToBeSubmitted} className="form-dropdown-input">
 								<option disabled selected value="">
 									Seleccionar Color
@@ -264,7 +306,7 @@ const CreateOneDeal = () => {
 						</div>
 					) : null}
 
-					{info?.carYear ? (
+					{info?.carYear?.length == 4 ? (
 						<div>
 							<input
 								type="number"
@@ -376,6 +418,9 @@ const CreateOneDeal = () => {
 					Agregar Venta
 				</button>
 			</form>
+
+			{/* <CreateOneClient />
+			<CreateOneVehicle /> */}
 		</div>
 	);
 };

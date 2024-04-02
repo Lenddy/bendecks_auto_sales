@@ -10,7 +10,7 @@ export const create_one_vehicle = gql`
 		$colors: [colorInput]
 		$boughtPrice: Float
 	) {
-		createOneVehicle(vehicleName: $vehicleName, vehicleModels: $vehicleModels, years: $years, colors: $colors, boughtPrice: $boughtPrice) {
+		createOneVehicle(vehicleName: $vehicleName, vehicleModels: $vehicleModels, colors: $colors, boughtPrice: $boughtPrice) {
 			id
 			vehicleName
 			vehicleModels {
@@ -41,7 +41,7 @@ export const update_One_vehicle = gql`
 		$colors: [colorInput]
 		$boughtPrice: Float
 	) {
-		updateOneVehicle(id: $id, vehicleName: $vehicleName, vehicleModels: $vehicleModels, years: $years, colors: $colors, boughtPrice: $boughtPrice) {
+		updateOneVehicle(id: $id, vehicleName: $vehicleName, vehicleModels: $vehicleModels, colors: $colors, boughtPrice: $boughtPrice) {
 			id
 			vehicleName
 			vehicleModels {

@@ -29,10 +29,6 @@ export const VEHICLE_CHANGE_SUBSCRIPTION = gql`
 					modelId
 					model
 				}
-				years {
-					yearId
-					year
-				}
 				colors {
 					colorId
 					color

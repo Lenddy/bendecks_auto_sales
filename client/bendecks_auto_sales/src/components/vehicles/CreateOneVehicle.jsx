@@ -29,7 +29,7 @@ const CreateOneVehicle = () => {
 
 		await createOneVehicle({
 			variables: {
-				vehicleName: info?.vehicleName,
+				vehicleName: info?.vehicleName.toUpperCase(),
 				vehicleModels: info?.vehicleModels,
 				// years: info?.years,
 				colors: info?.colors,
@@ -39,7 +39,7 @@ const CreateOneVehicle = () => {
 		})
 			.then(async res => {
 				let id = res.data.createOneVehicle.id;
-				// await navigate(`/vehicles/${id}`);
+				await navigate(`/vehicles/${id}`);
 
 				await console.log("here is the response", res.data.createOneVehicle);
 			})
@@ -56,32 +56,60 @@ const CreateOneVehicle = () => {
 	const [sections, setSections] = useState([{ model: "" }]);
 	const [sections2, setSections2] = useState([{ year: "" }]);
 	const [sections3, setSections3] = useState([{ color: "" }]);
-	const [years, setYears] = useState();
-
-	const vehicleYears = () => {
-		const yearsArray = [];
-		for (let year = 1960; year <= 2200; year++) {
-			yearsArray.push({ year: year.toString() });
-		}
-		console.log(yearsArray);
-		setYears(yearsArray);
-	};
-
-	useEffect(() => {
-		vehicleYears();
-	}, []);
 
 	const addSection = () => {
 		setSections([...sections, { model: "" }]);
 	};
 
+	// const handleInputChange = (e, index) => {
+	// 	const updatedSections = sections.map((section, secIndex) => {
+	// 		if (index === secIndex) {
+	// 			return { ...section, [e.target.name]: e.target.value };
+	// 		}
+	// 		return section;
+	// 	});
+	// 	setSections(updatedSections);
+	// 	setInfo({ ...info, vehicleModels: updatedSections });
+
+	// 	// Update the info.cellPhone with the cell phone numbers from all sections
+	// 	// const updatedColors = updatedSections.map((section) => section.color);
+	// };
+
+	// const handleInputChange = (e, index) => {
+	// 	const updatedSections = sections.map((section, secIndex) => {
+	// 	  if (index === secIndex) {
+	// 		// Capitalize the first letter of the input value
+	// 		const capitalizedValue = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
+	// 		return { ...section, [e.target.name]: capitalizedValue };
+	// 	  }
+	// 	  return section;
+	// 	});
+
+	// 	setSections(updatedSections);
+	// 	setInfo({ ...info, vehicleModels: updatedSections });
+
+	// 	// Update the info.cellPhone with the cell phone numbers from all sections
+	// 	// const updatedColors = updatedSections.map((section) => section.color);
+	//   };
+
+	const capitalizeFirstLetter = str => {
+		let words = str.split(" ");
+		for (let i = 0; i < words.length; i++) {
+			words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+		}
+		return words.join(" ");
+	};
+
 	const handleInputChange = (e, index) => {
 		const updatedSections = sections.map((section, secIndex) => {
 			if (index === secIndex) {
-				return { ...section, [e.target.name]: e.target.value };
+				// Capitalize the first letter of every word in the input value
+				const capitalizedValue = capitalizeFirstLetter(e.target.value);
+				return { ...section, [e.target.name]: capitalizedValue };
 			}
 			return section;
 		});
+
 		setSections(updatedSections);
 		setInfo({ ...info, vehicleModels: updatedSections });
 
@@ -94,28 +122,28 @@ const CreateOneVehicle = () => {
 		setSections(filteredSections);
 	};
 
-	const addSection2 = () => {
-		setSections2([...sections2, { year: "" }]);
-	};
+	// const addSection2 = () => {
+	// 	setSections2([...sections2, { year: "" }]);
+	// };
 
-	const handleInputChange2 = (e, index) => {
-		const updatedSections = sections2.map((section2, secIndex) => {
-			if (index === secIndex) {
-				return { ...section2, [e.target.name]: e.target.value };
-			}
-			return section2;
-		});
-		setSections2(updatedSections);
-		setInfo({ ...info, years: updatedSections });
+	// const handleInputChange2 = (e, index) => {
+	// 	const updatedSections = sections2.map((section2, secIndex) => {
+	// 		if (index === secIndex) {
+	// 			return { ...section2, [e.target.name]: e.target.value };
+	// 		}
+	// 		return section2;
+	// 	});
+	// 	setSections2(updatedSections);
+	// 	setInfo({ ...info, years: updatedSections });
 
-		// Update the info.cellPhone with the cell phone numbers from all sections
-		// const updatedColors = updatedSections.map((section) => section.color);
-	};
+	// 	// Update the info.cellPhone with the cell phone numbers from all sections
+	// 	// const updatedColors = updatedSections.map((section) => section.color);
+	// };
 
-	const deleteSection2 = index => {
-		const filteredSections = sections2.filter((_, secIndex) => secIndex !== index);
-		setSections2(filteredSections);
-	};
+	// const deleteSection2 = index => {
+	// 	const filteredSections = sections2.filter((_, secIndex) => secIndex !== index);
+	// 	setSections2(filteredSections);
+	// };
 
 	const addSection3 = () => {
 		setSections3([...sections3, { color: "" }]);
@@ -179,7 +207,7 @@ const CreateOneVehicle = () => {
 								setValidations(false);
 							}}
 							placeholder="Nombre Del Vehículo"
-							className="form-input"
+							className="form-input uppercase"
 						/>
 						{info?.vehicleName?.length > 0 && info?.vehicleName?.length < 2 ? <p className="input-validation">Nombre Del Vehículo Debe De Tener Por Lo Menos 2 Caracteres</p> : validations ? <p className="input-validation">El Nombre Del Vehículo Es Requerido</p> : null}
 					</div>
