@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { create_one_client } from "../../GraphQL/mutations/clientMutations";
+import GetOneClient from "./GetOneClient";
+import CreateOneDeal from "../deals/CreateOneDeal";
 
-const CreateOneClient = () => {
+const CreateOneClient = ({ redirect }) => {
 	const [info, setInfo] = useState({});
 	const navigate = useNavigate();
 	const [createOneClient] = useMutation(
@@ -60,8 +62,8 @@ const CreateOneClient = () => {
 			},
 		})
 			.then(async res => {
-				let id = res.data.createOneClient.id;
-				await navigate(`/${id}`);
+				let cId = res.data.createOneClient.id;
+				redirect === false ? <CreateOneDeal cId={cId} /> : await navigate(`/${id}`);
 				await console.log("here is the response", res.data.createOneClient);
 			})
 			.catch(error => {

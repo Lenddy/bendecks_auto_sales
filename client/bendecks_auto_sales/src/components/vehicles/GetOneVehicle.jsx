@@ -9,6 +9,7 @@ import { delete_one_vehicle } from "../../GraphQL/mutations/vehicleMutations";
 const GetOneVehicle = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
+	// const [givenId, setGivenId] = useState(requestedClient.requestedClient !== null ? requestedClient.requestedClient : id);
 	const [info, setInfo] = useState({});
 	const [vehicle, setVehicle] = useState();
 	const [notFound, setNotFound] = useState(false);

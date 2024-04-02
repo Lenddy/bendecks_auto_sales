@@ -511,5 +511,13 @@ td {
 	border-radius: 10px;
 }
 
+.multi-section-container {
+	/* background-color: red; */
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-items: center;
+}
+
 @media screen and (max-width: 500px) {
 }

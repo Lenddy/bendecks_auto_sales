@@ -7,17 +7,16 @@ import { update_One_client } from "../../GraphQL/mutations/clientMutations";
 import { delete_one_client } from "../../GraphQL/mutations/clientMutations";
 import { get_all_clients } from "../../GraphQL/queries/clientQueries";
 
-function GetOneClient() {
+function GetOneClient({ requestedClient }) {
 	const { id } = useParams();
 	const newSectionRef = useRef(null);
 	const navigate = useNavigate();
-
-	// Fetch data using the useQuery hook by executing the getAllList query
-	const { error, loading, data } = useQuery(get_one_client, {
-		variables: { id },
-	});
+	// console.log("this is the requestedClient", "is here" : "is null");
 
 	// Set up state to manage the lists fetched from the query
+	const [givenId, setGivenId] = useState(requestedClient !== undefined && id === undefined ? requestedClient : id !== undefined && requestedClient === undefined ? id : null);
+
+	// console.log("\x1b[34m blue this is the id", "\n", id, "\n", requestedClient, "\n", givenId);
 	const [client, setClient] = useState();
 	const [clientDelete, setClientDelete] = useState(false);
 	const [notFound, setNotFound] = useState(false);
@@ -27,9 +26,16 @@ function GetOneClient() {
 	const [sections, setSections] = useState();
 	const [numberUpdate, setNumberUpdate] = useState([]);
 	const [confirmDelete, setConfirmDelete] = useState(Array(sections?.length).fill(false));
+	const [reload, setReload] = useState(requestedClient !== givenId);
+
+	// Fetch data using the useQuery hook by executing the getAllList query
+	const { error, loading, data, refetch } = useQuery(get_one_client, {
+		variables: { id: givenId },
+	});
 
 	// useEffect hook to handle changes in error, loading, and data states
 	useEffect(() => {
+		// setGivenId(requestedClient !== null || requestedClient !== givenId ? requestedClient : id);
 		if (loading) {
 			// console.log("loading"); // Log a message when data is loading
 		}
@@ -43,8 +49,23 @@ function GetOneClient() {
 			// console.log("there was an error", error); // Log an error message if an error occurs
 			setNotFound(true);
 		}
-		// console.log("sections info ", sections)
 	}, [error, loading, data, client]); // Dependencies for the useEffect hook
+
+	useEffect(() => {
+		// Update givenId when the requestedClient prop changes
+		if (id !== undefined && id !== givenId) {
+			// setGivenId(requestedClient);
+			// console.log("\x1b[34m heelo blue this is the id", requestedClient, "\n", givenId, "\n", "are requestedClient and the givenId the same  ", requestedClient === givenId);
+			setGivenId(id);
+			// refetch();
+		}
+		if (requestedClient !== undefined && requestedClient !== givenId) {
+			// setGivenId(requestedClient);
+			// console.log("\x1b[34m heelo blue this is the id", requestedClient, "\n", givenId, "\n", "are requestedClient and the givenId the same  ", requestedClient === givenId);
+			setGivenId(requestedClient);
+			// refetch();
+		}
+	}, [requestedClient, givenId, refetch, id]);
 
 	const [updateOneClient] = useMutation(
 		update_One_client
@@ -106,12 +127,12 @@ function GetOneClient() {
 		e.preventDefault();
 		updateOneClient({
 			variables: {
-				id,
+				id: givenId,
 				clientName: info.clientName,
 				clientLastName: info.clientLastName,
 				cellPhones: numberUpdate,
 			},
-			refetchQueries: [{ query: get_all_clients }],
+			// refetchQueries: [{ query: get_all_clients }],
 		})
 			.then(res => {
 				// console.log(res.data);
