@@ -3,14 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
-import {
-	ApolloClient,
-	InMemoryCache,
-	ApolloProvider,
-	HttpLink,
-	from,
-	split,
-} from "@apollo/client"; //Import necessary modules from Apollo Client and other dependencies
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from, split } from "@apollo/client"; //Import necessary modules from Apollo Client and other dependencies
 
 // import {InMemoryCache} from"@apollo-cash-inmemory"
 
@@ -27,13 +20,16 @@ const errorLink = onError(({ graphqlErrors, networkError }) => {
 });
 
 // Create a link to the backend API (GraphQL endpoint)
+
 const link = from([
+	// http://localhost:8080/graphql/
 	errorLink, // Use the error link for error handling
-	new HttpLink({ uri: "http://localhost:8080/graphql/ " }), // Define the URL for your GraphQL API
+	new HttpLink({ uri: "https://bendecks-auto-sales.onrender.com/graphQL/" }), // Define the URL for your GraphQL API
 ]);
 
 const wsLink = new WebSocketLink({
-	uri: "ws://localhost:8080/graphql",
+	// ws://localhost:8080/graphql
+	uri: "wss://bendecks-auto-sales.onrender.com/graphQL/",
 	options: {
 		reconnect: true,
 	},
@@ -42,10 +38,7 @@ const wsLink = new WebSocketLink({
 const splitLink = split(
 	({ query }) => {
 		const definition = getMainDefinition(query);
-		return (
-			definition.kind === "OperationDefinition" &&
-			definition.operation === "subscription"
-		);
+		return definition.kind === "OperationDefinition" && definition.operation === "subscription";
 	},
 	wsLink,
 	link
