@@ -157,7 +157,7 @@ const CreateOneDeal = ({ cid }) => {
 	/* make btns to show other creates so that if they want to add a new client / vehicle they can doing from the create deals and al so make different stages one to create one fully and anoter for updates like if the client already exist allow it to be eble to be edited  and also for the vehicles al aswell so just grap what you already have from the vehicles and the clients and just add a update and create method here   when a client is chosen or vehicle is chosen   show some detais of that item and also allow it to be editable like in the get one  so make a funtion taht allow you to get that client or vehicle if it exixt and just make it editable    and if you need to create on just make a btn that says create one and show the inputs to be inputed just copy and pate what you have on the creates  and on the get ones ans also pput this info in the get one deal 	*/
 
 	//todo you have to find a way to be able to make the new ly addy client and vehicle automaticaly be seceltes and also show teir information  an idea is to just refecth the data here or use the sub to add it to the drop downs and
-
+	// https://www.youtube.com/results?search_query=how+to+make+a+searchable+dropdown+menu+in+react
 	//  and make the better drop downs with the search feature
 	return (
 		<div className="children-content">
